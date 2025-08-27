@@ -1,0 +1,270 @@
+body{
+    background-color: #e6e6f0;
+}
+
+.account-btn {
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+}
+
+.navbar {
+    border-radius: 40px;
+    margin: 20px;
+    background-color: #fff;
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+.hero-text h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.hero-text p {
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.highlight {
+    background-image: linear-gradient(to right, #03C4E7, #0047FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+.carousel-indicators .active {
+    background-color: #03C4E7 !important;
+    border-radius: 50%;
+}
+
+.review-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.table-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.highlightss {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.table-card {
+    width: 250px;
+    height: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s ease;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.table-card:hover {
+    transform: scale(1.05);
+}
+
+.table-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #444;
+}
+
+.table-price,
+.table-pax {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #777;
+}
+
+.reserve-btn {
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reserve-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-step {
+    display: none;
+}
+
+.modal-step.active {
+    display: block;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+}
+
+.close-btn {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.fa-user {
+    font-size: 24px;
+    color: #000;
+    cursor: pointer;
+}
+
+/* Dishes */
+
+#Dishes {
+    width: 100%;
+    height: 90vh;
+    background-image: url(bg1.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+#Dishes h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 55px;
+    margin-bottom: 30px;
+}
+
+#Dishes h1 span {
+    color: #fac031;
+    margin-left: 15px;
+    font-family: mv boli;
+}
+
+#Dishes h1 span::after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: #fac031;
+    display: block;
+    position: relative;
+    bottom: 15px;
+}
+
+#Dishes .Dish_box {
+    width: 95%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 13%;
+}
+
+#Dishes .Dish_box .profile {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    margin: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    transition: 0.4s;
+}
+
+#Dishes .Dish_box .profile:hover {
+    border-radius: 20px;
+    height: 320px;
+}
+
+#Dishes .Dish_box .profile img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    z-index: 2;
+    transition: 0.4s;
+}
+
+#Dishes .Dish_box .profile:hover img {
+    border-radius: 20px;
+    margin-top: -230px;
+}
+
+#Dishes .Dish_box .profile .info {
+    position: absolute;
+    text-align: center;
+    top: 25%;
+    transition: 0.4s;
+}
+
+#Dishes .Dish_box .profile:hover .info {
+    top: 60%;
+}
+
+#Dishes .Dish_box .profile .info .name {
+    color: #fac031;
+    margin-bottom: 15px;
+}
+
+#Dishes .Dish_box .profile .info .bio {
+    width: 70%;
+    text-align: center;
+    margin: 0 auto 10px auto;
+}
+
+
+

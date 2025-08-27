@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard | Menu</title>
+    <link rel="icon" type="image/png" href="https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/380741479_131206030075540_3076164827494524329_n.jpg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/UserRsv.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+    <div class="d-flex justify-content-center mb-5 mt-3">
+      <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+    </div>
+    <nav>
+
+      <a href="/user/menu"><i class="bi bi-list-ul"></i> Browse Menu</a>
+      <a href="/user/reservation" class="active"><i class="bi bi-calendar-check"></i> Book Reservation</a>
+      <a href="/user/orders"><i class="bi bi-bag"></i> Orders</a>
+      <a href="/user/reviews"><i class="bi bi-star"></i> Reviews</a>
+      <a href="/user/voucher"><i class="bi bi-ticket-perforated"></i> Voucher</a>
+      <a href="/user/myreservation"><i class="bi bi-calendar-event"></i> My Reservations</a>
+   
+    </nav>
+  </div>
+
+  <div class="navbar-custom-wrapper">
+    <nav class="navbar-custom d-flex justify-content-between align-items-center">
+      <% if (user) { %>
+        <div class="d-flex align-items-center gap-3">
+          <a href="/user/profile" class="d-flex align-items-center text-decoration-none text-dark">
+            <% if (user.profileImage) { %>
+              <img src="<%= user.profileImage %>" alt="Profile" width="45" height="45" class="rounded-circle me-2" style="object-fit: cover;">
+            <% } else { %>
+              <div class="d-flex justify-content-center align-items-center me-2" style="width: 45px; height: 45px; border-radius: 50%; background-color: #ccc;">
+                <i class="bi bi-person text-white"></i>
+              </div>
+            <% } %>
+            <div class="admin-info d-none d-md-block">
+              <div class="fw-semibold"><%= user.firstName || 'User' %></div>
+              <small class="text-muted"><%= user.email %></small>
+            </div>
+          </a>
+        </div>
+
+        <div class="d-flex align-items-center gap-3">
+          <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+            <i class="bi bi-box-arrow-right me-1"></i> Logout
+          </a>
+        </div>
+      <% } %>
+    </nav>
+  </div>
+
+    <div class="container py-3"> 
+      <div class="main-content">
+        <h3 class="mb-4 mt-5 text-center fw-bold">Make A <span>Reservation</span></h3>
+        <p class="text-center mb-4 text-muted">Ready to dine with us? Book your table now and enjoy a memorable experience!</p>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+        <% tables.forEach(table => { %>
+           <div class="col d-flex">
+  <div class="card card-table-horizontal shadow-lg border-0 w-100">
+    <img src="/uploads/<%= table.image %>" class="table-img" alt="<%= table.name %>" 
+      data-bs-toggle="modal" data-bs-target="#imageModal<%= table._id %>" style="cursor: pointer;">
+    
+    <div class="card-body d-flex flex-column justify-content-between text-start">
+      <div>
+        <h5 class="card-title fw-bold text-primary text-center"><%= table.name %></h5>
+        <hr>
+        <p class="text-muted small mt-4 mb-4 text-center"><%= table.description %></p>
+        <p class="fw-semibold text-success text-center mb-1">₱<%= table.price.toFixed(2) %></p>
+        <% if (table.reservation_fee !== undefined) { %>
+  <p class="fw-semibold text-primary text-center mb-4">
+    Reservation Fee: ₱<%= parseFloat(table.reservation_fee).toFixed(2) %>
+  </p>
+<% } else { %>
+  <p class="fw-semibold text-primary text-center mb-4 text-muted">
+    No Reservation Fee
+  </p>
+<% } %>
+
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center w-100 mt-auto">
+        <p class="mb-0">
+          <i class="bi bi-people-fill"></i> 
+          <strong><%= table.pax %></strong> Pax
+        </p>
+        <a href="#" class="btn btn-sm btn-primary rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#bookModal<%= table._id %>">
+          <i class="bi bi-calendar-check"></i> Book Table
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+        <% }) %>
+        </div>
+        <% tables.forEach(table => { %>
+        <div class="modal fade" id="imageModal<%= table._id %>" tabindex="-1" aria-labelledby="imageModalLabel<%= table._id %>" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header border-0 justify-content-center" style="background: linear-gradient(90deg, #0d6efd 0%, #6c63ff 100%); border-top-left-radius: .5rem; border-top-right-radius: .5rem;">
+                  <h5 class="modal-title text-white fw-bold mx-auto" id="imageModalLabel<%= table._id %>" style="letter-spacing: 1px;">
+                    <i class="bi bi-table me-2"></i><%= table.name %>
+                  </h5>
+                  <button type="button" class="btn-close position-absolute end-0 me-3 mt-2 bg-white rounded-circle p-2" data-bs-dismiss="modal" aria-label="Close" style="box-shadow: 0 2px 8px rgba(0,0,0,0.08);"></button>
+                </div>
+                <div class="modal-body text-center">
+                <img src="/uploads/<%= table.image %>" alt="<%= table.name %>" class="img-fluid rounded shadow">
+                </div>
+            </div>
+            </div>
+        </div>
+        <% }) %>
+    </div>
+
+    <% tables.forEach(table => { %>
+    <div class="modal fade" id="bookModal<%= table._id %>" tabindex="-1" aria-labelledby="bookModalLabel<%= table._id %>" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+
+    <form action="/user/reservation/<%= table._id %>/book" method="POST" enctype="multipart/form-data">
+    <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="bookModalLabel<%= table._id %>">
+        <i class="bi bi-calendar-check me-2"></i> Book Reservation – <%= table.name %>
+        </h5>
+        <button type="button" class="btn-close bg-white" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="px-4 pt-3">
+        <div class="progress mb-3" style="height: 8px;">
+        <div class="progress-bar bg-primary" role="progressbar" style="width: 50%;" id="stepProgressBar<%= table._id %>"></div>
+        </div>
+    </div>
+
+    <div class="modal-body px-4">
+        <div class="step step-1" id="step1<%= table._id %>">
+        <div class="text-center mb-4">
+            <label class="form-label fw-semibold">Scan GCash QR Code</label>
+
+
+
+
+
+              
+          <div class="border rounded bg-light p-3 d-inline-block w-100">
+
+<div class="text-center mt-4">
+  <img src="<%= settings.reservationQR %>" alt="Reservation QR Code" style="max-width: 220px;">
+</div>
+
+
+
+
+
+          
+            </div>
+            <p class="text-muted small mt-2 mb-0">Scan this QR with your GCash app and proceed to Step 2 after payment.</p>
+        </div>
+
+       <div class="text-center mt-3">
+  <p class="fw-bold fs-5 mb-0">Total Price</p>
+  <% if (table && table.reservation_fee !== undefined) { %>
+  <p class="text-success fw-semibold fs-3">₱<%= table.reservation_fee.toFixed(2) %></p>
+<% } else { %>
+  <p class="text-muted">₱0.00</p>
+<% } %>
+
+</div>
+
+        </div>
+
+        <div class="step step-2 d-none" id="step2<%= table._id %>">
+        <div class="row g-3">
+            <div class="col-md-6">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="fullName" value="<%= user.firstName + ' ' + user.lastName %>" readonly>
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" value="<%= user.email %>" readonly>
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" name="contactNo"
+                    value="<%= user.contactNo || '' %>"
+                    placeholder="e.g. 09123456789"
+                    pattern="09[0-9]{9}" required>
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label">Preferred Dine-in Date</label>
+            <input type="date" class="form-control" name="dineDate" min="<%= new Date().toISOString().split('T')[0] %>" required>
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label">Preferred Dine-in Time</label>
+            <input type="time" class="form-control" name="dineTime" min="09:00" max="21:00" required>
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label">GCash Reference No.</label>
+            <input type="number" class="form-control" name="referenceNumber" placeholder="e.g. 1234567890" required>
+            </div>
+
+            <div class="col-md-6">
+            <label class="form-label">Upload GCash Proof</label>
+            <input type="file" class="form-control" name="proofOfPayment" accept="image/*" required>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <div class="modal-footer justify-content-between">
+        <button type="button" class="btn btn-outline-secondary d-none" id="backBtn<%= table._id %>">Back</button>
+        <div class="mx-auto" style="flex:1; display: flex; justify-content: center;">
+        <button type="button" class="btn btn-primary" id="nextBtn<%= table._id %>">Next</button>
+        </div>
+        <button type="submit" class="btn btn-success d-none" id="submitBtn<%= table._id %>">
+        <i class="bi bi-check-circle me-1"></i> Confirm Reservation
+        </button>
+    </div>
+    </form>
+
+        </div>
+    </div>
+    </div>
+    <% }) %>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+  <% tables.forEach(table => { %>
+    const step1_<%= table._id %> = document.getElementById('step1<%= table._id %>');
+    const step2_<%= table._id %> = document.getElementById('step2<%= table._id %>');
+    const nextBtn_<%= table._id %> = document.getElementById('nextBtn<%= table._id %>');
+    const backBtn_<%= table._id %> = document.getElementById('backBtn<%= table._id %>');
+    const submitBtn_<%= table._id %> = document.getElementById('submitBtn<%= table._id %>');
+    const progressBar_<%= table._id %> = document.getElementById('stepProgressBar<%= table._id %>');
+
+    nextBtn_<%= table._id %>.addEventListener('click', () => {
+      step1_<%= table._id %>.classList.add('d-none');
+      step2_<%= table._id %>.classList.remove('d-none');
+      nextBtn_<%= table._id %>.classList.add('d-none');
+      submitBtn_<%= table._id %>.classList.remove('d-none');
+      backBtn_<%= table._id %>.classList.remove('d-none');
+      progressBar_<%= table._id %>.style.width = '100%';
+    });
+
+    backBtn_<%= table._id %>.addEventListener('click', () => {
+      step2_<%= table._id %>.classList.add('d-none');
+      step1_<%= table._id %>.classList.remove('d-none');
+      nextBtn_<%= table._id %>.classList.remove('d-none');
+      submitBtn_<%= table._id %>.classList.add('d-none');
+      backBtn_<%= table._id %>.classList.add('d-none');
+      progressBar_<%= table._id %>.style.width = '50%';
+    });
+  <% }) %>
+
+    const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === '1') {
+    Swal.fire({
+      title: 'Reservation Booked!',
+      text: 'A confirmation email has been sent to you.',
+      icon: 'success',
+      confirmButtonText: 'Okay',
+      confirmButtonColor: '#0047FF'
+    }).then(() => {
+      window.history.replaceState(null, '', window.location.pathname);
+    });
+  }
+</script>
+
+</body>
+</html>

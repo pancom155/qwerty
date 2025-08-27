@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nap's Grill And Restobar</title>
+    <link rel="icon" type="image/png" href="https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/380741479_131206030075540_3076164827494524329_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeE-Vik8eSQGYAGt14wfSyIA4P8mAP1_9SLg_yYA_X_1Ik9yLKvQebvsaygQ7vLe7VpIz6jw8gyFFebxY6n5x2pp&_nc_ohc=xWqnBPNSxGUQ7kNvgFNAOXL&_nc_oc=AdiZAZLOpoBBd7d5_TlOsCFXMLLtgmECjcevYUFBwT5f0bCW_1NOQ7Qz9XpfKkXEpNA&_nc_zt=23&_nc_ht=scontent.fmnl8-6.fna&_nc_gid=AWvhnDJxXcXu4UKhxWffrKA&oh=00_AYA2AUJ07aVz41BjtO-TwfKwJkGlT1snfISKrYcu9hly9w&oe=67C33380">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<style>
+    body{
+    background-color: #e6e6f0;
+}
+
+.account-btn {
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+}
+
+.navbar {
+    border-radius: 40px;
+    margin: 20px;
+    background-color: #fff;
+}
+
+html{
+    scroll-behavior: smooth;
+}
+
+.hero-text h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.hero-text p {
+    font-size: 36px;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.highlight {
+    background-image: linear-gradient(to right, #03C4E7, #0047FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+.carousel-indicators .active {
+    background-color: #03C4E7 !important;
+    border-radius: 50%;
+}
+
+.review-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.table-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.highlightss {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.table-card {
+    width: 250px;
+    height: 400px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+    transition: transform 0.3s ease;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.table-card:hover {
+    transform: scale(1.05);
+}
+
+.table-name {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #444;
+}
+
+.table-price,
+.table-pax {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #777;
+}
+
+.reserve-btn {
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.reserve-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-step {
+    display: none;
+}
+
+.modal-step.active {
+    display: block;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 600px;
+    border-radius: 10px;
+}
+
+.close-btn {
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #888;
+    transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+    color: #000;
+}
+
+.fa-user {
+    font-size: 24px;
+    color: #000;
+    cursor: pointer;
+}
+
+/* Dishes */
+
+#Dishes {
+    width: 100%;
+    height: 90vh;
+    background-image: url(bg1.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+#Dishes .Dish_box {
+    width: 95%;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    top: 13%;
+}
+
+#Dishes .Dish_box .profile {
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    margin: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    transition: 0.4s;
+}
+
+#Dishes .Dish_box .profile:hover {
+    border-radius: 20px;
+    height: 320px;
+}
+
+#Dishes .Dish_box .profile img {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    z-index: 2;
+    transition: 0.4s;
+}
+
+#Dishes .Dish_box .profile:hover img {
+    border-radius: 20px;
+    margin-top: -230px;
+}
+
+#Dishes .Dish_box .profile .info {
+    position: absolute;
+    text-align: center;
+    top: 25%;
+    transition: 0.4s;
+}
+
+#Dishes .Dish_box .profile:hover .info {
+    top: 60%;
+}
+
+#Dishes .Dish_box .profile .info .name {
+    color: #000000;
+    margin-bottom: 15px;
+    font-size: 1.5rem;
+}
+
+#Dishes .Dish_box .profile .info .bio {
+    width: 70%;
+    text-align: center;
+    margin: 0 auto 10px auto;
+}
+
+    .offer_btn {
+        display: inline-block;
+        padding: 10px 20px;
+        background: linear-gradient(90deg, #03C4E7, #0047FF);
+        color: white !important;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 10px rgba(3, 196, 231, 0.3);
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .offer_btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(3, 196, 231, 0.4);
+        background: linear-gradient(90deg, #03a1c4, #0036d4);
+    }
+
+    .offer_btn i {
+        margin-right: 5px;
+    }
+
+.reviews-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.reviews-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+.view-all-btn:hover {
+    background: linear-gradient(90deg, #03C4E7, #0047FF) !important;
+    color: white !important;
+    border: none !important;
+}
+    
+    .all-items-container {
+        transition: all 0.3s ease;
+    }
+    
+    .card {
+        transition: transform 0.2s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+.btn.btn-sm.btn-outline-primary#toggleRatingDistributionBtn {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  color: white;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.btn.btn-sm.btn-outline-primary#toggleRatingDistributionBtn:hover {
+  background: linear-gradient(90deg, #03a1c4, #0036d4);
+  color: white;
+}
+
+.btn.btn-sm.btn-outline-primary#toggleRatingDistributionBtn i {
+  color: white;
+}
+
+.gradient-btn {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  border: none;
+  color: #fff !important;
+  font-weight: 500;
+  transition: 0.3s ease;
+}
+
+.gradient-btn:hover {
+  background: linear-gradient(90deg, #0047FF, #03C4E7);
+  transform: translateY(-2px);
+}
+</style>
+
+<body>
+    <nav class="navbar navbar-expand-lg shadow-sm sticky-top px-3">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">
+                <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo"  height="50"width="50"style="border-radius: 50%;"/>
+            
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto fw-semibold">
+                    <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#Dishes">Dishes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
+                </ul>
+                <ul class="navbar-nav ms-2   fw-semibold">
+                    <li class="nav-item dropdown">
+                        <a class="btn btn-primary dropdown-toggle fw-semibold account-btn" style="border-radius: 30px;" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Account
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="/login">Login</a></li>
+                            <li><a class="dropdown-item" href="/register">Register</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="py-1">
+        <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="bg-light active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" class="bg-light" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" class="bg-light" aria-label="Slide 3"></button>
+            </div>
+        
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="hero d-flex justify-content-between align-items-center" style="background-color: white; padding: 100px 60px; border-radius: 40px; margin: 50px auto; width: 85%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 100px;">
+                        <div class="hero-text">
+                            <h1>Welcome to <span style="highlight">Naps Grill and Restobar</span></h1>
+                            <p>Get your Meal and Reserve a Table 
+                            <br><span class="highlight">In an easy way</span></p>
+                            <button style="background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer;" onclick="window.location.href='/login'"><i class="bi bi-cart-fill"></i> Order Now</button>
+                        </div>
+                        <div class="hero-image" style="position: absolute; top: 0; right: 0; padding-right: 10px;">
+                            <img src="/images/burgerbc.png" alt="Burger" style="max-width: 600px; height: auto; margin: 10px;" alt="Burger">
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="carousel-item">
+                    <div class="hero d-flex justify-content-between align-items-center" style="background-color: white; padding: 30px 40px; border-radius: 40px; margin: 50px auto; width: 85%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 100px;">
+                        <div class="hero-text">
+                            <h1>Delicious Meals <span class="highlight">Served Fresh</span></h1>
+                            <p>Experience the best dining at <br>
+                            <span class="highlight">Naps Grill and Restobar</span></p>
+                            <button style="background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer;" onclick="window.location.href='/login'"><i class="bi bi-calendar-check-fill"></i> Reserve a Table</button>
+                        </div>
+                        <div class="hero-image">
+                            <img src="images/naps.png" style="max-width: 560px; border-radius: 30px;;" alt="Steak">
+                        </div>
+                    </div>
+                </div>
+        
+                <div class="carousel-item">
+                    <div class="hero d-flex justify-content-between align-items-center" style="background-color: white; padding: 30px 40px; border-radius: 40px; margin: 50px auto; width: 85%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 100px;">
+                        <div class="hero-text">
+                              <h1>Claim Your <span class="highlight">Voucher</span></h1>
+                              <p>Get exclusive discounts and special rewards 
+                              <br>when you claim your 
+                              <span class="highlight">Naps Grill and Restobar</span> voucher.</p>
+                            <button style="background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer;" onclick="window.location.href='/login'"><i class="bi bi-person-raised-hand"></i> Claim Now</button>
+                        </div>
+                        <div class="hero-image">
+                            <img src="images/voucher.png" style="max-width: 365px; border-radius: 30px;" alt="Voucher">
+                        </div>
+                    </div>
+                </div>            
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5" id="about">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10 bg-white p-4 rounded-4 shadow-lg">
+                    <div class="row align-items-center">
+                        <div class="col-md-5 position-relative">
+                            <img src="images/naps.png" class="img-fluid rounded-4 shadow-lg" alt="Restaurant" style="width: 100%; height: 500px;">
+                            <img src="images/naps.png" class="img-fluid rounded-4 shadow-lg position-absolute" alt="Restaurant View" 
+                                 style="width: 60%; bottom: -30px; left: 20px; border: 5px solid white;">
+                        </div>
+                        <div class="col-md-7">
+                            <h2 class="fw-bold">Why Food Choose Us?</h2>
+                            <p class="text-muted">
+                                Choose us because of the fusion of American and Filipino food with the ambience of the place.  
+                                We bring together the bold, smoky flavors of American classics with the rich, savory taste of Filipino delicacies,  
+                                creating a unique dining experience that satisfies every craving. Our carefully curated menu blends  
+                                tradition with innovation, offering comfort food with a twist.
+                            </p>
+
+                            <p class="text-muted">
+                                Not only do we serve delicious meals, but we also provide a warm and inviting atmosphere—  
+                                perfect for family gatherings, romantic dinners, and friendly meet-ups.
+                                Our restaurant ensures a memorable experience every time you visit.  
+                            </p>
+                            
+                            <div class="d-flex gap-3">
+                              <a href="/login" class="btn gradient-btn"><i class="bi bi-calendar-check"></i> Book Now</a>
+                              <a href="/login" class="btn gradient-btn"><i class="bi bi-cart"></i> Order Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+  <div class="team" id="Dishes">
+       <h1 class="text-center mb-5 fw-bold" style="font-size: 35px;">Our Special <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Dishes</span></h1>
+
+      <div class="Dish_box">
+          <div class="profile">
+              <img src="/images/sisig.jpg">
+              <div class="info">
+                  <h2 class="name">Sisig</h2>
+                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
+              </div>
+          </div>
+
+          <div class="profile">
+              <img src="/images/adobo.jpg">
+              <div class="info">
+                  <h2 class="name">Adobo</h2>
+                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
+              </div>
+          </div>
+
+          <div class="profile">
+              <img src="/images/sinigang.webp">
+              <div class="info">
+                  <h2 class="name">Sinigang</h2>
+                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
+              </div>
+          </div>
+
+          <div class="profile">
+              <img src="/images/kaldereta.jpg">
+              <div class="info">
+                  <h2 class="name">Kaldereta</h2>
+                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+<section class="container mb-5" id="reviews">
+    <h1 class="text-center mb-5 fw-bold" style="font-size: 35px;">Customer <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Reviews</span></h1>
+
+    <div style="background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        <% if (reviews && reviews.length > 0) { %>
+            <!-- Fixed Rating Summary Section - Now in one line -->
+            <div class="review-summary p-4 bg-light rounded-top" style="position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #dee2e6;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center" style="gap: 15px;">
+                        <h2 class="mb-0" style="font-size: 2rem; font-weight: bold; line-height: 2;">
+                            <%= (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1) %>
+                        </h2>
+                        <div style="color: #ffc107; font-size: 1.5rem;">
+                            <%= '★'.repeat(Math.round(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length)) %><%= '☆'.repeat(5 - Math.round(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length)) %>
+                        </div>
+                        <p class="text-muted mb-0" style="font-size: 1rem;"><%= reviews.length %> reviews</p>
+                    </div>
+                    <button class="btn btn-sm btn-outline-primary" id="toggleRatingDistributionBtn">
+                        <i class="bi bi-bar-chart"></i> View Ratings
+                    </button>
+                </div>
+                
+                <!-- Rating Distribution (hidden by default) -->
+                <div class="rating-distribution mt-3" style="display: none;">
+                    <% [5,4,3,2,1].forEach(star => { 
+                        const count = reviews.filter(r => r.rating === star).length;
+                        const percent = (count / reviews.length * 100).toFixed(0);
+                    %>
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="me-2" style="width: 30px; text-align: right;">
+                            <span class="fw-bold"><%= star %></span>
+                            <i class="bi bi-star-fill text-warning"></i>
+                        </div>
+                        <div class="progress flex-grow-1" style="height: 20px;">
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: <%= percent %>%;" 
+                                 aria-valuenow="<%= percent %>" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100"></div>
+                        </div>
+                        <div class="ms-2" style="width: 40px; text-align: left;">
+                            <span class="text-muted"><%= percent %>%</span>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <!-- Scrollable Reviews Container -->
+            <div class="reviews-container p-4" style="max-height: 500px; overflow-y: auto;">
+                <div class="d-flex flex-column" style="gap: 25px;">
+                    <% reviews.forEach(review => { %>
+                        <div class="card shadow-sm border-0 p-3">
+                            <div class="card-body d-flex flex-column flex-md-row align-items-start">
+                                <% if (review.orderId?.items?.length > 0) { %>
+                                    <div class="me-md-3 mb-3 mb-md-0 position-relative" style="min-width: 120px;">
+                                        <img 
+                                            src="/uploads/<%= review.orderId.items[0].productId?.image || 'default.png' %>" 
+                                            class="rounded shadow-sm" 
+                                            style="width: 120px; height: 120px; object-fit: cover; border: 1px solid #f0f0f0;" 
+                                            alt="Product Image">
+                                        <% if (review.orderId.items.length > 1) { %>
+                                            <button class="btn btn-sm btn-outline-primary position-absolute bottom-0 end-0 mb-1 me-1 view-all-btn" 
+                                                    style="font-size: 0.7rem; padding: 0.15rem 0.35rem; backdrop-filter: blur(2px); background-color: rgba(255,255,255,0.7);"
+                                                    data-review-id="<%= review._id %>"
+                                                    data-item-count="<%= review.orderId.items.length %>">
+                                                View All
+                                            </button>
+                                        <% } %>
+                                    </div>
+                                <% } else { %>
+                                    <div class="me-md-3 mb-3 mb-md-0">
+                                        <img 
+                                            src="/uploads/default.png" 
+                                            class="rounded" 
+                                            style="width: 120px; height: 120px; object-fit: cover;" 
+                                            alt="Default Image">
+                                    </div>
+                                <% } %>
+                                
+                                <div class="flex-grow-1">
+                                    <div class="mb-2" style="color: #ffc107; font-size: 1.1rem;">
+                                        <%= '★'.repeat(review.rating) %><%= '☆'.repeat(5 - review.rating) %>
+                                    </div>
+                                    
+                                    <h5 class="card-title mb-1">
+                                        <%= review.userId?.firstName %> <%= review.userId?.lastName %>
+                                    </h5>
+                                    <p class="text-muted small mb-2"><i class="bi bi-envelope me-1"></i> <%= review.userId?.email || 'No email provided' %></p>
+                                    <div class="bg-light p-3 rounded mb-3">
+                                        <p class="mb-0 text-dark">"<%= review.comment %>"</p>
+                                    </div>
+                                    <p class="card-text text-muted small">
+                                        <i class="bi bi-clock me-1"></i> Reviewed on <%= new Date(review.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Hidden items container -->
+                            <div class="all-items-container d-none mt-3" id="items-<%= review._id %>">
+                                <hr class="my-2">
+                                <h6 class="fw-bold mb-3 d-flex align-items-center">
+                                    <i class="bi bi-basket2 me-2"></i> All Ordered Items
+                                    <span class="badge bg-primary ms-2"><%= review.orderId.items.length %> items</span>
+                                </h6>
+                                <div class="d-flex flex-wrap" style="gap: 10px;">
+                                    <% review.orderId.items.forEach((item, index) => { %>
+                                        <div class="position-relative" style="width: 80px;">
+                                            <img 
+                                                src="/uploads/<%= item.productId?.image || 'default.png' %>" 
+                                                class="rounded shadow-sm" 
+                                                style="width: 80px; height: 80px; object-fit: cover; border: 1px solid #f0f0f0;" 
+                                                alt="Product Image">
+                                            <div class="text-center small mt-1 text-truncate" style="max-width: 80px;">
+                                                <%= item.productId?.name || 'Item' %>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        <% } else { %>
+            <div class="text-center py-5">
+                <i class="bi bi-chat-square-text display-5 text-muted mb-3"></i>
+                <p class="text-muted">No customer reviews yet.</p>
+                <a href="/menu" class="btn btn-primary">Be the first to review</a>
+            </div>
+        <% } %>
+    </div>
+</section>
+    
+    <footer style="padding: 40px 0; background: #fff;">
+        <div class="container">
+            <div class="row text-center text-md-start">
+                <div class="col-md-4 mb-3">
+                    <h5 style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">ADDRESS</h5>
+                    <p style="font-size: 14px; line-height: 1.6; margin: 0;">
+                        32nd Street corner Melencio St., <br>
+                        Kapitan Pepe Phase II Subd., <br>
+                        Cabanatuan City, Philippines
+                    </p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">Stay Connected</h5>
+                    <p style="font-size: 14px; margin: 0;">
+                        Contact: <br>
+                        napsgrillandrestobar08@gmail.com <br>
+                        0994 705 8003
+                    </p>
+                    <div style="margin-top: 10px;">
+                        <a href="#" style="text-decoration: none; font-size: 18px; color: #000; margin-right: 10px;"><i class="bi bi-facebook"></i></a>
+                        <a href="#" style="text-decoration: none; font-size: 18px; color: #000;"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 text-md-end text-center">
+                    <h5 style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">
+                        Get Your Vouchers
+                    </h5>
+                    <p style="font-size: 14px; margin-bottom: 15px;">Our services are wide open for you</p>
+                    <a href="/login"class="btn" style="text-decoration: none; background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; border: none; border-radius: 30px; padding: 10px 20px;"><i class="bi bi-ticket-detailed-fill"></i> Claim your Vouchers</a>
+                </div>
+            </div>
+        </div>
+    </footer>     
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle rating distribution visibility
+    const toggleBtn = document.getElementById('toggleRatingDistributionBtn');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+            const distributionSection = document.querySelector('.rating-distribution');
+            if (distributionSection.style.display === 'none') {
+                distributionSection.style.display = 'block';
+                this.innerHTML = '<i class="bi bi-eye-slash"></i> Hide Ratings';
+            } else {
+                distributionSection.style.display = 'none';
+                this.innerHTML = '<i class="bi bi-bar-chart"></i> View Ratings';
+            }
+        });
+    }
+
+    // Existing view all items functionality
+    document.querySelectorAll('.view-all-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const reviewId = this.getAttribute('data-review-id');
+            const itemsContainer = document.getElementById(`items-${reviewId}`);
+            
+            if (itemsContainer.classList.contains('d-none')) {
+                itemsContainer.classList.remove('d-none');
+                this.innerHTML = '<i class="bi bi-chevron-up me-1"></i> Hide Items';
+            } else {
+                itemsContainer.classList.add('d-none');
+                this.innerHTML = '<i class="bi bi-chevron-down me-1"></i> View All';
+            }
+        });
+    });
+});
+</script>
+</body>
+</html>

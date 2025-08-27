@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nap's | Register</title>
+  <link rel="icon" type="image/png" href="/images/napslogo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    .image-section {
+      background: url('/images/naps.png') no-repeat center center;
+      background-size: cover;
+    }
+    .gradient-btn {
+      background: linear-gradient(to right, #00ADEF, #0066FF);
+      color: white;
+      transition: 0.3s;
+    }
+    .gradient-btn:hover {
+      background-color: #0056b3;
+    }
+    .form-check-input {
+      width: 18px;
+      height: 18px;
+      border: 1px solid black;
+    }
+    .password-toggle {
+      cursor: pointer;
+    }
+    .alert-danger {
+      background-color: #fff !important;
+      color: #dc3545 !important;
+      border: 1px solid #ffffff !important;
+    }
+    /* Modal Styling */
+    .modal-content {
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .modal-header {
+      border-bottom: none;
+      text-align: center;
+      flex-direction: column;
+    }
+    .modal-header img {
+      width: 80px;
+      margin-bottom: 10px;
+    }
+    .modal-body {
+      max-height: 300px;
+      overflow-y: auto;
+      text-align: justify;
+    }
+    .modal-footer {
+      border-top: none;
+      justify-content: flex-end; 
+      padding: 1rem;
+    }
+    .btn-gradient {
+      background: linear-gradient(to right, #03C4E7, #0047FF);
+      color: white;
+      transition: 0.3s;
+    }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="container-fluid vh-100 d-flex">
+  <div class="row flex-grow-1 w-100">
+    <div class="col-md-6 d-none d-md-block image-section"></div>
+    <div class="col-md-6 d-flex justify-content-center align-items-center bg-white shadow-lg">
+      <div class="w-100 px-4" style="max-width: 600px; width: 100%;">
+
+        <div class="text-center mb-4">
+          <img src="/images/napslogo.png" alt="Logo" class="mb-2" width="130">
+          <h2 class="fw-bold">Sign Up</h2>
+          <p class="text-muted">Please fill out the information below.</p>
+        </div>
+
+        <% if (typeof error !== 'undefined') { %>
+          <div class="alert alert-danger text-center"><%= error %></div>
+        <% } %>
+
+        <form action="/register" method="post">
+          <div class="row mb-3">
+            <div class="col-6">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" name="firstName" class="form-control" placeholder="First Name" required>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                <input type="text" name="lastName" class="form-control" placeholder="Last Name" required>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+                        <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input type="email" name="email" class="form-control" placeholder="Email" required>
+          </div>
+            </div>
+            <div class="col">
+                          <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+            <input type="text" name="contactNo" class="form-control" placeholder="Contact Number" required>
+          </div> 
+            </div>
+          </div>
+
+            <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-home"></i></span>
+            <input type="text" name="address" class="form-control" placeholder="Address" required>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col input-group">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+              <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+              <span class="input-group-text password-toggle" onclick="togglePassword('password', 'togglePasswordIcon1')">
+                <i id="togglePasswordIcon1" class="fas fa-eye"></i>
+              </span>
+            </div>
+            <div class="col input-group">
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>
+              <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password" required>
+              <span class="input-group-text password-toggle" onclick="togglePassword('confirmPassword', 'togglePasswordIcon2')">
+                <i id="togglePasswordIcon2" class="fas fa-eye"></i>
+              </span>
+            </div>
+          </div>
+
+          <div class="form-check d-flex justify-content-center align-items-center mt-4 mb-3">
+            <input class="form-check-input" type="checkbox" id="termsCheckbox" required>
+            <label class="form-check-label ms-2" for="termsCheckbox">
+              I agree to the 
+              <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" style="text-decoration: none;">Terms and Privacy Policy</a>
+            </label>
+          </div>
+
+          <div class="d-grid">
+            <button type="submit" class="btn gradient-btn w-100">Create Account</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-3">
+          <p>Already have an account? <a href="/login" style="color: #00ADEF; text-decoration: none;">Login</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Terms & Privacy Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-center">
+      <div class="modal-header">
+        <img src="/images/napslogo.png" alt="Logo">
+        <h4 class="modal-title fw-bold" id="termsModalLabel">Terms And Privacy Of Use</h4>
+      </div><hr>
+      <div class="modal-body">
+        <p>
+          At Nap's Grill and Resto Bar, we believe in creating a respectful and enjoyable dining experience for everyone.  
+          We ask our customers to follow these ethical guidelines to maintain a welcoming atmosphere:
+        </p>
+        <ul class="text-start">
+          <li><strong>Respect for Others:</strong> Treat our staff and fellow customers with kindness and respect at all times.</li><br>
+          <li><strong>Honest Feedback:</strong> Share genuine reviews and feedback to help us improve our services.</li><br>
+          <li><strong>Responsible Reservations & Orders:</strong> Avoid placing fake reservations or unnecessary orders that could waste food and resources.</li><br>
+          <li><strong>Clean and Orderly Conduct:</strong> Help maintain a clean and pleasant dining environment for everyone.</li><br>
+          <li><strong>Compliance with Policies:</strong> Follow our restaurant rules, including proper dress code and responsible alcohol consumption.</li><br>
+        </ul>
+        <p class="fw-bold text-danger">
+          We reserve the right to block users who do not take these guidelines seriously or engage in inappropriate behavior.  
+          Your cooperation helps us ensure a great experience for all our valued customers.  
+        </p>
+      </div>                
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-gradient" data-bs-dismiss="modal" id="agreeButton">Agree</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (showOTP) { %>
+  <script>
+    Swal.fire({
+      title: 'Verify Your Email',
+      html: `
+        <form id="otpForm" class="text-start">
+          <input type="hidden" id="otpEmail" value="<%= email %>"/>
+          <label for="otpInput" class="form-label">Enter the 6-digit OTP sent to your email</label>
+          <input type="text" id="otpInput" class="form-control mb-2" placeholder="Enter OTP" maxlength="6" required />
+          <div class="d-grid">
+            <button type="submit" class="btn btn-success mt-2">Verify OTP</button>
+            <button type="button" id="resendOtp" class="btn btn-link mt-2">Resend OTP</button>
+          </div>
+        </form>
+      `,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        const otpForm = document.getElementById('otpForm');
+        const resendBtn = document.getElementById('resendOtp');
+
+        otpForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const email = document.getElementById('otpEmail').value;
+          const otp = document.getElementById('otpInput').value;
+
+          try {
+            const res = await fetch('/verify-otp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, otp })
+            });
+
+            const result = await res.json();
+
+            if (result.success) {
+              Swal.fire('Verified!', 'Your email has been verified.', 'success')
+                .then(() => window.location.href = '/login');
+            } else {
+              Swal.fire('Invalid OTP', result.message || 'The OTP is incorrect or expired.', 'error');
+            }
+          } catch (err) {
+            Swal.fire('Error', 'Something went wrong while verifying OTP.', 'error');
+          }
+        });
+
+        resendBtn.addEventListener('click', async () => {
+          const email = document.getElementById('otpEmail').value;
+
+          try {
+            const res = await fetch('/resend-otp', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email })
+            });
+
+            const result = await res.json();
+
+            if (result.success) {
+              Swal.fire('OTP Sent', 'A new OTP has been sent to your email.', 'success');
+            } else {
+              Swal.fire('Failed', result.message || 'Could not resend OTP.', 'error');
+            }
+          } catch (err) {
+            Swal.fire('Error', 'Something went wrong while resending OTP.', 'error');
+          }
+        });
+      }
+    });
+  </script>
+<% } %>
+
+<script>
+  function togglePassword(inputId, iconId) {
+    const passwordInput = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      icon.classList.remove("fa-eye");
+      icon.classList.add("fa-eye-slash");
+    } else {
+      passwordInput.type = "password";
+      icon.classList.remove("fa-eye-slash");
+      icon.classList.add("fa-eye");
+    }
+  }
+
+  document.getElementById("agreeButton")?.addEventListener("click", function () {
+    document.getElementById("termsCheckbox").checked = true;
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

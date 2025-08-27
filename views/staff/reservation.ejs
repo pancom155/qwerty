@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff | Reservations</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<style>
+  body {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f1f1f1;
+}
+
+.container-fluid {
+    padding: 2rem;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #f8f9fa;
+    padding: 5px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.sidebar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.sidebar nav a {
+    width: 90%;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    color: #000;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: background 0.5s ease;
+}
+
+.sidebar nav a.active,
+.sidebar nav a:hover {
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    color: #fff;
+}
+
+.main-content {
+    margin-left: 250px;
+    flex-grow: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-custom-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.navbar-custom {
+    background-color: #ffffff;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    width: 95%;
+    max-width: 1200px;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-custom img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid black;
+}
+
+.navbar-custom .admin-info {
+    line-height: 1.2;
+}
+
+.navbar-custom .admin-info .fw-semibold {
+    font-size: 1rem;
+    color: #343a40;
+}
+
+.navbar-custom .admin-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.navbar-custom .btn-danger {
+    padding: 0.4rem 0.6rem;
+}
+</style>
+<body>
+
+  <div class="sidebar" id="sidebar">
+    <div class="d-flex justify-content-center mb-5 mt-3">
+    <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+    </div>
+    <nav>
+    <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/staff/order"><i class="bi bi-bag-check"></i> Orders</a>
+    <a href="/staff/reservation" class="active"><i class="bi bi-calendar-check"></i> Reservation</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="navbar-custom-wrapper">
+      <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
+          <div class="admin-info">
+            <div class="fw-semibold mb-1"><%= user.fullName%></div>
+            <p><%= user.email %></p>
+          </div>
+        </div>
+
+        <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </nav>
+    </div>
+
+    <div class="container-fluid">
+      <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Reservations</h1>
+              <div class="table-responsive">
+
+
+                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 px-2">
+  <input 
+    type="text" 
+    id="searchInput" 
+    class="form-control mb-2 mb-md-0 me-md-2" 
+    style="width: 400px; " 
+    placeholder="Search Reservations...">
+  
+<select id="statusFilter" class="form-select form-select-sm w-100 w-md-25 mb-2 mb-md-0 me-md-2 d-none">
+  <option value="">All Statuses</option>
+  <option value="pending">Pending</option>
+  <option value="processing">Processing</option>
+  <option value="ready_to_pickup">Ready to Pickup</option>
+</select>
+
+
+</div>
+
+        <table class="table table-bordered table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Table</th>
+              <th>Reservation_fee</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>GCash Ref</th>
+              <th>Proof</th>
+              <th>Status</th>
+              <th>Booked At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+           <tbody id="reservationTableBody">
+  <% let hasPending = false; %>
+  <% reservations.forEach((r, i) => {
+       if (r.status === 'pending') {
+         hasPending = true;
+  %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><%= r.userId?.firstName %> <%= r.userId?.lastName %></td>
+      <td><%= r.userId?.email %></td>
+      <td><%= r.phone %></td>
+      <td><%= r.tableId?.name %></td>
+     <td>
+  <% if (r.reservation_fee != null) { %>
+    ₱<%= r.reservation_fee.toFixed(2) %>
+  <% } else { %>
+    N/A
+  <% } %>
+</td>
+
+      <td><%= r.dineInDateTime.split(' ')[0] %></td>
+      <td><%= r.dineInDateTime.split(' ')[1] %></td>
+      <td><%= r.referenceNumber %></td>
+      <td>
+        <% if (r.proofOfPayment) { %>
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
+        <% } else { %>
+          N/A
+        <% } %>
+      </td>
+      <td><span class="badge bg-warning text-dark">Pending</span></td>
+      <td><%= new Date(r.createdAt).toLocaleString() %></td>
+      <td>
+        <button class="btn btn-sm btn-success mb-1" onclick="confirmAction('<%= r._id %>', 'approve')">
+          <i class="bi bi-check-circle-fill"></i>
+        </button>
+        <button class="btn btn-sm btn-danger" onclick="confirmAction('<%= r._id %>', 'reject')">
+          <i class="bi bi-x-circle-fill"></i>
+        </button>
+      </td>
+    </tr>
+
+    <% if (r.proofOfPayment) { %>
+      <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-labelledby="proofModalLabel<%= r._id %>" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title" id="proofModalLabel<%= r._id %>">Proof of Payment</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img src="/uploads/<%= r.proofOfPayment %>" class="img-fluid rounded shadow" alt="Proof of Payment" style="max-height: 500px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+  <% } }); %>
+
+  <% if (!hasPending) { %>
+    <tr>
+      <td colspan="12" class="text-center text-muted">No pending reservations found.</td>
+    </tr>
+  <% } %>
+</tbody>
+
+        </table>
+         <div class="d-flex justify-content-center mt-3">
+  <ul class="pagination pagination-sm" id="pagination"></ul>
+</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    function confirmAction(id, action) {
+      const text = action === 'approve' ? 'approve this reservation' : 'reject this reservation';
+      const confirmText = action === 'approve' ? 'Yes, Approve' : 'Yes, Reject';
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to ${text}.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: confirmText,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/staff/reservation/${id}/${action}`, {
+            method: 'POST'
+          })
+          .then(() => {
+            Swal.fire({
+              title: 'Success!',
+              text: `Reservation ${action}d successfully.`,
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => window.location.reload());
+          })
+          .catch(() => {
+            Swal.fire('Error!', 'Something went wrong.', 'error');
+          });
+        }
+      });
+    }
+       const rowsPerPage = 10;
+  let currentPage = 1;
+
+  const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
+  const searchInput = document.getElementById("searchInput");
+  const statusFilter = document.getElementById("statusFilter");
+  const pagination = document.getElementById("pagination");
+
+  function filterRows() {
+    const searchValue = searchInput.value.toLowerCase();
+    const statusValue = statusFilter.value.toLowerCase();
+
+    return rows.filter(row => {
+      const text = row.innerText.toLowerCase();
+      const matchesSearch = text.includes(searchValue);
+
+      const statusText = row.querySelector("td:nth-child(10)")?.innerText.trim().toLowerCase();
+      const matchesStatus = !statusValue || statusText === statusValue;
+
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  function renderTable() {
+    const filteredRows = filterRows();
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    rows.forEach(row => row.style.display = "none");
+    filteredRows.slice(start, end).forEach(row => row.style.display = "");
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    pagination.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+      li.addEventListener("click", e => {
+        e.preventDefault();
+        currentPage = i;
+        renderTable();
+      });
+      pagination.appendChild(li);
+    }
+  }
+
+  // Events
+  searchInput.addEventListener("input", () => {
+    currentPage = 1;
+    renderTable();
+  });
+
+  statusFilter.addEventListener("change", () => {
+    currentPage = 1;
+    renderTable();
+  });
+
+  // Initial
+  renderTable();
+  </script>
+</body>
+</html>

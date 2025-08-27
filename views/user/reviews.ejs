@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Dashboard | Orders</title>
+  <link rel="icon" type="image/png" href="https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/380741479_131206030075540_3076164827494524329_n.jpg">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/UserReviews.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <div class="d-flex justify-content-center mb-5 mt-3">
+      <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+    </div>
+    <nav>
+      <a href="/user/menu"><i class="bi bi-list-ul"></i> Browse Menu</a>
+      <a href="/user/reservation"><i class="bi bi-calendar-check"></i> Book Reservation</a>
+      <a href="/user/orders"><i class="bi bi-bag"></i> Orders</a>
+      <a href="/user/reviews" class="active"><i class="bi bi-star"></i> Reviews</a>
+      <a href="/user/voucher"><i class="bi bi-ticket-perforated"></i> Voucher</a>
+      <a href="/user/myreservation"><i class="bi bi-calendar-event"></i> My Reservations</a>
+    </nav>
+  </div>
+
+  <div class="navbar-custom-wrapper">
+    <nav class="navbar-custom d-flex justify-content-between align-items-center">
+      <% if (user) { %>
+        <div class="d-flex align-items-center gap-3">
+          <a href="/user/profile" class="d-flex align-items-center text-decoration-none text-dark">
+            <% if (user.profileImage) { %>
+              <img src="<%= user.profileImage %>" alt="Profile" width="45" height="45" class="rounded-circle me-2" style="object-fit: cover;">
+            <% } else { %>
+              <div class="d-flex justify-content-center align-items-center me-2" style="width: 45px; height: 45px; border-radius: 50%; background-color: #ccc;">
+                <i class="bi bi-person text-white"></i>
+              </div>
+            <% } %>
+            <div class="admin-info d-none d-md-block">
+              <div class="fw-semibold"><%= user.firstName || 'User' %></div>
+              <small class="text-muted"><%= user.email %></small>
+            </div>
+          </a>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+            <i class="bi bi-box-arrow-right me-1"></i> Logout
+          </a>
+        </div>
+      <% } %>
+    </nav>
+  </div>
+
+  <div class="container py-1">
+    <div class="main-content">
+      <div class="container mt-4">
+        <h2 class="mb-4 text-center fw-bold">Orders <span>Review</span></h2>
+
+        <% if (completedOrders && completedOrders.length > 0) { %>
+          <% completedOrders.forEach(order => { 
+            const existingReview = reviewsMap[order._id.toString()];
+          %>
+            <div class="card mb-4 shadow-sm review-card">
+              <div class="card-header fw-bold">
+                Order ID: <%= order._id %> | Date: <%= order.createdAt.toLocaleString() %>
+              </div>
+              <ul class="list-group list-group-flush">
+                <% order.items.forEach(item => { %>
+                  <li class="list-group-item d-flex align-items-center">
+                    <img src="/uploads/<%= item.productId?.image || 'default.png' %>" alt="Product Image" class="product-image">
+                    <div class="flex-grow-1">
+                      <strong><%= item.name %></strong> — <%= item.quantity %> × ₱<%= item.price.toFixed(2) %><br>
+                      <small class="text-muted">Subtotal: ₱<%= item.subtotal.toFixed(2) %></small>
+                    </div>
+                  </li>
+                <% }) %>
+              </ul>
+              <div class="card-footer">
+                <div>Total: <strong>₱<%= order.netTotal.toFixed(2) %></strong></div>
+
+                <% if (existingReview) { %>
+                  <div class="alert alert-success mt-3">
+                    <strong>Review Submitted</strong><br>
+                    Rating: <%= '⭐'.repeat(existingReview.rating) %><br>
+                    Comment: "<%= existingReview.comment %>"
+                  </div>
+                <% } else { %>
+                  <form action="/user/reviews/<%= order._id %>" method="POST" class="mt-3 review-form">
+                    <div class="mb-2">
+                      <label class="form-label">Rating:</label><br>
+                      <div class="star-rating">
+                        <input type="radio" name="rating" id="star5-<%= order._id %>" value="5"><label for="star5-<%= order._id %>">★</label>
+                        <input type="radio" name="rating" id="star4-<%= order._id %>" value="4"><label for="star4-<%= order._id %>">★</label>
+                        <input type="radio" name="rating" id="star3-<%= order._id %>" value="3"><label for="star3-<%= order._id %>">★</label>
+                        <input type="radio" name="rating" id="star2-<%= order._id %>" value="2"><label for="star2-<%= order._id %>">★</label>
+                        <input type="radio" name="rating" id="star1-<%= order._id %>" value="1"><label for="star1-<%= order._id %>">★</label>
+                      </div>
+                    </div>
+                    <div class="mb-2">
+                      <label for="comment-<%= order._id %>" class="form-label">Comment:</label>
+                      <textarea name="comment" id="comment-<%= order._id %>" class="form-control" rows="3" placeholder="Write your review here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                  </form>
+                <% } %>
+              </div>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <div class="alert alert-warning">No completed orders to review yet.</div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  const reviewForms = document.querySelectorAll('.review-form');
+  reviewForms.forEach(form => {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      Swal.fire({
+        title: 'Submit Review?',
+        text: "Your feedback is valuable!",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#198754',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, submit it!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          form.submit();
+        }
+      });
+    });
+  });
+
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === '1') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Review Submitted!',
+      text: 'Thank you for your feedback.',
+      confirmButtonColor: '#198754',
+      timer: 2000,
+      showConfirmButton: false,
+      timerProgressBar: true
+    });
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+</script>
+</body>
+</html>

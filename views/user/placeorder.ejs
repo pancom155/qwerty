@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .gradient-btn {
+      background: linear-gradient(90deg, #03C4E7 0%, #0047FF 100%);
+      border: none;
+      color: #fff;
+    }
+    .gradient-btn:hover, .gradient-btn:focus {
+      opacity: 0.9;
+      color: #fff;
+    }
+    .qr-image {
+      width: 100%;
+      max-width: 300px;
+      margin: 0 auto;
+      display: block;
+    }
+    .voucher-image {
+      max-width: 150px;
+      max-height: 80px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <h2 class="fw-bold mb-4 text-center">Review & Checkout</h2>
+
+    <% if (pwdCooldownRemaining > 0 && pwdCountdownEnd) { %>
+      <div class="alert alert-info text-center mb-3" style="width: 400px; display: flex; justify-content: center; align-items: center; margin: 0 auto;">
+        PWD Discount is available again in:
+        <span id="pwd-timer" class="fw-bold ms-2"></span>
+      </div>
+    <% } else if (pwdDiscountAmount > 0) { %>
+      <div class="alert alert-success text-center mb-3" role="alert">
+         PWD Discount Applied: ₱<%= pwdDiscountAmount.toFixed(2) %>
+      </div>
+    <% } %>
+
+    <div class="table-responsive mb-4">
+      <table class="table align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Product</th>
+            <th class="text-end">Price</th>
+            <th class="text-center">Qty</th>
+            <th class="text-end">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(item => { %>
+            <tr>
+              <td class="d-flex align-items-center gap-2">
+                <img src="/uploads/<%= item.image %>" alt="" class="rounded" style="width:45px;height:45px;object-fit:cover;">
+                <span><%= item.name %></span>
+              </td>
+              <td class="text-end">₱<%= item.price.toFixed(2) %></td>
+              <td class="text-center"><%= item.quantity %></td>
+              <td class="text-end fw-semibold">₱<%= item.subtotal.toFixed(2) %></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mb-3">
+      <form method="get" action="/user/placeorder">
+        <label class="form-label">Select Voucher</label>
+        <div class="input-group">
+          <select name="voucher" class="form-select" onchange="this.form.submit()">
+            <option value="">-- No Voucher --</option>
+            <% if (user && user._id) { %>
+              <% vouchers.forEach(v => {
+                  const hasUsed = v.redeemedBy?.some(u => u.toString() === user._id.toString());
+                  const hasClaimed = v.claimedBy?.some(u => u.toString() === user._id.toString());
+                  if (!hasUsed && hasClaimed) { %>
+                    <option value="<%= v.code %>" <%= v.code === voucherCode ? 'selected' : '' %>>
+                      <%= v.code %> - ₱<%= v.discount %>
+                    </option>
+              <% }}); %>
+            <% } %>
+          </select>
+        </div>
+      </form>
+    </div>
+
+    <div class="card shadow-sm mx-auto mb-4" style="max-width:480px;">
+      <div class="card-body">
+        <ul class="list-unstyled mb-3">
+          <li class="d-flex justify-content-between mb-1">
+            <span>Gross Total:</span>
+            <span>₱<%= grossTotal.toFixed(2) %></span>
+          </li>
+          <% if (pwdDiscountAmount > 0) { %>
+            <li class="d-flex justify-content-between mb-1 text-success">
+              <span>PWD 20% Discount:</span>
+              <span>-₱<%= pwdDiscountAmount.toFixed(2) %></span>
+            </li>
+          <% } %>
+          <% if (voucherDiscountAmount > 0) { %>
+            <li class="d-flex justify-content-between mb-1 text-success">
+              <span>Voucher (<%= voucherCode %>):</span>
+              <span>-₱<%= voucherDiscountAmount.toFixed(2) %></span>
+            </li>
+          <% } %>
+          <li class="border-top my-2"></li>
+          <li class="d-flex justify-content-between fw-bold">
+            <span>Net Total:</span>
+            <span>₱<%= netTotal.toFixed(2) %></span>
+          </li>
+        </ul>
+        <button class="btn gradient-btn w-100" data-bs-toggle="modal" data-bs-target="#stepOneModal">Proceed to Payment</button>
+      </div>
+    </div>
+
+    <div class="text-center">
+      <a href="/user/menu" class="btn btn-link">&larr; Back to Menu</a>
+    </div>
+  </div>
+
+<!-- Step 1 Modal -->
+<div class="modal fade" id="stepOneModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Scan QR Code (Pickup Only)</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <h3 style="color: blue; font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;">GCASH </h3>
+         <img src="<%= settings.orderQR %>" alt="Order QR" width="280" class="img-fluid rounded shadow-sm">
+       
+
+        <p class="fw-bold">Please scan the QR code first before proceeding.</p>
+        
+        <!-- Net Total Display -->
+        <div class="alert alert-secondary mt-3 fw-semibold">
+          Total Amount: ₱<span id="netTotalDisplay"><%= netTotal %></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn gradient-btn w-100" data-bs-target="#stepTwoModal" data-bs-toggle="modal" data-bs-dismiss="modal">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Step 2 Modal -->
+  <div class="modal fade" id="stepTwoModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Complete Payment Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form action="/user/placeorder" method="POST" enctype="multipart/form-data">
+          <div class="modal-body">
+            <input type="hidden" name="voucherCode" value="<%= voucherCode || '' %>">
+            <div class="mb-3">
+              <label class="form-label">First Name</label>
+              <input type="text" class="form-control" value="<%= user.firstName %>" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Last Name</label>
+              <input type="text" class="form-control" value="<%= user.lastName %>" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Email</label>
+              <input type="email" class="form-control" value="<%= user.email %>" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              <input type="text" class="form-control" value="<%= user.phoneNumber %>" readonly>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Reference Number</label>
+              <input type="number" class="form-control" name="referenceNumber" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Upload Proof of Payment</label>
+              <input type="file" class="form-control" name="proofOfPayment" accept="image/*" required>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn gradient-btn">Confirm Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <% if (pwdCooldownRemaining > 0 && pwdCountdownEnd) { %>
+  <script>
+    const countdownEnd = new Date("<%= pwdCountdownEnd %>").getTime();
+    const timerElement = document.getElementById('pwd-timer');
+
+    function updateTimer() {
+      const now = new Date().getTime();
+      const distance = countdownEnd - now;
+
+      if (distance <= 0) {
+        timerElement.innerHTML = "Available Now!";
+        return;
+      }
+
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      timerElement.innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    updateTimer();
+    setInterval(updateTimer, 1000);
+  </script>
+  <% } %>
+</body>
+</html>

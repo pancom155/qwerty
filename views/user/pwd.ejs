@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Dashboard | Apply PWD</title>
+
+    <link rel="icon" type="image/png"href="https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/380741479_131206030075540_3076164827494524329_n.jpg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/UserPwd.css">
+</head>
+<body>
+    <div class="sidebar" id="sidebar">
+        <div class="d-flex justify-content-center mb-5 mt-3">
+            <img src="/images/napslogo.png" alt="Logo">
+        </div>
+        <nav>
+            <a href="/user/index"><i class="bi bi-house-door"></i> Home</a>
+            <a href="/user/menu"><i class="bi bi-list-ul"></i> Browse Menu</a>
+            <a href="/user/reservation"><i class="bi bi-calendar-check"></i> Book Reservation</a>
+            <a href="/user/orders"><i class="bi bi-bag"></i> Orders</a>
+            <a href="/user/reviews"><i class="bi bi-star"></i> Reviews</a>
+            <a href="/user/voucher"><i class="bi bi-ticket-perforated"></i> Voucher</a>
+            <a href="/user/pwd" class="active"><i class="bi bi-person-badge"></i> Apply PWD</a>
+        </nav>
+    </div>
+
+    <div class="navbar-custom-wrapper">
+        <nav class="navbar-custom d-flex justify-content-between align-items-center">
+        <% if (user) { %>
+            <div class="d-flex align-items-center gap-3">
+            <a href="/user/profile" class="d-flex align-items-center text-decoration-none text-dark">
+                <% if (user.profileImage) { %>
+                <img src="<%= user.profileImage %>" alt="Profile" width="45" height="45" class="rounded-circle me-2" style="object-fit: cover;">
+                <% } else { %>
+                <div class="d-flex justify-content-center align-items-center me-2" style="width: 45px; height: 45px; border-radius: 50%; background-color: #ccc;">
+                    <i class="bi bi-person text-white"></i>
+                </div>
+                <% } %>
+                <div class="admin-info d-none d-md-block">
+                <div class="fw-semibold"><%= user.firstName || 'User' %></div>
+                <small class="text-muted"><%= user.email %></small>
+                </div>
+            </a>
+            </div>
+
+            <div class="d-flex align-items-center gap-3">
+            <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+                <i class="bi bi-box-arrow-right me-1"></i> Logout
+            </a>
+            </div>
+        <% } %>
+        </nav>
+    </div>
+
+  <main class="container py-4 ">
+    <div class="row justify-content-center">
+      <div style="margin-left: 470px;">
+        <div class="card shadow-sm" style="margin-left: 150px; margin-top: 100px; width: 800px;">
+          <div class="card-body">
+            <h3 class="card-title fw-bold mb-3 text-center">PWD Discount Application</h3>
+
+            <% if (request) { %>
+              <% if (request.status === 'Pending') { %>
+                <div class="alert alert-info text-center">
+                  Your current application status is <strong>Pending</strong>.
+                </div>
+              <% } else if (request.status === 'Approved') { %>
+                <div class="alert alert-success text-center">
+                  Your PWD discount request has been <strong>Approved</strong> —
+                  discounts are now active on your account.
+                </div>
+              <% } else if (request.status === 'Rejected') { %>
+                <div class="alert alert-danger text-center">
+                  Your previous application was <strong>Rejected</strong>.<br>
+                  You may submit clearer documentation below.
+                </div>
+              <% } %>
+            <% } %>
+
+            <% if (!request || request.status === 'Rejected') { %>
+              <form action="/user/pwd/apply" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">
+                    Upload a clear photo of your PWD ID
+                  </label>
+                  <input class="form-control" type="file" name="document"
+                         accept="image/*" required>
+                </div>
+                <button class="btn w-100 gradient-btn">Submit Application</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const qs = new URLSearchParams(location.search);
+            if (qs.get('success')) Swal.fire({icon:'success',title:qs.get('success'),timer:1600,showConfirmButton:false});
+            if (qs.get('error'))   Swal.fire({icon:'error',title:qs.get('error')});
+        });
+    </script>
+</body>
+</html>

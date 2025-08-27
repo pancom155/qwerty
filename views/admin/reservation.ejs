@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard - Reservations</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/AdminRsv.css">
+</head>
+<body>
+
+  <div class="sidebar" id="sidebar">
+    <div class="d-flex justify-content-center mb-5 mt-3">
+       <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+    </div>
+    <nav>
+      <a href="/admin/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="/admin/users"><i class="bi bi-person-circle"></i> Users Profile</a>
+      <a href="/admin/staff"><i class="bi bi-people-fill"></i> Account Creation</a>
+      <a href="/admin/orders"><i class="bi bi-receipt"></i> Orders</a>
+
+
+      
+
+
+  <div class="dropdown custom-dropdown" style="position: relative; width: 100%; margin-left: 25px;">
+  <a href="#" class="dropdown-toggle d-block py-2 text-dark text-decoration-none rounded mb-2" id="ordersDropdown" style="background: linear-gradient(90deg, #03C4E7, #0047FF);
+    color: #fff;">
+    <i class="bi bi-journal-bookmark"></i> Reservations
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+     <li>
+      <a class="dropdown-item" class="okay" href="/admin/reservations" >
+        <i class="bi bi-check-circle me-2"></i> Confirmed
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item" href="/admin/reservation_done">
+        <i class="bi bi-hourglass-split me-2"></i> Done
+      </a>
+    </li>
+    <li>
+      <a class="dropdown-item" href="/admin/reservation_cancelled">
+        <i class="bi bi-x-circle me-2"></i> Cancelled
+      </a>
+    </li>
+  </ul>
+</div>
+
+      <a href="/admin/discounts"><i class="bi bi-percent"></i> Discounts</a>
+      <a href="/admin/reviews"><i class="bi bi-chat-dots"></i> Users Reviews</a>
+      <a href="/admin/products"><i class="bi bi-box-seam"></i> Inventory</a>
+      <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
+<a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
+    </nav>
+  </div>
+
+  <div class="main-content">
+    <div class="navbar-custom-wrapper">
+      <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
+          <div class="admin-info">
+            <div class="fw-semibold">Super Admin</div>
+            <p>napsgrillrestobar08@gmail.com</p>
+          </div>
+        </div>
+        <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+          <i class="bi bi-box-arrow-right"></i>
+        </a>
+      </nav>
+    </div>
+
+    <div class="container-fluid">
+      <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Reservations</h1>
+      <div class="table-responsive">
+       <div class="container mb-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
+  <input 
+    type="text" 
+    id="searchInput" 
+    class="form-control mb-2 mb-md-0 me-md-2" 
+    style="width: 400px; margin-left: -50px;" 
+    placeholder="Search reservations...">
+</div>
+
+   <div class="col-md-4" style="display: none;">
+  <select id="statusFilter" class="form-select w-100 w-md-auto">
+    <option value="all">All Statuses</option>
+    <option value="confirmed">Confirmed</option>
+    <option value="cancelled">Cancelled</option>
+    <option value="done">Done</option>
+  </select>
+  </div>
+</div>
+
+        <table class="table table-bordered table-hover">
+          <thead class="table-dark">
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Table</th>
+              <th>Price</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>GCash Ref</th>
+              <th>Proof</th>
+              <th>Status</th>
+              <th>Booked At</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+      <tbody id="reservationTableBody">
+
+  <% reservations.filter(r => r.status === 'confirmed').forEach((r, i) => { %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td><%= r.userId?.firstName %> <%= r.userId?.lastName %></td>
+      <td><%= r.userId?.email %></td>
+      <td><%= r.tableId?.name %></td>
+      <td>₱<%= r.tableId?.price?.toFixed(2) %></td>
+      <td><%= r.dineInDateTime.split(' ')[0] %></td>
+      <td><%= r.dineInDateTime.split(' ')[1] %></td>
+      <td><%= r.referenceNumber %></td>
+      <td>
+        <% if (r.proofOfPayment) { %>
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
+        <% } else { %>
+          N/A
+        <% } %>
+      </td>
+      <td>
+        <span class="badge bg-success">Confirmed</span>
+      </td>
+      <td><%= new Date(r.createdAt).toLocaleString() %></td>
+      <td>
+        <button class="btn btn-sm btn-danger mb-1" onclick="confirmAction('<%= r._id %>', 'cancelled')">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+        <button class="btn btn-sm btn-success" onclick="confirmAction('<%= r._id %>', 'done')">
+          <i class="bi bi-check-circle"></i> Done
+        </button>
+      </td>
+    </tr>
+  <% }); %>
+</tbody>
+
+        </table>
+        <div class="d-flex justify-content-center mt-3">
+  <ul class="pagination" id="pagination"></ul>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+  function confirmAction(reservationId, action) {
+    const actions = {
+      cancelled: {
+        text: 'cancel this reservation',
+        confirmText: 'Yes, Cancel',
+      },
+      done: {
+        text: 'mark this reservation as done',
+        confirmText: 'Yes, Mark as Done',
+      },
+      confirmed: {
+        text: 'confirm this reservation',
+        confirmText: 'Yes, Confirm',
+      },
+      pending: {
+        text: 'mark this reservation as pending',
+        confirmText: 'Yes, Mark as Pending',
+      }
+    };
+
+    const selectedAction = actions[action];
+    if (!selectedAction) {
+      alert("Invalid action.");
+      return;
+    }
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to ${selectedAction.text}.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: selectedAction.confirmText,
+      cancelButtonText: 'Cancel',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`/admin/reservation/${reservationId}/status`, {
+
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ action })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            Swal.fire({
+              title: 'Success!',
+              text: data.message,
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            }).then(() => window.location.reload());
+          } else {
+            throw new Error();
+          }
+        })
+        .catch(() => {
+          Swal.fire('Error!', 'Failed to update status.', 'error');
+        });
+      }
+    });
+  }
+
+   document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
+      toggle.addEventListener("click", function (e) {
+        e.preventDefault();
+
+        const parentDropdown = this.closest(".dropdown");
+
+        // Close others
+        document.querySelectorAll(".dropdown").forEach(d => {
+          if (d !== parentDropdown) d.classList.remove("show");
+        });
+
+        parentDropdown.classList.toggle("show");
+      });
+    });
+
+    document.addEventListener("click", function (e) {
+      if (!e.target.closest(".dropdown")) {
+        document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
+      }
+    });
+  });
+
+   const originalReservations = <%- JSON.stringify(reservations.filter(r => r.status === 'confirmed')) %>;
+  const rowsPerPage = 10;
+  let currentPage = 1;
+  let filteredData = [...originalReservations];
+
+  const tbody = document.getElementById("reservationTableBody");
+  const pagination = document.getElementById("pagination");
+  const searchInput = document.getElementById("searchInput");
+  const statusFilter = document.getElementById("statusFilter");
+
+  function renderTable(data) {
+    tbody.innerHTML = '';
+    const start = (currentPage - 1) * rowsPerPage;
+    const pageData = data.slice(start, start + rowsPerPage);
+
+    if (pageData.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="12" class="text-center text-muted">No records found.</td></tr>`;
+      return;
+    }
+
+    pageData.forEach((r, i) => {
+      const dineDate = r.dineInDateTime.split(' ')[0];
+      const dineTime = r.dineInDateTime.split(' ')[1];
+      const createdAt = new Date(r.createdAt).toLocaleString();
+      const fullName = `${r.userId?.firstName || ''} ${r.userId?.lastName || ''}`;
+      const email = r.userId?.email || 'N/A';
+      const tableName = r.tableId?.name || 'N/A';
+      const tablePrice = r.tableId?.price?.toFixed(2) || '0.00';
+      const proofBtn = r.proofOfPayment 
+        ? `<button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal${r._id}">View</button>` 
+        : 'N/A';
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${start + i + 1}</td>
+          <td>${fullName}</td>
+          <td>${email}</td>
+          <td>${tableName}</td>
+          <td>₱${tablePrice}</td>
+          <td>${dineDate}</td>
+          <td>${dineTime}</td>
+          <td>${r.referenceNumber || ''}</td>
+          <td>${proofBtn}</td>
+          <td><span class="badge bg-success">${r.status}</span></td>
+          <td>${createdAt}</td>
+          <td>
+            <button class="btn btn-sm btn-danger mb-1" onclick="confirmAction('${r._id}', 'cancelled')">
+              <i class="bi bi-x-circle"></i> Cancel
+            </button>
+            <button class="btn btn-sm btn-success" onclick="confirmAction('${r._id}', 'done')">
+              <i class="bi bi-check-circle"></i> Done
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  function renderPagination(dataLength) {
+    const pageCount = Math.ceil(dataLength / rowsPerPage);
+    pagination.innerHTML = '';
+
+    for (let i = 1; i <= pageCount; i++) {
+      const activeClass = currentPage === i ? 'active' : '';
+      pagination.innerHTML += `
+        <li class="page-item ${activeClass}">
+          <a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>
+        </li>
+      `;
+    }
+  }
+
+  function goToPage(page) {
+    currentPage = page;
+    renderTable(filteredData);
+    renderPagination(filteredData.length);
+  }
+
+  function applyFilters() {
+    const query = searchInput.value.toLowerCase();
+    const status = statusFilter.value;
+
+    filteredData = originalReservations.filter(r => {
+      const name = `${r.userId?.firstName || ''} ${r.userId?.lastName || ''}`.toLowerCase();
+      const email = (r.userId?.email || '').toLowerCase();
+      const table = (r.tableId?.name || '').toLowerCase();
+      const matchesSearch = name.includes(query) || email.includes(query) || table.includes(query);
+      const matchesStatus = status === 'all' || r.status === status;
+
+      return matchesSearch && matchesStatus;
+    });
+
+    currentPage = 1;
+    renderTable(filteredData);
+    renderPagination(filteredData.length);
+  }
+
+  // Event listeners
+  searchInput.addEventListener("input", applyFilters);
+  statusFilter.addEventListener("change", applyFilters);
+
+  // Initialize
+  applyFilters();
+</script>
+
+</body>
+</html>

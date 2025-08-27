@@ -1,0 +1,59 @@
+body {
+    background-color: #e6e6f0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.navbar {
+    border-radius: 40px;
+    margin: 30px;
+    background-color: #fff;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.welcome-home {
+    background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+    border-radius: 50px;
+}
+
+.welcome-buttons .btn {
+    border-radius: 30px;
+    padding: 10px 25px;
+    font-size: 1rem;    
+    margin-right: 10px;
+}
+
+.welcome-buttons .btn i {
+    margin-right: 8px;
+}
+
+.card-img-top {
+    height: 300px;
+    object-fit: cover;
+}
+
+.category-badge {
+    font-size: 0.9rem;
+    padding: 7px 12px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.contact-btn {
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    border: none;
+    border-radius: 30px;
+    padding: 12px 25px;
+    font-size: 1.05rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.contact-btn:hover {
+    opacity: 0.9;
+}
+
+.input-group-text {
+    border-radius: 10px 0 0 10px;
+}

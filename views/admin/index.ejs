@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/AdminDashboard.css">
+</head>
+<body>
+
+  <div class="sidebar" id="sidebar">
+    <div class="d-flex justify-content-center mb-5 mt-3">
+  <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+
+
+
+    </div>
+    <nav>
+    <a href="/admin/index"class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/admin/users" ><i class="bi bi-person-circle"></i> Users Profile</a>
+    <a href="/admin/staff"><i class="bi bi-people-fill"></i> Account Creation</a>
+    <a href="/admin/orders"><i class="bi bi-receipt"></i> Orders</a>
+    <a href="/admin/reservations"><i class="bi bi-journal-bookmark"></i> Reservations</a>
+    <a href="/admin/discounts"><i class="bi bi-percent"></i> Discounts</a>
+    <a href="/admin/reviews"><i class="bi bi-chat-dots"></i> Users Reviews</a>
+    <a href="/admin/products"><i class="bi bi-box-seam"></i> Inventory</a>
+    <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
+   
+  
+   <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
+  </nav>
+  <button id="restaurantStatusButton" class="btn w-100" onclick="toggleRestaurantStatus()">
+  <i class="bi bi-door-open-fill"></i> Close Restaurant
+</button>
+  </div>
+
+<div class="main-content">
+  <div class="navbar-custom-wrapper">
+    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
+        <div class="admin-info">
+          <div class="fw-semibold">Super Admin</div>
+          <p>napsgrillrestobar08@gmail.com</p>
+        </div>
+      </div>
+      <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+        <i class="bi bi-box-arrow-right"></i>
+      </a>
+    </nav>
+  </div>
+
+  <div class="col-md-10 content" style="padding-left:50px; margin-left: 80px;">
+    <div class="row mt-3">
+      
+      <!-- LEFT COLUMN -->
+      <div class="col-md-8">
+        <!-- Status Cards -->
+        <div class="container mb-3">
+          <div class="circle-container d-flex flex-wrap gap-3">
+             <!-- Completed Orders -->
+    <div class="status-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <h6 class="text-muted">COMPLETED ORDERS</h6>
+      </div>
+      <div style="position: relative;">
+        <canvas id="doneChart"></canvas>
+        <div class="status-percentage"><%= completedOrders %></div>
+      </div>
+    </div>
+
+    <!-- ready Orders -->
+    <div class="status-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <h6 class="text-muted">READY ORDERS</h6>
+      </div>
+      <div style="position: relative;">
+        <canvas id="pendingChart"></canvas>
+        <div class="status-percentage"><%= readyToPickupOrders %></div>
+      </div>
+    </div>
+
+    <!-- Rejected Orders -->
+    <div class="status-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <h6 class="text-muted">REJECTED ORDERS</h6>
+      </div>
+      <div style="position: relative;">
+        <canvas id="cancelledChart"></canvas>
+        <div class="status-percentage"><%= rejectedOrders %></div>
+      </div>
+    </div>
+
+    <!-- Processing Orders -->
+    <div class="status-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <h6 class="text-muted">PROCESSING ORDERS</h6>
+      </div>
+      <div style="position: relative;">
+        <canvas id="processingChart"></canvas>
+        <div class="status-percentage"><%= processingOrders %></div>
+      </div>
+    </div>
+            <!-- Total Orders -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">TOTAL ORDERS</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="total_ordersChart"></canvas>
+                <div class="status-percentage"><%= totalOrders %></div>
+              </div>
+            </div>
+
+            <!-- Total Products -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">TOTAL PRODUCTS</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="total_productsChart"></canvas>
+                <div class="status-percentage"><%= totalProducts %></div>
+              </div>
+            </div>
+
+            <!-- Total Users -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">TOTAL USERS</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="total_usersChart"></canvas>
+                <div class="status-percentage"><%= totalUsers %></div>
+              </div>
+            </div>
+
+            <!-- Total Tables -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">TOTAL TABLES</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="Total_tablesChart"></canvas>
+                <div class="status-percentage"><%= totalTables %></div>
+              </div>
+            </div>
+
+            <!-- Pending Reservations -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">PENDING RESERVATIONS</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="pending_reservationChart"></canvas>
+                <div class="status-percentage"><%= pendingReservations %></div>
+              </div>
+            </div>
+
+            <!-- Confirmed Reservations -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">CONFIRMED RESERVATIONS</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="confirmed_reservationChart"></canvas>
+                <div class="status-percentage"><%= confirmedReservations %></div>
+              </div>
+            </div>
+
+            <!-- Cancelled Reservations -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">CANCELLED RESERVATIONS</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="cancelled_reservationChart"></canvas>
+                <div class="status-percentage"><%= cancelledReservations %></div>
+              </div>
+            </div>
+
+            <!-- Completed Reservations -->
+            <div class="status-card">
+              <div class="d-flex justify-content-between align-items-center">
+                <h6 class="text-muted">COMPLETED RESERVATIONS</h6>
+              </div>
+              <div style="position: relative;">
+                <canvas id="done_reservationChart"></canvas>
+                <div class="status-percentage"><%= doneReservations %></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Report Card -->
+        <div class="card shadow-sm p-3">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5><i class="bi bi-receipt"></i> Sales Report</h5>
+            <!-- Dropdown for time filter -->
+            <select id="salesFilter" class="form-select form-select-sm w-auto">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+
+          <h3 class="text-success mt-2">
+            ₱<%= monthlySales.toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
+            <span class="text-secondary fs-6">
+              +₱<%= monthlySalesDiff.toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
+            </span>
+          </h3>
+
+          <canvas id="salesChart" height="190"></canvas>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="col-md-4">
+        <!-- Recent Orders -->
+        <div class="card shadow-sm p-3 mb-3">
+          <h5><i class="bi bi-cart-check"></i> Recent Orders</h5>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">NAME</th>
+                <th scope="col">TOTAL</th>
+                <th scope="col">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if (recentOrders && recentOrders.length > 0) { %>
+                <% recentOrders.forEach(order => { %>
+                  <tr>
+                    <td><%= order.fullName || order.userId?.firstName + ' ' + order.userId?.lastName || 'N/A' %></td>
+                    <td>₱<%= order.netTotal?.toFixed(2) || '0.00' %></td>
+                    <td>
+                      <% if (order.status === 'completed') { %>
+                        <span class="badge bg-success rounded-pill">Completed</span>
+                      <% } else if (order.status === 'pending') { %>
+                        <span class="badge bg-warning rounded-pill">Pending</span>
+                      <% } else if (order.status === 'cancelled') { %>
+                        <span class="badge bg-danger rounded-pill">Cancelled</span>
+                      <% } else { %>
+                        <span class="badge bg-secondary rounded-pill"><%= order.status %></span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="4" class="text-center">No recent orders found.</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+
+<!-- Food Reviews -->
+<div class="card shadow-sm p-3">
+  <h5><i class="bi bi-chat-dots"></i> Food Reviews</h5>
+  <div class="list-group">
+    <% recentReviews.forEach((review, index) => { %>
+      <div class="list-group-item d-flex align-items-start">
+
+        <!-- First Product Image -->
+        <% 
+          let firstItem = review.orderId?.items[0];
+          const firstImage = firstItem?.productId?.image ? `/uploads/${firstItem.productId.image}` : '/uploads/default.png';
+        %>
+        <img 
+          src="<%= firstImage %>" 
+          alt="Product Image" 
+          class="rounded shadow-sm me-3" 
+          style="width: 70px; height: 70px; object-fit: cover; border: 1px solid #f0f0f0; cursor: pointer;"
+          data-bs-toggle="modal"
+          data-bs-target="#reviewModal<%= index %>"
+        >
+
+        <!-- Review Info -->
+        <div>
+          <h6>
+            <%= review.orderId?.userId?.firstName || 'Unknown' %> 
+            <%= review.orderId?.userId?.lastName || '' %>
+            <span class="text-muted fs-6">
+              <%= '⭐'.repeat(review.rating) %>
+            </span>
+          </h6>
+          <p class="mb-1"><%= review.comment %></p>
+        </div>
+
+      </div>
+
+      <!-- Modal for all product images -->
+      <div class="modal fade" id="reviewModal<%= index %>" tabindex="-1" aria-labelledby="reviewModalLabel<%= index %>" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="reviewModalLabel<%= index %>">Order Products</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-wrap">
+              <% review.orderId?.items.forEach(item => { %>
+                <% 
+                  const image = item.productId?.image ? `/uploads/${item.productId.image}` : '/uploads/default.png';
+                  const name = item.productId?.name || 'Product Image';
+                %>
+                <img 
+                  src="<%= image %>" 
+                  alt="<%= name %>" 
+                  class="rounded shadow-sm me-2 mb-2" 
+                  style="width: 120px; height: 120px; object-fit: cover; border: 1px solid #f0f0f0;"
+                >
+              <% }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <% }) %>
+  </div>
+</div>
+
+
+
+
+
+
+
+ <div class="card shadow-sm p-3 mt-4">
+  <h5 class="mb-3"><i class="bi bi-bar-chart"></i> Sales Report</h5>
+  <form id="salesReportForm" class="row g-3 align-items-center" method="GET" target="_blank">
+
+    <!-- Date Fields -->
+    <div class="col-md-6">
+      <label for="fromDate" class="form-label fw-semibold">From</label>
+      <input type="date" id="fromDate" name="from" class="form-control shadow-sm" required>
+    </div>
+    <div class="col-md-6">
+      <label for="toDate" class="form-label fw-semibold">To</label>
+      <input type="date" id="toDate" name="to" class="form-control shadow-sm" required>
+    </div>
+
+    <!-- Buttons -->
+    <div class="col-12 d-flex gap-2 mt-3">
+      <button type="submit" formaction="/download-sales-report/pdf"
+        class="btn btn-danger w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm rounded-3">
+        <i class="bi bi-file-earmark-pdf"></i> PDF
+      </button>
+
+      <button type="submit" formaction="/download-sales-report/excel"
+        class="btn btn-success w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm rounded-3">
+        <i class="bi bi-file-earmark-excel"></i> Excel
+      </button>
+
+      <button type="submit" formaction="/download-sales-report/csv"
+        class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm rounded-3">
+        <i class="bi bi-file-earmark-spreadsheet"></i> CSV
+      </button>
+    </div>
+  </form>
+</div>
+
+
+
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+       
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    function createCircleChart(ctx, percentage, color) {
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        datasets: [{
+          data: [percentage, 100 - percentage],
+          backgroundColor: [color, '#e9ecef'],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        cutout: '80%',
+        plugins: {
+          tooltip: { enabled: false },
+          legend: { display: false }
+        }
+      }
+    });
+  }
+createCircleChart(document.getElementById('doneChart').getContext('2d'), <%= completedOrders %>, '#198754');
+createCircleChart(document.getElementById('pendingChart').getContext('2d'), <%= readyToPickupOrders %>, '#0dcaf0');
+createCircleChart(document.getElementById('processingChart').getContext('2d'), <%= processingOrders %>, '#ffc107');
+createCircleChart(document.getElementById('cancelledChart').getContext('2d'), <%= rejectedOrders %>, '#dc3545');
+
+createCircleChart(document.getElementById('total_ordersChart').getContext('2d'), <%= totalOrders %>, '#6f42c1');
+createCircleChart(document.getElementById('total_productsChart').getContext('2d'), <%= totalProducts %>, '#fd7e14');
+createCircleChart(document.getElementById('total_usersChart').getContext('2d'), <%= totalUsers %>, '#0d6efd');
+createCircleChart(document.getElementById('Total_tablesChart').getContext('2d'), <%= totalTables %>, '#20c997');
+
+createCircleChart(document.getElementById('pending_reservationChart').getContext('2d'), <%= pendingReservations %>, '#ffc107');
+createCircleChart(document.getElementById('confirmed_reservationChart').getContext('2d'), <%= confirmedReservations %>, '#0d6efd');
+createCircleChart(document.getElementById('cancelled_reservationChart').getContext('2d'), <%= cancelledReservations %>, '#dc3545');
+createCircleChart(document.getElementById('done_reservationChart').getContext('2d'), <%= doneReservations %>, '#198754');
+
+
+
+
+  // Sample data passed from backend
+  const dailySales   = <%- JSON.stringify(dailySalesArray) %>;   // length = days of month
+  const weeklySales  = <%- JSON.stringify(weeklySalesArray) %>;  // length = 4/5 weeks
+  const monthlySales = <%- JSON.stringify(monthlySalesArray) %>; // length = 12
+  const yearlySales  = <%- JSON.stringify(yearlySalesArray) %>;  // length = N years
+
+  const ctx = document.getElementById("salesChart").getContext("2d");
+
+  // Default chart (Monthly)
+  let salesChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+      datasets: [{
+        label: 'Monthly Sales (₱)',
+        data: monthlySales,
+        backgroundColor: '#28a745'
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            callback: function(value) {
+              return '₱' + value.toLocaleString();
+            }
+          }
+        }
+      }
+    }
+  });
+
+  // Filter change event
+  document.getElementById("salesFilter").addEventListener("change", function(e) {
+    const filter = e.target.value;
+
+    let labels = [];
+    let data = [];
+    let labelText = '';
+
+    if (filter === 'daily') {
+      labels = Array.from({ length: dailySales.length }, (_, i) => `Day ${i+1}`);
+      data = dailySales;
+      labelText = 'Daily Sales (₱)';
+    } else if (filter === 'weekly') {
+      labels = ['Week 1','Week 2','Week 3','Week 4','Week 5'];
+      data = weeklySales;
+      labelText = 'Weekly Sales (₱)';
+    } else if (filter === 'monthly') {
+      labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      data = monthlySales;
+      labelText = 'Monthly Sales (₱)';
+    } else if (filter === 'yearly') {
+      labels = Array.from({ length: yearlySales.length }, (_, i) => `${new Date().getFullYear() - (yearlySales.length-1-i)}`);
+      data = yearlySales;
+      labelText = 'Yearly Sales (₱)';
+    }
+
+    // Update chart
+    salesChart.data.labels = labels;
+    salesChart.data.datasets[0].data = data;
+    salesChart.data.datasets[0].label = labelText;
+    salesChart.update();
+  });
+
+
+
+
+
+
+
+function toggleRestaurantStatus() {
+  const button = document.getElementById("restaurantStatusButton");
+  const isClosed = localStorage.getItem("restaurantClosed") === "true";
+
+  localStorage.setItem("restaurantClosed", !isClosed);
+  updateRestaurantButton(button, !isClosed);
+
+  alert(`The restaurant is now ${!isClosed ? "closed" : "open"} for orders.`);
+}
+
+function updateRestaurantButton(button, isClosed) {
+  if (isClosed) {
+    button.innerHTML = `<i class="bi bi-door-closed-fill"></i> Open Restaurant`;
+    button.style.backgroundColor = "#28a745"; 
+    button.classList.remove("btn-danger");
+    button.classList.add("btn-success");
+  } else {
+    button.innerHTML = `<i class="bi bi-door-open-fill"></i> Close Restaurant`;
+    button.style.backgroundColor = "#dc3545";
+    button.classList.remove("btn-success");
+    button.classList.add("btn-danger");
+  }
+}
+</script>
+</body>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

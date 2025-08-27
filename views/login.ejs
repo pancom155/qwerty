@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nap's | Login</title>
+  <link rel="icon" type="image/png" href="/images/napslogo.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+  <style>
+    .image-section {
+      background: url('/images/naps.png') no-repeat center center;
+      background-size: cover;
+    }
+    .btn-gradient {
+      background: linear-gradient(to right, #03C4E7, #0047FF);
+      color: white;
+      width: 50%;
+    }
+    .btn-gradient:hover {
+      background: #0056b3;
+    }
+    .fullscreen-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.6);
+      z-index: 1050;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .cooldown-box {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    }
+
+    .alert-danger {
+    background-color: white !important;
+    color: #dc3545 !important;
+    border: 1px solid #ffffff;
+  }
+  </style>
+</head>
+<body class="bg-light">
+
+<% if (typeof cooldownSeconds !== 'undefined' && cooldownSeconds !== null) { %>
+  <div class="fullscreen-overlay" id="cooldownOverlay">
+    <div class="cooldown-box">
+      <h4 class="fw-bold">Too many login attempts</h4>
+      <p>Please wait before trying again.</p>
+      <div class="cooldown-timer">
+        <span id="minutes">00</span>:<span id="seconds"><%= cooldownSeconds %></span>
+      </div>
+    </div>
+  </div>
+<% } %>
+
+<div class="container-fluid vh-100 d-flex">
+  <div class="row w-100">
+    <div class="col-md-6 d-none d-md-block image-section"></div>
+    <div class="col-md-6 d-flex align-items-center justify-content-center bg-white shadow-sm p-4">
+      <div class="w-100" style="max-width: 400px;">
+        <div class="text-center mb-3">
+          <img src="/images/napslogo.png" alt="Logo" class="img-fluid" style="width: 150px;">
+          <h2 class="mt-2 fw-bold">Login</h2>
+          <p class="text-muted">Enter your credentials below.</p>
+        </div>
+
+        <% if (typeof error !== 'undefined') { %>
+          <div class="alert alert-danger text-center" role="alert">
+            <%= error %>
+          </div>
+        <% } %>
+
+        <form method="POST" action="/login">
+          <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input type="email" class="form-control" name="email" placeholder="Email" required>
+          </div>
+
+          <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+            <span class="input-group-text password-toggle" onclick="togglePassword('password', 'togglePasswordIcon1')">
+              <i id="togglePasswordIcon1" class="fas fa-eye"></i>
+            </span>
+          </div>
+
+          <div class="mb-3 text-center">
+            <a href="#" class="text-primary text-decoration-none" id="forgotPasswordLink">Forgot password?</a>
+          </div>
+
+          <div class="mb-3 d-flex justify-content-center">
+            <div class="g-recaptcha" data-sitekey="6LfJYLcqAAAAADB7y3kG7pDFRRbddu06DYHM_ZoF"></div>
+          </div>
+
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-gradient">Log In</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-3">
+          <p class="mb-0">Don't have an account? <a href="/register" class="text-primary text-decoration-none">Sign up</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePassword(passwordId, iconId) {
+  const passwordField = document.getElementById(passwordId);
+  const icon = document.getElementById(iconId);
+  if (passwordField.type === "password") {
+    passwordField.type = "text";
+    icon.classList.replace("fa-eye", "fa-eye-slash");
+  } else {
+    passwordField.type = "password";
+    icon.classList.replace("fa-eye-slash", "fa-eye");
+  }
+}
+</script>
+
+<script>
+  const secondsDisplay = document.getElementById('seconds');
+  const minutesDisplay = document.getElementById('minutes');
+  const overlay = document.getElementById('cooldownOverlay');
+
+  if (secondsDisplay && minutesDisplay && overlay) {
+    let totalSeconds = parseInt(secondsDisplay.textContent);
+
+    if (!isNaN(totalSeconds)) {
+      function updateTimer() {
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+
+        minutesDisplay.textContent = String(mins).padStart(2, '0');
+        secondsDisplay.textContent = String(secs).padStart(2, '0');
+
+        if (totalSeconds <= 0) {
+          clearInterval(timer);
+          overlay.remove();
+        }
+
+        totalSeconds--;
+      }
+
+      updateTimer();
+      const timer = setInterval(updateTimer, 1000);
+    }
+  }
+</script>
+
+<script>
+// Add this script to your login.ejs
+document.querySelector('form').addEventListener('submit', function(e) {
+    const recaptchaResponse = grecaptcha.getResponse();
+    if (!recaptchaResponse) {
+        e.preventDefault();
+        Swal.fire({
+            icon: 'error',
+            title: 'reCAPTCHA Required',
+            text: 'Please complete the reCAPTCHA verification',
+        });
+    }
+});
+
+document.getElementById('forgotPasswordLink').addEventListener('click', () => {
+  Swal.fire({
+    title: 'Forgot Password',
+    html: `<input type="email" id="otpEmail" class="form-control" placeholder="Enter your email" required>`,
+    confirmButtonText: 'Send OTP',
+    preConfirm: async () => {
+      const email = document.getElementById('otpEmail').value;
+      const res = await fetch('/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+
+      const data = await res.json();
+      if (!data.success) {
+        Swal.showValidationMessage(data.message || 'Failed to send OTP.');
+      } else {
+        return email;
+      }
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      showOtpModal(result.value);
+    }
+  });
+});
+
+function showOtpModal(email) {
+  Swal.fire({
+    title: 'Enter OTP',
+    html: `
+      <input type="hidden" id="otpEmailHidden" value="${email}">
+      <input type="text" id="otpCode" class="form-control my-2" placeholder="Enter OTP" required>
+    `,
+    confirmButtonText: 'Verify OTP',
+    preConfirm: async () => {
+      const otp = document.getElementById('otpCode').value;
+      const email = document.getElementById('otpEmailHidden').value;
+
+      const res = await fetch('/verify-forgot-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        Swal.showValidationMessage(data.message || 'Invalid or expired OTP.');
+      } else {
+        showResetModal(email);
+      }
+    }
+  });
+}
+
+function showResetModal(email) {
+  Swal.fire({
+    title: 'Reset Password',
+    html: `
+      <input type="password" id="newPass" class="form-control my-2" placeholder="New Password">
+      <input type="password" id="confirmPass" class="form-control my-2" placeholder="Confirm Password">
+    `,
+    confirmButtonText: 'Update Password',
+    preConfirm: async () => {
+      const password = document.getElementById('newPass').value;
+      const confirm = document.getElementById('confirmPass').value;
+
+      if (password !== confirm) {
+        Swal.showValidationMessage("Passwords do not match.");
+        return;
+      }
+
+      const res = await fetch('/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, newPassword: password })
+      });
+
+      const data = await res.json();
+
+      if (!data.success) {
+        Swal.showValidationMessage(data.message || 'Failed to reset.');
+      } else {
+        Swal.fire('Success', 'Your password has been updated.', 'success').then(() => {
+          location.href = '/login';
+        });
+      }
+    }
+  });
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

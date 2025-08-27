@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Waiter Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/StaffDashboard.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<section>
+  <nav>
+    <div class="nav-left">
+      <div class="admin-info">
+        <img src="/images/admin-avatar.avif" alt="Admin" class="admin-avatar">
+        <div class="admin-text">
+          <p class="admin-name"><%= user.fullName %></p>
+          <p class="admin-email"><%= user.email %></p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="nav-center">
+      <div class="search-bar">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="searchProducts()">
+      </div>
+    </div>
+    
+    <div class="nav-right">
+      <button class="cart-btn" id="cart-icon">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="badge" id="cartCount">0</span>
+      </button>
+      <a href="/logout" class="logout-btn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+  </nav>
+</section>
+
+<div class="menu-sidebar">
+  <div class="sidebar-logo">
+    <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Restaurant Logo">
+    <h3>Menu <span>Categories</span></h3>
+  </div>
+  <ul class="category-list">
+    <li><a href="/waiter/products" data-category="all"><i class="fas fa-utensils"></i> All</a></li>
+    <li><a href="/waiter/products/seafood" data-category="seafood"><i class="fas fa-fish"></i> Seafood</a></li>
+    <li><a href="/waiter/products/appetizer" data-category="appetizer"><i class="fas fa-cheese"></i> Appetizers</a></li>
+    <li><a href="/waiter/products/meat" data-category="meat"><i class="fas fa-drumstick-bite"></i> Meat</a></li>
+    <li><a href="/waiter/products/vegetable" data-category="vegetable"><i class="fas fa-carrot"></i> Vegetables</a></li>
+    <li><a href="/waiter/products/dessert" data-category="dessert"><i class="fas fa-ice-cream"></i> Desserts</a></li>
+    <li><a href="/waiter/products/beverage" data-category="beverage"><i class="fas fa-glass-whiskey"></i> Beverages</a></li>
+  </ul>
+</div>
+
+<h2>Waiter <span>Ordering</span></h2>
+
+<div class="product-grid" id="productGrid">
+  <% products.forEach((product) => { %>
+    <div class="product-card" data-category="<%= product.category %>" data-name="<%= product.name.toLowerCase() %>">
+      <img src="/uploads/<%= product.image %>" class="card-img-top rounded-top img-fluid" alt="Product Image">
+      <div class="card-body d-flex flex-column justify-content-between">
+        <div>
+          <h5 class="product-name"><%= product.name %></h5>
+          <p class="product-description"><%= product.description %></p>
+          <span class="product-category <%= product.category.toLowerCase() %>">
+            <i class="<%= 
+              product.category.toLowerCase() === 'seafood' ? 'fas fa-fish' :
+              product.category.toLowerCase() === 'appetizer' ? 'fas fa-cheese' :
+              product.category.toLowerCase() === 'meat' ? 'fas fa-drumstick-bite' :
+              product.category.toLowerCase() === 'vegetable' ? 'fas fa-carrot' :
+              product.category.toLowerCase() === 'dessert' ? 'fas fa-ice-cream' :
+              product.category.toLowerCase() === 'beverage' ? 'fas fa-glass-whiskey' :
+              'fas fa-utensils'%>"></i>
+            <%= product.category %>
+          </span>
+          <p class="product-price">₱<%= product.price.toFixed(2) %></p>
+        </div>
+        <button class="add-to-cart-btn" onclick='addToCart("<%= product._id %>", "<%= product.name %>", <%= product.price %>, "/uploads/<%= product.image %>")'>
+          <i class="fas fa-shopping-cart"></i> Add to Cart
+        </button>
+      </div>
+    </div>
+  <% }); %>
+</div>
+
+<!-- Improved Cart Sidebar -->
+<div class="cart-sidebar" id="cartSidebar">
+  <h3>Waiter <span>Cart</span></h3>
+  <div class="cart-items-container">
+    <div id="cartItems"></div>
+    <div class="empty-cart-message" id="emptyCartMessage">
+      <i class="fas fa-shopping-cart fa-2x" style="opacity: 0.3;"></i>
+      <p>The cart is empty</p>
+      <p class="text-muted">Add items to get started</p>
+    </div>
+  </div>
+  <div class="checkout-section">
+    <button id="checkoutBtn" class="checkout-btn" data-bs-toggle="modal" data-bs-target="#placeOrderModal">
+      <i class="fas fa-utensils"></i> Place Order
+    </button>
+  </div>
+</div>
+
+<!-- Order Modal -->
+<div class="modal fade" id="placeOrderModal" tabindex="-1" aria-labelledby="placeOrderModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 800px;">
+    <form id="orderForm">
+      <div class="modal-content" style="height: 80vh; display: flex; flex-direction: column;">
+        <div class="modal-header" style="background: linear-gradient(135deg, #03C4E7, #0047FF);">
+          <h5 class="modal-title text-white" id="placeOrderModalLabel">
+            <i class="fas fa-utensils me-2"></i>Place Dine-In Order
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body p-4">
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text" name="fullName" id="fullName" class="form-control" placeholder="Customer Name" required>
+                <label for="fullName" class="text-muted">Customer Name</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="number" name="tableNumber" id="tableNumber" class="form-control" placeholder="Table Number" required>
+                <label for="tableNumber" class="text-muted">Table Number</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-md-8">
+              <div class="form-floating">
+                <input type="text" id="pwdId" name="pwdId" class="form-control" placeholder="PWD ID (Optional)">
+                <label for="pwdId" class="text-muted">PWD/SENIOR ID (Optional)</label>
+              </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+              <button type="button" class="btn btn-success btn-sm w-auto py-1 px-3" onclick="applyPWDDiscount()">
+                 <i class="fas fa-percentage me-1"></i>Apply PWD Discount
+              </button>
+            </div>
+          </div>
+
+          <input type="hidden" name="paymentMethod" value="cash">
+          <input type="hidden" name="status" value="processing">
+
+          <div class="table-responsive mb-4" style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-hover align-middle">
+              <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+                <tr>
+                  <th style="width: 40%">Product</th>
+                  <th style="width: 15%">Qty</th>
+                  <th style="width: 15%">Price</th>
+                  <th style="width: 15%">Subtotal</th>
+                  <th style="width: 15%">Action</th>
+                </tr>
+              </thead>
+              <tbody id="modalCartItems">
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-4">The cart is empty. Please add some items.</td>
+                </tr>
+              </tbody>
+              <tfoot id="orderSummary" style="display: none;">
+                <tr class="table-light">
+                  <td colspan="3" class="text-end fw-bold border-0">TOTAL:</td>
+                  <td colspan="2" class="fw-bold border-0">₱0.00</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-footer d-flex justify-content-between">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i> Cancel
+          </button>
+          <button type="submit" class="btn btn-success px-4">
+            <i class="fas fa-paper-plane me-2"></i> Place Order
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const cart = [];
+
+  function addToCart(id, name, price, image) {
+    const existing = cart.find(item => item.productId === id);
+    if (existing) {
+      existing.qty += 1;
+    } else {
+      cart.push({
+        productId: id,
+        name,
+        unitPrice: price,
+        image,
+        qty: 1,
+        discountApplied: false
+      });
+    }
+
+    updateCartUI();
+    showSuccessToast(`${name} added to cart`);
+  }
+
+  function removeFromCart(index) {
+    const removedItem = cart.splice(index, 1)[0];
+    updateCartUI();
+    showWarningToast(`${removedItem.name} removed from cart`);
+  }
+
+  function changeQuantity(index, newQty) {
+    const qty = parseInt(newQty);
+    if (!qty || qty < 1) return;
+
+    cart[index].qty = qty;
+    cart.forEach(item => {
+      item.discount = 0;
+      item.discountApplied = false;
+    });
+
+    applyPWDDiscount(true);
+    updateCartUI();
+  }
+
+  function updateCartUI() {
+    const sidebarItems = document.getElementById("cartItems");
+    const modalItems = document.getElementById("modalCartItems");
+    const count = document.getElementById("cartCount");
+    const emptyMsg = document.getElementById("emptyCartMessage");
+    
+    sidebarItems.innerHTML = "";
+    modalItems.innerHTML = "";
+    let total = 0;
+    let totalDiscount = 0;
+
+    if (cart.length === 0) {
+      emptyMsg.style.display = "block";
+      modalItems.innerHTML = '<tr><td colspan="5" class="text-center text-muted">Cart is empty.</td></tr>';
+    } else {
+      emptyMsg.style.display = "none";
+      
+      cart.forEach((item, index) => {
+        const discountPerUnit = item.discount || 0;
+        const discountedQty = discountPerUnit > 0 ? 1 : 0;
+        const subtotal = (item.unitPrice * item.qty) - (discountPerUnit * discountedQty);
+        const itemTotalDiscount = discountPerUnit * discountedQty;
+
+        total += subtotal;
+        totalDiscount += itemTotalDiscount;
+
+        // Sidebar cart item
+        const sidebarItem = document.createElement("div");
+        sidebarItem.className = "cart-item";
+        sidebarItem.innerHTML = `
+          <img src="${item.image}" alt="${item.name}">
+          <div class="cart-item-details">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-price">₱${subtotal.toFixed(2)}</div>
+            <div class="quantity-controls">
+              <button class="decrease-quantity" data-index="${index}">-</button>
+              <span class="quantity-display">${item.qty}</span>
+              <button class="increase-quantity" data-index="${index}">+</button>
+            </div>
+            <button class="remove-btn" data-index="${index}">Remove</button>
+          </div>
+        `;
+        sidebarItems.appendChild(sidebarItem);
+
+        // Modal cart item
+        const modalRow = `
+          <tr>
+            <td>
+              <input type="hidden" name="items[]" value='${JSON.stringify({
+                productId: item.productId,
+                name: item.name,
+                price: item.unitPrice,
+              })}'>
+              ${item.name}
+              ${item.discount > 0 ? `<div class="text-success small">PWD Discount: -₱${(item.discount).toFixed(2)}</div>` : ''}
+            </td>
+            <td>${item.qty}</td>
+            <td>₱${item.unitPrice.toFixed(2)}</td>
+            <td>₱${subtotal.toFixed(2)}</td>
+            <td>
+              <button type="button" class="btn btn-sm btn-danger" onclick="removeFromCart(${index})">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>`;
+        modalItems.innerHTML += modalRow;
+      });
+
+      if (totalDiscount >= 250) {
+        modalItems.innerHTML += `
+          <tr>
+            <td colspan="3" class="text-end text-success">PWD Discount (max ₱250):</td>
+            <td colspan="2" class="text-success">- ₱250.00</td>
+          </tr>`;
+      } else if (totalDiscount > 0) {
+        modalItems.innerHTML += `
+          <tr>
+            <td colspan="3" class="text-end text-success">PWD Discount:</td>
+            <td colspan="2" class="text-success">- ₱${totalDiscount.toFixed(2)}</td>
+          </tr>`;
+      }
+
+      modalItems.innerHTML += `
+        <tr>
+          <td colspan="3" class="text-end fw-bold">TOTAL:</td>
+          <td colspan="2" class="fw-bold">₱${total.toFixed(2)}</td>
+        </tr>`;
+    }
+
+    count.textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+  }
+
+  function applyPWDDiscount(silent = false) {
+    if (cart.length === 0) {
+      if (!silent) showErrorToast("Cart is empty. Please add items first.");
+      return;
+    }
+
+    const pwdId = document.getElementById("pwdId")?.value?.trim();
+    if (!pwdId && !silent) {
+      showErrorToast("Please enter a valid PWD ID.");
+      return;
+    }
+
+    let remainingDiscount = 250;
+    const sortedCart = [...cart].sort((a, b) => b.unitPrice - a.unitPrice);
+
+    sortedCart.forEach((item) => {
+      item.discount = 0;
+      item.discountApplied = false;
+
+      const oneQtyDiscount = item.unitPrice * 0.2;
+
+      if (remainingDiscount >= oneQtyDiscount) {
+        item.discount = oneQtyDiscount;
+        item.discountApplied = true;
+        remainingDiscount -= oneQtyDiscount;
+      } else if (remainingDiscount > 0) {
+        item.discount = remainingDiscount;
+        item.discountApplied = true;
+        remainingDiscount = 0;
+      } else {
+        item.discount = 0;
+        item.discountApplied = false;
+      }
+
+      item.discount = parseFloat(item.discount.toFixed(2));
+    });
+
+    sortedCart.forEach((sortedItem) => {
+      const original = cart.find(item => item.productId === sortedItem.productId);
+      if (original) {
+        original.discount = sortedItem.discount;
+        original.discountApplied = sortedItem.discountApplied;
+      }
+    });
+
+    if (!silent) showSuccessToast("PWD discount applied (1 qty per item, highest price first, max ₱250)");
+    updateCartUI();
+  }
+
+  function showSuccessToast(message) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: message,
+      showConfirmButton: false,
+      timer: 3000
+    });
+  }
+
+  function showErrorToast(message) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'error',
+      title: message,
+      showConfirmButton: false,
+      timer: 3000
+    });
+  }
+
+  function showWarningToast(message) {
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'warning',
+      title: message,
+      showConfirmButton: false,
+      timer: 3000
+    });
+  }
+
+  function searchProducts() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const productGrid = document.getElementById('productGrid');
+    const products = productGrid.getElementsByClassName('product-card');
+
+
+    for (let i = 0; i < products.length; i++) {
+      const productName = products[i].getAttribute('data-name');
+      if (productName.includes(filter)) {
+        products[i].style.display = "";
+      } else {
+        products[i].style.display = "none";
+      }
+    }
+  }
+
+  document.getElementById('cart-icon').addEventListener('click', function() {
+    document.getElementById('cartSidebar').classList.toggle('active');
+  });
+
+  document.getElementById('cartItems').addEventListener('click', function(e) {
+    if (e.target.classList.contains('increase-quantity')) {
+      const index = e.target.getAttribute('data-index');
+      cart[index].qty += 1;
+      updateCartUI();
+    } else if (e.target.classList.contains('decrease-quantity')) {
+      const index = e.target.getAttribute('data-index');
+      if (cart[index].qty > 1) {
+        cart[index].qty -= 1;
+        updateCartUI();
+      }
+    } else if (e.target.classList.contains('remove-btn')) {
+      const index = e.target.getAttribute('data-index');
+      removeFromCart(index);
+    }
+  });
+
+document.getElementById('orderForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+    const fullName = document.getElementById('fullName').value.trim();
+    const tableNumber = document.getElementById('tableNumber').value;
+    const pwdId = document.getElementById('pwdId').value.trim();
+
+    if (!fullName) {
+      return showErrorToast('Full name is required!');
+    }
+
+    if (cart.length === 0) {
+      return showErrorToast('Cart is empty!');
+    }
+
+    if (pwdId !== '') {
+      applyPWDDiscount(true);
+    }
+
+    const items = cart.map(item => ({
+      productId: item.productId,
+      name: item.name,
+      price: item.unitPrice,
+      quantity: item.qty,
+      subtotal: (item.unitPrice * item.qty) - (item.discount || 0),
+      discount: item.discount || 0
+    }));
+
+    const grossTotal = items.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+    const netTotal = items.reduce((acc, item) => acc + item.subtotal, 0);
+    const totalDiscount = grossTotal - netTotal;
+
+    const discounts = cart
+      .filter(item => item.discount && item.discount > 0)
+      .map(item => ({
+        type: 'pwd',
+        amount: item.discount,
+        description: `PWD discount applied on ${item.name}`
+      }));
+
+    const orderData = {
+      fullName,
+      tableNumber,
+      pwdId,
+      grossTotal,
+      netTotal,
+      items,
+      discounts,
+      payment: {
+        method: 'cash'
+      },
+      status: 'processing'
+    };
+
+    try {
+      const res = await fetch('/waiter/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderData)
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        showSuccessToast('Order placed successfully!');
+        document.getElementById('orderForm').reset();
+        cart.length = 0;
+        updateCartUI();
+
+        const modal = bootstrap.Modal.getInstance(document.getElementById('placeOrderModal'));
+        modal.hide();
+      } else {
+        showErrorToast(result.message || 'Failed to place order.');
+      }
+    } catch (err) {
+      console.error(err);
+      showErrorToast('Something went wrong.');
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+  const path = window.location.pathname;
+  let currentCategory = 'all'; 
+  
+  if (path.includes('/products/')) {
+    currentCategory = path.split('/products/')[1];
+  }
+  
+  const categoryLinks = document.querySelectorAll('.category-list li a');
+  categoryLinks.forEach(link => {
+    const linkCategory = link.getAttribute('data-category');
+    if (linkCategory === currentCategory) {
+      link.classList.add('active');
+    }
+    
+    link.addEventListener('click', function(e) {
+      categoryLinks.forEach(item => item.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+});
+</script>
+
+</body>
+</html>

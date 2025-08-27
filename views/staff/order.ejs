@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Dashboard | Orders</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/StaffOrder.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<div class="sidebar" id="sidebar">
+  <div class="d-flex justify-content-center mb-5 mt-3">
+    <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+  </div>
+  <nav>
+    <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/staff/order" class="active"><i class="bi bi-bag-check"></i> Orders</a>
+    <a href="/staff/reservation"><i class="bi bi-calendar-check"></i> Reservation</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="navbar-custom-wrapper">
+    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
+        <div class="admin-info">
+          <div class="fw-semibold mb-1"><%= user.fullName %></div>
+          <p><%= user.email %></p>
+        </div>
+      </div>
+
+      <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+       <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+    </nav>
+  </div>
+
+  <div class="container-fluid mt-4">
+    <h3 class="mb-4">Orders</h3>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 px-2">
+  <input 
+    type="text" 
+    id="searchInput" 
+    class="form-control mb-2 mb-md-0 me-md-2" 
+    style="width: 400px; " 
+    placeholder="Search Orders...">
+  
+<select id="statusFilter" class="form-select form-select-sm w-100 w-md-25 mb-2 mb-md-0 me-md-2 d-none">
+  <option value="">All Statuses</option>
+  <option value="pending">Pending</option>
+  <option value="processing">Processing</option>
+  <option value="ready_to_pickup">Ready to Pickup</option>
+</select>
+
+
+</div>
+
+    <table class="table table-bordered table-hover align-middle text-center">
+      <thead class="table-dark">
+        <tr>
+          
+          <th>Order ID</th>
+          <th>Table Number</th>
+          <th>Customer</th>
+          <th>Items</th>
+          <th>Reference No.</th>
+          <th>Proof of Payment</th>
+          <th>Status</th>
+          <th>Created At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+    <tbody id="reservationTableBody">
+
+        <% if (orders && orders.length > 0) { %>
+          <% orders.forEach(order => { %>
+            <tr>
+              <td><%= order._id %></td>
+            <td><%= order.tableNumber ? order.tableNumber : 'N/A' %></td>
+              <td>
+  <% if (order.userId) { %>
+    <strong><%= order.userId.firstName %> <%= order.userId.lastName %></strong><br>
+    <small><%= order.userId.email %></small>
+  <% } else { %>
+    <strong><%= order.fullName || 'Guest' %></strong><br>
+    <small class="text-muted">No Email</small>
+  <% } %>
+</td>
+              <td>
+                  <button class="btn btn-sm btn-view" data-bs-toggle="modal" data-bs-target="#viewItemsModal<%= order._id %>">
+                    <i class="bi bi-list-ul"></i> Items
+                  </button>
+                  <div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header justify-content-center text-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF); color: white;">
+                          <h5 class="modal-title w-100"><i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %></h5>
+                          <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body bg-light">
+                          <% order.items.forEach(item => { %>
+                            <div class="card mb-2 shadow-sm border-0">
+                              <div class="card-body d-flex align-items-center gap-3">
+                                <img src="/uploads/<%= item.productId?.image || 'default.png' %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                <div class="flex-grow-1">
+                                  <div class="fw-semibold fs-6"><%= item.name %></div>
+                                  <small class="text-muted">₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
+                                </div>
+                                <div class="text-success fw-bold fs-6">₱<%= item.subtotal.toFixed(2) %></div>
+                              </div>
+                            </div>
+                          <% }) %>
+                          
+          <% if (order.discounts?.length > 0) { 
+     let shownDiscount = 0;
+%>
+  <div class="mt-4">
+    <h6 class="fw-bold"><i class="bi bi-tags-fill me-2"></i>Discount Details</h6>
+    <% order.discounts.forEach(discount => { 
+         if (shownDiscount < 250) {
+           const remaining = 250 - shownDiscount;
+           const toShow = Math.min(discount.amount, remaining);
+           shownDiscount += toShow;
+    %>
+      <div class="text-muted"><%= discount.description %> — ₱<%= toShow.toFixed(2) %></div>
+    <%   } 
+       }); 
+    %>
+  </div>
+<% } %>
+
+
+                          <div class="p-3 mt-3 rounded bg-white shadow-sm">
+                            <h6 class="fw-bold text-primary"><i class="bi bi-calculator-fill me-2"></i>Order Summary</h6>
+                            <div class="d-flex justify-content-between border-bottom py-1">
+                              <span><i class="bi bi-cash-coin me-1"></i>Gross Total:</span>
+                              <span class="fw-semibold">₱<%= order.grossTotal.toFixed(2) %></span>
+                            </div>
+                            <% if (order.discountTotal > 0) { %>
+                              <div class="d-flex justify-content-between border-bottom py-1 text-success">
+                                <span><i class="bi bi-patch-check-fill me-1"></i>Discount:</span>
+                                <span class="fw-semibold">- ₱<%= order.discountTotal.toFixed(2) %></span>
+                              </div>
+                            <% } %>
+                            <div class="d-flex justify-content-between pt-2 fw-bold fs-5 text-success">
+                              <span><i class="bi bi-wallet2 me-1"></i>Net Total:</span>
+                              <span>₱<%= order.netTotal.toFixed(2) %></span>
+                            </div>
+                          </div>
+                        </div>
+              </td>
+              <td><%= order.payment?.referenceNumber || 'N/A' %></td>
+              <td>
+                <% if (order.payment?.proofOfPayment) { %>
+                  <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
+                    <i class="bi bi-eye-fill"></i> View
+                  </button>
+                  <!-- Modal for proof -->
+                  <div class="modal fade" id="proofModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Proof of Payment</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                          <img src="/uploads/<%= order.payment.proofOfPayment %>" class="img-fluid rounded" alt="Proof">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% } else { %>
+                  <span class="text-muted">No Proof</span>
+                <% } %>
+              </td>
+              <td>
+                <span class="badge bg-secondary text-uppercase"><%= order.status %></span>
+              </td>
+              <td><%= new Date(order.createdAt).toLocaleString() %></td>
+              <td>
+               <% if (order.status === 'pending') { %>
+  <div class="d-flex flex-column gap-1">
+    <button class="btn btn-success btn-sm" onclick="processOrder('<%= order._id %>')">
+      <i class="bi bi-check-circle"></i> Process
+    </button>
+    <form id="rejectForm-<%= order._id %>" action="/staff/orders/reject/<%= order._id %>" method="POST" style="display:none;"></form>
+    <button class="btn btn-danger btn-sm" onclick="confirmReject('<%= order._id %>')">
+      <i class="bi bi-x-circle"></i> Reject
+    </button>
+  </div>
+
+<% } else if (order.status === 'processing') { %>
+  <div class="d-flex flex-column gap-1">
+    <form id="readyForm-<%= order._id %>" action="/staff/orders/ready/<%= order._id %>" method="POST" style="display: none;"></form>
+    <button class="btn btn-warning btn-sm" onclick="confirmReadyToPickup('<%= order._id %>')">
+      <i class="bi bi-box-seam"></i> Ready to Pickup
+    </button>
+  </div>
+
+<% } else if (order.status === 'ready_to_pickup') { %>
+  <div class="d-flex flex-column gap-1">
+    <form id="completeForm-<%= order._id %>" action="/staff/orders/complete/<%= order._id %>" method="POST" style="display: none;"></form>
+    <button class="btn btn-primary btn-sm" onclick="confirmComplete('<%= order._id %>')">
+      <i class="bi bi-check2-circle"></i> Complete
+    </button>
+  </div>
+
+<% } else if (order.status === 'completed') { %>
+  <span class="text-success fw-bold">Completed</span>
+
+<% } else if (order.status === 'rejected') { %>
+  <span class="text-muted">Rejected</span>
+
+<% } else { %>
+  <span class="text-muted">—</span>
+<% } %>
+
+              </td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr>
+            <td colspan="8" class="text-muted text-center">No orders found.</td>
+          </tr>
+        <% } %>
+      </tbody>
+    </table>
+    <div class="d-flex justify-content-center mt-3">
+  <ul class="pagination pagination-sm" id="pagination"></ul>
+</div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function processOrder(orderId) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'This will mark the order as "Processing".',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#28a745',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, process it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        fetch(`/staff/orders/process/${orderId}`, {
+          method: 'POST'
+        })
+        .then(res => res.json())
+        .then(() => Swal.fire('Success', 'Order is now being processed.', 'success').then(() => location.reload()))
+        .catch(() => Swal.fire('Error', 'Something went wrong.', 'error'));
+      }
+    });
+  }
+
+  function confirmReject(orderId) {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'Reject this order? This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Yes, Reject'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById(`rejectForm-${orderId}`).submit();
+      }
+    });
+  }
+
+    function confirmComplete(orderId) {
+    Swal.fire({
+      title: 'Mark as Completed?',
+      text: "This order will be marked as completed.",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, complete it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById(`completeForm-${orderId}`).submit();
+      }
+    });
+  }
+  function confirmReadyToPickup(orderId) {
+  Swal.fire({
+    title: 'Ready for Pickup?',
+    text: "This order will be marked as 'Ready to Pickup'.",
+    icon: 'info',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, mark it!',
+    cancelButtonText: 'Cancel'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      document.getElementById(`readyForm-${orderId}`).submit();
+    }
+  });
+}
+    const rowsPerPage = 10;
+  let currentPage = 1;
+
+  const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
+  const searchInput = document.getElementById("searchInput");
+  const statusFilter = document.getElementById("statusFilter");
+  const pagination = document.getElementById("pagination");
+
+  function filterRows() {
+    const searchValue = searchInput.value.toLowerCase();
+    const statusValue = statusFilter.value.toLowerCase();
+
+    return rows.filter(row => {
+      const text = row.innerText.toLowerCase();
+      const matchesSearch = text.includes(searchValue);
+
+      const statusText = row.querySelector("td:nth-child(10)")?.innerText.trim().toLowerCase();
+      const matchesStatus = !statusValue || statusText === statusValue;
+
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  function renderTable() {
+    const filteredRows = filterRows();
+    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    rows.forEach(row => row.style.display = "none");
+    filteredRows.slice(start, end).forEach(row => row.style.display = "");
+
+    renderPagination(totalPages);
+  }
+
+  function renderPagination(totalPages) {
+    pagination.innerHTML = "";
+
+    for (let i = 1; i <= totalPages; i++) {
+      const li = document.createElement("li");
+      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+      li.addEventListener("click", e => {
+        e.preventDefault();
+        currentPage = i;
+        renderTable();
+      });
+      pagination.appendChild(li);
+    }
+  }
+
+  // Events
+  searchInput.addEventListener("input", () => {
+    currentPage = 1;
+    renderTable();
+  });
+
+  statusFilter.addEventListener("change", () => {
+    currentPage = 1;
+    renderTable();
+  });
+
+  // Initial
+  renderTable();
+</script>
+</body>
+</html>

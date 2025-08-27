@@ -1,0 +1,111 @@
+      body {
+        background-color: #e6e6f0;
+        font-family: 'Poppins', sans-serif;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background-color: #f8f9fa;
+        padding: 10px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .sidebar img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 20px 0;
+      }
+
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+      }
+
+      .sidebar nav a {
+        padding: 10px 20px;
+        color: #000;
+        text-decoration: none;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: background 0.3s ease, color 0.3s ease;
+        width: 90%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .sidebar nav a:hover,
+      .sidebar nav a.active {
+        background: linear-gradient(90deg, #03C4E7, #0047FF);
+        color: #fff;
+      }
+
+      .main-content {
+        margin-left: 250px;
+        padding: 20px;
+      }
+
+      .navbar-custom-wrapper {
+        margin-left: 250px;
+        padding: 3px 40px;
+        position: sticky;
+        top: 0;
+        z-index: 999;
+      }
+
+      .btn-primary {
+        background: linear-gradient(90deg, #03C4E7, #0047FF);
+        border: none;
+      }
+
+      .btn-primary:hover {
+        opacity: 0.9;
+      }
+
+      .offcanvas-backdrop.show {
+        opacity: 0 !important;
+      }
+
+      .btn-disabled {
+        pointer-events: none;
+        opacity: 0.5;
+      }
+
+      .navbar-custom {
+        background-color: #ffffff;
+        border-bottom-left-radius: 20px;
+        border-bottom-right-radius: 20px;
+        width: 95%;
+        max-width: 1200px;
+        padding: 0.5rem 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+     h3 span {
+       background-image: linear-gradient(to right, #03C4E7, #0047FF);
+       -webkit-background-clip: text;
+       -webkit-text-fill-color: transparent;
+       background-clip: text;
+       font-weight: bold;
+    }
+
+
