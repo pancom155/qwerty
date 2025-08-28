@@ -96,6 +96,7 @@
             <a href="#" class="text-primary text-decoration-none" id="forgotPasswordLink">Forgot password?</a>
           </div>
 
+        
           <div class="mb-3 d-flex justify-content-center">
        
             <div class="g-recaptcha" data-sitekey="6LcwvLQrAAAAACQf9w5tA5nzUmr3cNO9646yWjfK"></div>
@@ -107,7 +108,7 @@
         </form>
 
         <div class="text-center mt-3">
-          <p class="mb-0">Don't have an account?. <a href="/register" class="text-primary text-decoration-none">Sign up</a></p>
+          <p class="mb-0">Don't have an account? <a href="/register" class="text-primary text-decoration-none">Sign up</a></p>
         </div>
       </div>
     </div>
@@ -159,7 +160,6 @@ function togglePassword(passwordId, iconId) {
 </script>
 
 <script>
-// Add this script to your login.ejs
 document.querySelector('form').addEventListener('submit', function(e) {
     const recaptchaResponse = grecaptcha.getResponse();
     if (!recaptchaResponse) {
@@ -174,9 +174,25 @@ document.querySelector('form').addEventListener('submit', function(e) {
 
 document.getElementById('forgotPasswordLink').addEventListener('click', () => {
   Swal.fire({
-    title: 'Forgot Password',
-    html: `<input type="email" id="otpEmail" class="form-control" placeholder="Enter your email" required>`,
-    confirmButtonText: 'Send OTP',
+    title: '<i class="fas fa-key text-primary"></i> Forgot Password',
+    imageUrl: '/images/napslogo.png',
+    imageWidth: 100,
+    imageAlt: "Nap's Logo",
+    html: `
+      <div class="input-group" style="margin: 6px 0;">
+        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+        <input type="email" id="otpEmail" class="form-control" placeholder="Enter your email" required>
+      </div>
+      <p class="text-muted mb-0" style="font-size: 13px; margin-top: 4px;">
+        We'll send an OTP to your email for password reset.
+      </p>
+    `,
+    confirmButtonText: '<i class="fas fa-paper-plane"></i> Send OTP',
+    confirmButtonColor: '#0d6efd',
+    customClass: {
+      title: 'swal2-title-sm',
+      htmlContainer: 'swal2-text-sm'
+    },
     preConfirm: async () => {
       const email = document.getElementById('otpEmail').value;
       const res = await fetch('/forgot-password', {
@@ -201,15 +217,59 @@ document.getElementById('forgotPasswordLink').addEventListener('click', () => {
 
 function showOtpModal(email) {
   Swal.fire({
-    title: 'Enter OTP',
+    title: '<i class="fas fa-shield-alt text-primary"></i> Verify OTP',
+    imageUrl: '/images/napslogo.png',
+    imageWidth: 80,
+    imageAlt: "Nap\'s Logo",
     html: `
       <input type="hidden" id="otpEmailHidden" value="${email}">
-      <input type="text" id="otpCode" class="form-control my-2" placeholder="Enter OTP" required>
+      <div id="otpInputs" style="display: flex; justify-content: center; gap: 10px; margin: 10px 0;">
+        ${Array(6).fill(0).map((_, i) => `
+          <input type="text" maxlength="1" class="otp-digit" id="otpDigit${i}" 
+            style="width: 42px; height: 42px; text-align: center; font-size: 18px; 
+                   border-radius: 8px; border: 2px solid #0d6efd; color: #0d6efd; 
+                   font-weight: bold;">
+        `).join('')}
+      </div>
+      <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
+        Enter the 6-digit OTP sent to your email.
+      </p>
     `,
-    confirmButtonText: 'Verify OTP',
+    confirmButtonText: '<i class="fas fa-check"></i> Verify OTP',
+    confirmButtonColor: '#0d6efd',
+
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCloseButton: false,
+
+    didOpen: () => {
+      const inputs = document.querySelectorAll('.otp-digit');
+      inputs[0].focus();
+
+      inputs.forEach((input, idx) => {
+        input.addEventListener('input', () => {
+          if (input.value.length === 1 && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === "Backspace" && !input.value && idx > 0) {
+            inputs[idx - 1].focus();
+          }
+        });
+      });
+    },
+
     preConfirm: async () => {
-      const otp = document.getElementById('otpCode').value;
+      const otp = Array.from(document.querySelectorAll('.otp-digit'))
+                       .map(input => input.value).join('');
       const email = document.getElementById('otpEmailHidden').value;
+
+      if (otp.length !== 6) {
+        Swal.showValidationMessage('Please enter the complete 6-digit OTP.');
+        return;
+      }
 
       const res = await fetch('/verify-forgot-otp', {
         method: 'POST',
@@ -218,7 +278,6 @@ function showOtpModal(email) {
       });
 
       const data = await res.json();
-
       if (!data.success) {
         Swal.showValidationMessage(data.message || 'Invalid or expired OTP.');
       } else {
@@ -230,15 +289,80 @@ function showOtpModal(email) {
 
 function showResetModal(email) {
   Swal.fire({
-    title: 'Reset Password',
+    title: '<i class="fas fa-lock text-warning"></i> Reset Password',
+    imageUrl: '/images/napslogo.png',
+    imageWidth: 80,
+    imageAlt: "Nap\'s Logo",
     html: `
-      <input type="password" id="newPass" class="form-control my-2" placeholder="New Password">
-      <input type="password" id="confirmPass" class="form-control my-2" placeholder="Confirm Password">
+      <!-- New Password -->
+      <div class="input-group my-2">
+        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+        <input type="password" id="newPass" class="form-control" placeholder="New Password">
+        <span class="input-group-text password-toggle" onclick="togglePassword('newPass','eyeNew')">
+          <i id="eyeNew" class="fas fa-eye"></i>
+        </span>
+      </div>
+
+      <!-- Confirm Password -->
+      <div class="input-group my-2">
+        <span class="input-group-text"><i class="fas fa-lock"></i></span>
+        <input type="password" id="confirmPass" class="form-control" placeholder="Confirm Password">
+        <span class="input-group-text password-toggle" onclick="togglePassword('confirmPass','eyeConfirm')">
+          <i id="eyeConfirm" class="fas fa-eye"></i>
+        </span>
+      </div>
+
+      <!-- Password Helper -->
+      <div id="passwordHelper" class="mt-2 text-start small" style="display:none;">
+        <p id="length" class="mb-1 text-danger">• At least 8 characters</p>
+        <p id="uppercase" class="mb-1 text-danger">• At least one uppercase letter</p>
+        <p id="lowercase" class="mb-1 text-danger">• At least one lowercase letter</p>
+        <p id="number" class="mb-1 text-danger">• At least one number</p>
+        <p id="special" class="mb-1 text-danger">• At least one special character (!@#$%^&* or _)</p>
+      </div>
     `,
-    confirmButtonText: 'Update Password',
+    confirmButtonText: '<i class="fas fa-save"></i> Update Password',
+    confirmButtonColor: '#0d6efd',
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCloseButton: false,
+
+    didOpen: () => {
+      const newPass = document.getElementById('newPass');
+      const helper = document.getElementById('passwordHelper');
+
+      const checkRules = () => {
+        helper.style.display = newPass.value ? 'block' : 'none';
+
+        const rules = {
+          length: newPass.value.length >= 8,
+          uppercase: /[A-Z]/.test(newPass.value),
+          lowercase: /[a-z]/.test(newPass.value),
+          number: /\d/.test(newPass.value),
+          special: /[!@#$%^&*_]/.test(newPass.value)
+        };
+
+        for (const [id, valid] of Object.entries(rules)) {
+          document.getElementById(id).className =
+            valid ? "mb-1 text-success" : "mb-1 text-danger";
+        }
+
+        return Object.values(rules).every(Boolean);
+      };
+
+      newPass.addEventListener('input', checkRules);
+
+      Swal.checkPasswordRules = checkRules;
+    },
+
     preConfirm: async () => {
       const password = document.getElementById('newPass').value;
       const confirm = document.getElementById('confirmPass').value;
+
+      if (!Swal.checkPasswordRules()) {
+        Swal.showValidationMessage("Please follow all password requirements.");
+        return;
+      }
 
       if (password !== confirm) {
         Swal.showValidationMessage("Passwords do not match.");
@@ -256,12 +380,36 @@ function showResetModal(email) {
       if (!data.success) {
         Swal.showValidationMessage(data.message || 'Failed to reset.');
       } else {
-        Swal.fire('Success', 'Your password has been updated.', 'success').then(() => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Password Updated!',
+          imageUrl: '/images/napslogo.png',
+          imageWidth: 80,
+          imageAlt: "Nap\'s Logo",
+          text: 'Your password has been changed successfully.',
+          confirmButtonText: '<i class="fas fa-sign-in-alt"></i> Go to Login',
+          confirmButtonColor: '#0d6efd'
+        }).then(() => {
           location.href = '/login';
         });
       }
     }
   });
+}
+
+function togglePassword(fieldId, eyeId) {
+  const field = document.getElementById(fieldId);
+  const eye = document.getElementById(eyeId);
+
+  if (field.type === "password") {
+    field.type = "text";
+    eye.classList.remove("fa-eye");
+    eye.classList.add("fa-eye-slash");
+  } else {
+    field.type = "password";
+    eye.classList.remove("fa-eye-slash");
+    eye.classList.add("fa-eye");
+  }
 }
 </script>
 

@@ -34,7 +34,6 @@
       color: #dc3545 !important;
       border: 1px solid #ffffff !important;
     }
-    /* Modal Styling */
     .modal-content {
       border-radius: 12px;
       padding: 20px;
@@ -62,6 +61,33 @@
       background: linear-gradient(to right, #03C4E7, #0047FF);
       color: white;
       transition: 0.3s;
+    }
+    .otp-logo {
+      width: 100px;
+      margin-bottom: 10px;
+    }
+    .otp-heading {
+      font-weight: bold;
+      color: #0066FF;
+    }
+    .otp-subtext {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .otp-input {
+      letter-spacing: 10px;
+      font-weight: bold;
+      font-size: 1.5rem;
+      text-align: center;
+    }
+    .btn-primary-theme {
+      background: linear-gradient(to right, #00ADEF, #0066FF);
+      color: white;
+      border: none;
+    }
+    .btn-primary-theme:hover {
+      background: #0056b3;
+      color: #fff;
     }
   </style>
 </head>
@@ -101,38 +127,50 @@
 
           <div class="row">
             <div class="col">
-                        <div class="mb-3 input-group">
-            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-            <input type="email" name="email" class="form-control" placeholder="Email" required>
-          </div>
+              <div class="mb-3 input-group">
+                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                <input type="email" name="email" class="form-control" placeholder="Email" required>
+              </div>
             </div>
             <div class="col">
-                          <div class="mb-3 input-group">
-            <span class="input-group-text"><i class="fas fa-phone"></i></span>
-            <input type="text" name="contactNo" class="form-control" placeholder="Contact Number" required>
-          </div> 
+              <div class="mb-3 input-group">
+                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                <input type="text" name="contactNo" class="form-control" placeholder="Contact Number" required>
+              </div> 
             </div>
           </div>
-
-            <div class="mb-3 input-group">
+          <div class="mb-3 input-group">
             <span class="input-group-text"><i class="fas fa-home"></i></span>
             <input type="text" name="address" class="form-control" placeholder="Address" required>
           </div>
 
           <div class="row mb-3">
-            <div class="col input-group">
-              <span class="input-group-text"><i class="fas fa-lock"></i></span>
-              <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
-              <span class="input-group-text password-toggle" onclick="togglePassword('password', 'togglePasswordIcon1')">
-                <i id="togglePasswordIcon1" class="fas fa-eye"></i>
-              </span>
+            <div class="col-md-6">
+              <div class="input-group mb-2">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+                <span class="input-group-text password-toggle" onclick="togglePassword('password', 'togglePasswordIcon1')">
+                  <i id="togglePasswordIcon1" class="fas fa-eye"></i>
+                </span>
+              </div>
+
+              <div id="passwordHelper" class="small text-muted" style="display: none;">
+                <p id="length" class="mb-1">At least 8 characters</p>
+                <p id="uppercase" class="mb-1">At least one uppercase letter</p>
+                <p id="lowercase" class="mb-1">At least one lowercase letter</p>
+                <p id="number" class="mb-1">At least one number</p>
+                <p id="special" class="mb-1">At least one special character</p>
+              </div>
             </div>
-            <div class="col input-group">
-              <span class="input-group-text"><i class="fas fa-lock"></i></span>
-              <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password" required>
-              <span class="input-group-text password-toggle" onclick="togglePassword('confirmPassword', 'togglePasswordIcon2')">
-                <i id="togglePasswordIcon2" class="fas fa-eye"></i>
-              </span>
+
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Confirm Password" required>
+                <span class="input-group-text password-toggle" onclick="togglePassword('confirmPassword', 'togglePasswordIcon2')">
+                  <i id="togglePasswordIcon2" class="fas fa-eye"></i>
+                </span>
+              </div>
             </div>
           </div>
 
@@ -157,7 +195,6 @@
   </div>
 </div>
 
-<!-- Terms & Privacy Modal -->
 <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-center">
@@ -191,75 +228,97 @@
 </div>
 
 <% if (showOTP) { %>
-  <script>
-    Swal.fire({
-      title: 'Verify Your Email',
-      html: `
-        <form id="otpForm" class="text-start">
-          <input type="hidden" id="otpEmail" value="<%= email %>"/>
-          <label for="otpInput" class="form-label">Enter the 6-digit OTP sent to your email</label>
-          <input type="text" id="otpInput" class="form-control mb-2" placeholder="Enter OTP" maxlength="6" required />
-          <div class="d-grid">
-            <button type="submit" class="btn btn-success mt-2">Verify OTP</button>
-            <button type="button" id="resendOtp" class="btn btn-link mt-2">Resend OTP</button>
-          </div>
-        </form>
-      `,
-      showConfirmButton: false,
-      allowOutsideClick: false,
-      didOpen: () => {
-        const otpForm = document.getElementById('otpForm');
-        const resendBtn = document.getElementById('resendOtp');
+<script>
+  Swal.fire({
+    title: `
+      <img src="/images/napslogo.png" alt="Logo" class="otp-logo"/>
+    `,
+    html: `
+     <div class="otp-heading fs-3 mb-3">Verify Your Email</div>
+      <p class="otp-subtext mb-3">
+        We’ve sent a 6-digit verification code to your registered email.  
+        Please enter it below to complete your registration.
+      </p>
+      <form id="otpForm" class="text-start">
+        <input type="hidden" id="otpEmail" value="<%= email %>"/>
+        <input type="text" id="otpInput" 
+          class="form-control mb-3 otp-input" 
+          placeholder="000000" maxlength="6" required/>
+        <div class="d-grid gap-2 mt-2">
+          <button type="submit" class="btn btn-primary-theme btn-lg">Verify OTP</button>
+          <button type="button" id="resendOtp" class="btn btn-outline-primary btn-lg" disabled>
+            Resend OTP (<span id="timer">05:00</span>)
+          </button>
+        </div>
+      </form>
+    `,
+    showConfirmButton: false,
+    allowOutsideClick: false,
+    didOpen: () => {
+      const otpForm = document.getElementById('otpForm');
+      const resendBtn = document.getElementById('resendOtp');
+      const timerSpan = document.getElementById('timer');
 
-        otpForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const email = document.getElementById('otpEmail').value;
-          const otp = document.getElementById('otpInput').value;
+      let countdown = 300;
+      const timerInterval = setInterval(() => {
+        if (countdown <= 0) {
+          clearInterval(timerInterval);
+          resendBtn.disabled = false;
+          resendBtn.innerHTML = 'Resend OTP';
+        } else {
+          const minutes = String(Math.floor(countdown / 60)).padStart(2, '0');
+          const seconds = String(countdown % 60).padStart(2, '0');
+          timerSpan.textContent = `${minutes}:${seconds}`;
+          countdown--;
+        }
+      }, 1000);
 
-          try {
-            const res = await fetch('/verify-otp', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, otp })
-            });
+      otpForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('otpEmail').value;
+        const otp = document.getElementById('otpInput').value;
 
-            const result = await res.json();
-
-            if (result.success) {
-              Swal.fire('Verified!', 'Your email has been verified.', 'success')
-                .then(() => window.location.href = '/login');
-            } else {
-              Swal.fire('Invalid OTP', result.message || 'The OTP is incorrect or expired.', 'error');
-            }
-          } catch (err) {
-            Swal.fire('Error', 'Something went wrong while verifying OTP.', 'error');
+        try {
+          const res = await fetch('/verify-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, otp })
+          });
+          const result = await res.json();
+          if (result.success) {
+            Swal.fire('Verified!', 'Your email has been verified.', 'success')
+              .then(() => window.location.href = '/login');
+          } else {
+            Swal.fire('Invalid OTP', result.message || 'The OTP is incorrect or expired.', 'error');
           }
-        });
+        } catch (err) {
+          Swal.fire('Error', 'Something went wrong while verifying OTP.', 'error');
+        }
+      });
 
-        resendBtn.addEventListener('click', async () => {
+      resendBtn.addEventListener('click', async () => {
+        resendBtn.disabled = true;
+        countdown = 300;
+        try {
           const email = document.getElementById('otpEmail').value;
-
-          try {
-            const res = await fetch('/resend-otp', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email })
-            });
-
-            const result = await res.json();
-
-            if (result.success) {
-              Swal.fire('OTP Sent', 'A new OTP has been sent to your email.', 'success');
-            } else {
-              Swal.fire('Failed', result.message || 'Could not resend OTP.', 'error');
-            }
-          } catch (err) {
-            Swal.fire('Error', 'Something went wrong while resending OTP.', 'error');
+          const res = await fetch('/resend-otp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const result = await res.json();
+          if (result.success) {
+            Swal.fire('OTP Sent', 'A new OTP has been sent to your email.', 'success');
+          } else {
+            Swal.fire('Failed', result.message || 'Could not resend OTP.', 'error');
           }
-        });
-      }
-    });
-  </script>
+        } catch (err) {
+          Swal.fire('Error', 'Something went wrong while resending OTP.', 'error');
+        }
+      });
+    }
+  });
+</script>
 <% } %>
 
 <script>
@@ -279,6 +338,43 @@
 
   document.getElementById("agreeButton")?.addEventListener("click", function () {
     document.getElementById("termsCheckbox").checked = true;
+  });
+</script>
+
+<script>
+  const passwordInput = document.getElementById("password");
+  const passwordHelper = document.getElementById("passwordHelper");
+
+  const lengthReq = document.getElementById("length");
+  const upperReq = document.getElementById("uppercase");
+  const lowerReq = document.getElementById("lowercase");
+  const numberReq = document.getElementById("number");
+  const specialReq = document.getElementById("special");
+
+  passwordInput.addEventListener("input", () => {
+    const value = passwordInput.value;
+    passwordHelper.style.display = value.length > 0 ? "block" : "none";
+    lengthReq.style.color = value.length >= 8 ? "green" : "red";
+    upperReq.style.color = /[A-Z]/.test(value) ? "green" : "red";
+    lowerReq.style.color = /[a-z]/.test(value) ? "green" : "red";
+    numberReq.style.color = /\d/.test(value) ? "green" : "red";
+    specialReq.style.color = /[!@#$%^&*(),.?":{}|<>_]/.test(value) ? "green" : "red";
+  });
+
+  const form = document.querySelector("form");
+  form.addEventListener("submit", (e) => {
+    const value = passwordInput.value;
+    const valid =
+      value.length >= 8 &&
+      /[A-Z]/.test(value) &&
+      /[a-z]/.test(value) &&
+      /\d/.test(value) &&
+      /[!@#$%^&*(),.?":{}|<>_]/.test(value);
+
+    if (!valid) {
+      e.preventDefault();
+      Swal.fire("Weak Password", "Please create a stronger password before continuing.", "warning");
+    }
   });
 </script>
 

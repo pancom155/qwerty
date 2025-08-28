@@ -344,9 +344,16 @@ html{
   background: linear-gradient(90deg, #0047FF, #03C4E7);
   transform: translateY(-2px);
 }
+.modal-body img {
+  transition: transform 0.3s;
+}
+.modal-body img:hover {
+  transform: scale(1.05);
+}
 
-/* 📱 Responsive Media Queries */
+/* Large tablets / small desktops */
 @media (max-width: 992px) {
+  /* Hero Text */
   .hero-text h1,
   .hero-text p,
   .highlightss {
@@ -354,12 +361,14 @@ html{
     text-align: center;
   }
 
+  /* Table Cards */
   .table-card {
     width: 200px;
     height: auto;
     margin-bottom: 20px;
   }
 
+  /* Dishes Section */
   #Dishes .Dish_box {
     flex-wrap: wrap;
     gap: 20px;
@@ -375,12 +384,56 @@ html{
     width: 200px;
     height: 200px;
   }
+
+  /* Reviews Container */
+  .reviews-container {
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 10px;
+  }
+
+  .reviews-container .review-card {
+    display: inline-block;
+    margin-right: 15px;
+    vertical-align: top;
+  }
 }
 
+/* Tablets / large phones */
 @media (max-width: 768px) {
   .navbar {
     margin: 10px;
     border-radius: 20px;
+    position: relative;
+  }
+
+  /* Hamburger Button */
+  .navbar .burger-btn {
+    display: block;
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    cursor: pointer;
+    font-size: 28px;
+    color: #000;
+    z-index: 1000;
+  }
+
+  .navbar .nav-links {
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    position: absolute;
+    top: 60px;
+    right: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .navbar .nav-links.active {
+    display: flex;
   }
 
   .hero-text h1,
@@ -388,16 +441,19 @@ html{
     font-size: 22px;
   }
 
+  /* Table Cards */
   .table-card {
     width: 100%;
     max-width: 300px;
   }
 
+  /* Modal */
   .modal-content {
     width: 95%;
     margin: 20% auto;
   }
 
+  /* Buttons Full Width */
   .reserve-btn,
   .offer_btn,
   .gradient-btn {
@@ -406,6 +462,7 @@ html{
   }
 }
 
+/* Mobile phones */
 @media (max-width: 576px) {
   .hero-text h1,
   .hero-text p,
@@ -413,6 +470,7 @@ html{
     font-size: 20px;
   }
 
+  /* Table Text */
   .table-name {
     font-size: 18px;
   }
@@ -422,6 +480,7 @@ html{
     font-size: 14px;
   }
 
+  /* Dishes Section */
   #Dishes .Dish_box {
     flex-direction: column;
     top: 0;
@@ -436,8 +495,18 @@ html{
     width: 180px;
     height: 180px;
   }
-}
 
+  /* Reviews */
+  .reviews-container {
+    overflow-x: auto;
+    padding-bottom: 10px;
+  }
+
+  .reviews-container .review-card {
+    display: inline-block;
+    margin-right: 10px;
+  }
+}
 </style>
 
 <body>
@@ -562,45 +631,156 @@ html{
             </div>
         </div>
     </section>
+ <section class="tables py-5" id="Tables">
+  <div class="container">
+    <h1 class="text-center mb-4 fw-bold" style="font-size: 35px;">
+      Available <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tables</span>
+    </h1>
 
-  <div class="team" id="Dishes">
-       <h1 class="text-center mb-5 fw-bold" style="font-size: 35px;">Our Special <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Dishes</span></h1>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  <% tables.forEach(table => { %>
+    <div class="col d-flex">
+      <div class="card shadow-lg border-0 rounded-4 w-100 hover-shadow" style="transition: transform 0.3s;">
+        
+        <!-- Table Image -->
+        <img src="/uploads/<%= table.image %>" class="card-img-top rounded-top-4" 
+             alt="<%= table.name %>" style="height:220px; object-fit:cover; cursor:pointer;"
+             data-bs-toggle="modal" data-bs-target="#imageModal<%= table._id %>">
 
-      <div class="Dish_box">
-          <div class="profile">
-              <img src="/images/sisig.jpg">
-              <div class="info">
-                  <h2 class="name">Sisig</h2>
-                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
-              </div>
+        <!-- Table Details -->
+        <div class="card-body d-flex flex-column justify-content-between">
+          <div class="text-center">
+            <h5 class="card-title fw-bold text-primary"><%= table.name %></h5>
+            <hr class="mx-auto" style="width:50px; border-top:2px solid #03C4E7;">
+            <p class="text-muted small mt-3 mb-2"><%= table.description %></p>
+            <p class="fw-bold text-success mb-1">₱<%= table.price.toFixed(2) %></p>
+            
+            <% if (table.reservation_fee !== undefined) { %>
+              <p class="fw-semibold text-primary mb-3">Reservation Fee: ₱<%= parseFloat(table.reservation_fee).toFixed(2) %></p>
+            <% } else { %>
+              <p class="fw-semibold text-secondary mb-3">No Reservation Fee</p>
+            <% } %>
           </div>
 
-          <div class="profile">
-              <img src="/images/adobo.jpg">
-              <div class="info">
-                  <h2 class="name">Adobo</h2>
-                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
-              </div>
+          <!-- Footer with Pax and Book Now -->
+          <div class="d-flex justify-content-between align-items-center mt-3">
+            <p class="mb-0"><i class="bi bi-people-fill"></i> <strong><%= table.pax %></strong> Pax</p>
+            <!-- Redirect to login page -->
+            <a href="/login" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
+              <i class="bi bi-calendar-check"></i> Book Now
+            </a>
           </div>
-
-          <div class="profile">
-              <img src="/images/sinigang.webp">
-              <div class="info">
-                  <h2 class="name">Sinigang</h2>
-                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
-              </div>
-          </div>
-
-          <div class="profile">
-              <img src="/images/kaldereta.jpg">
-              <div class="info">
-                  <h2 class="name">Kaldereta</h2>
-                  <a href="/login" class="offer_btn"><i class="bi bi-cart"></i> Order Now</a>
-              </div>
-          </div>
+        </div>
       </div>
+    </div>
+  <% }) %>
+</div>
+
+  </div>
+  <% tables.forEach(table => { %>
+  <!-- Modal for full image -->
+  <div class="modal fade" id="imageModal<%= table._id %>" tabindex="-1" aria-labelledby="imageModalLabel<%= table._id %>" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 rounded-4">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="imageModalLabel<%= table._id %>"><%= table.name %></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img src="/uploads/<%= table.image %>" alt="<%= table.name %>" class="img-fluid rounded">
+        </div>
+      </div>
+    </div>
+  </div>
+<% }) %>
+
+</section>
+
+
+<section class="team py-5" id="Dishes">
+  <div class="container">
+
+ 
+    <h1 class="text-center mb-4 fw-bold" style="font-size: 35px;">
+      Our Special 
+      <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); 
+                  -webkit-background-clip: text; 
+                  -webkit-text-fill-color: transparent; 
+                  background-clip: text;">
+        Dishes
+      </span>
+    </h1>
+
+
+    <div class="text-center mb-5">
+      <button class="btn btn-outline-primary me-2 filter-btn active" data-filter="all">All</button>
+      <button class="btn btn-outline-info me-2 filter-btn" data-filter="seafood">Seafood</button>
+      <button class="btn btn-outline-warning me-2 filter-btn" data-filter="appetizer">Appetizer</button>
+      <button class="btn btn-outline-danger me-2 filter-btn" data-filter="meat">Meat</button>
+      <button class="btn btn-outline-success me-2 filter-btn" data-filter="vegetable">Vegetable</button>
+      <button class="btn btn-outline-secondary me-2 filter-btn" data-filter="dessert">Dessert</button>
+      <button class="btn btn-outline-dark me-2 filter-btn" data-filter="beverage">Beverage</button>
+    </div>
+
+    <div class="row g-4" id="productGrid">
+      <% products.forEach(product => { %>
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item" 
+             data-category="<%= product.category.toLowerCase() %>">
+          <div class="card h-100 shadow-sm border-0 rounded-4">
+
+        
+            <img src="/uploads/<%= product.image %>" 
+                 class="card-img-top rounded-top-4" 
+                 alt="<%= product.name %>" 
+                 style="height:200px; object-fit:cover;">
+
+    
+            <div class="card-body d-flex flex-column">
+              <h6 class="card-title fw-bold text-dark"><%= product.name %></h6>
+              <p class="card-text text-muted small mb-2"><%= product.description %></p>
+
+         
+              <span class="badge 
+                <% if (product.category === 'seafood') { %> bg-info-subtle text-info 
+                <% } else if (product.category === 'appetizer') { %> bg-warning-subtle text-warning 
+                <% } else if (product.category === 'meat') { %> bg-danger-subtle text-danger 
+                <% } else if (product.category === 'vegetable') { %> bg-success-subtle text-success 
+                <% } else if (product.category === 'desert') { %> bg-pink-subtle text-pink 
+                <% } else if (product.category === 'beverage') { %> bg-primary-subtle text-primary 
+                <% } else { %> bg-secondary-subtle text-secondary <% } %>
+                rounded-pill mb-2">
+                <%= product.category %>
+              </span>
+
+     
+              <p class="fw-bold text-primary mb-3">₱<%= product.price.toFixed(2) %></p>
+
+     
+              <form action="/cart/add" method="POST" class="mt-auto">
+                <input type="hidden" name="productId" value="<%= product._id %>">
+                <button type="submit" class="btn btn-primary w-100 rounded-pill">
+                  <i class="bi bi-cart-plus"></i> Order Now
+                </button>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      <% }) %>
+    </div>
+
+
+    <div id="noResultsMessage" 
+         class="text-center mt-5 text-muted fw-semibold" 
+         style="display: none;">
+      <i class="bi bi-emoji-frown" style="font-size: 2rem;"></i><br>
+      No products found matching your criteria.
+    </div>
+
   </div>
 
+</section>
+  <br><br><br><br><br><br><br><br><br>
 
 <section class="container mb-5" id="reviews">
     <h1 class="text-center mb-5 fw-bold" style="font-size: 35px;">Customer <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Reviews</span></h1>
@@ -804,6 +984,37 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+
+ document.addEventListener("DOMContentLoaded", () => {
+    const filterButtons = document.querySelectorAll(".filter-btn");
+    const products = document.querySelectorAll(".product-item");
+    const noResultsMessage = document.getElementById("noResultsMessage");
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        // remove active state
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+
+        const filter = btn.getAttribute("data-filter");
+        let visibleCount = 0;
+
+        products.forEach(product => {
+          const category = product.getAttribute("data-category");
+          if (filter === "all" || category === filter) {
+            product.style.display = "block";
+            visibleCount++;
+          } else {
+            product.style.display = "none";
+          }
+        });
+
+        // show no results message if none visible
+        noResultsMessage.style.display = visibleCount === 0 ? "block" : "none";
+      });
+    });
+  });
 </script>
 </body>
 </html>
