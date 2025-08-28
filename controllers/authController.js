@@ -19,30 +19,34 @@ const { generateOtp, sendOtpEmail } = require('../middleware/emailService');
 
 exports.getIndexPage = async (req, res) => {
   try {
-    // Get latest 6 reviews
+    // ✅ Get latest 6 reviews with user and order details
     const reviews = await Review.find()
       .sort({ createdAt: -1 })
       .limit(6)
       .populate({
         path: 'userId',
-        select: 'firstname lastname email'
+        select: 'firstname lastname email' // adjust according to User schema
       })
       .populate({
         path: 'orderId',
-        strictPopulate: false // ✅ avoids strictPopulate error
+        populate: {
+          path: 'items.productId',
+          model: 'Product',
+          select: 'name image'
+        }
       });
 
-    // Get all products
+    // ✅ Get all products
     const products = await Product.find();
 
-    // Get all tables
+    // ✅ Get all tables
     const tables = await Table.find();
 
-    // Render index page with all data
+    // ✅ Render index page with all data
     res.render('index', {
       reviews,
       products,
-      tables,  // ✅ now available in EJS
+      tables, // now available in EJS
       user: req.session.user || null
     });
   } catch (err) {
@@ -50,6 +54,7 @@ exports.getIndexPage = async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 };
+
 
 exports.getLogin = (req, res) => {
   const success = req.query.registered === '1';
