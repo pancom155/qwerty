@@ -344,6 +344,100 @@ html{
   background: linear-gradient(90deg, #0047FF, #03C4E7);
   transform: translateY(-2px);
 }
+
+/* 📱 Responsive Media Queries */
+@media (max-width: 992px) {
+  .hero-text h1,
+  .hero-text p,
+  .highlightss {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .table-card {
+    width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  #Dishes .Dish_box {
+    flex-wrap: wrap;
+    gap: 20px;
+    top: 5%;
+  }
+
+  #Dishes .Dish_box .profile {
+    width: 260px;
+    height: 260px;
+  }
+
+  #Dishes .Dish_box .profile img {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    margin: 10px;
+    border-radius: 20px;
+  }
+
+  .hero-text h1,
+  .hero-text p {
+    font-size: 22px;
+  }
+
+  .table-card {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .modal-content {
+    width: 95%;
+    margin: 20% auto;
+  }
+
+  .reserve-btn,
+  .offer_btn,
+  .gradient-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-text h1,
+  .hero-text p,
+  .highlightss {
+    font-size: 20px;
+  }
+
+  .table-name {
+    font-size: 18px;
+  }
+
+  .table-price,
+  .table-pax {
+    font-size: 14px;
+  }
+
+  #Dishes .Dish_box {
+    flex-direction: column;
+    top: 0;
+  }
+
+  #Dishes .Dish_box .profile {
+    width: 220px;
+    height: 220px;
+  }
+
+  #Dishes .Dish_box .profile img {
+    width: 180px;
+    height: 180px;
+  }
+}
+
 </style>
 
 <body>

@@ -248,3 +248,50 @@ exports.readyToPickupOrder = async (req, res) => {
     res.redirect('/staff/order');
   }
 };
+
+
+// ✅ Render calendar page
+exports.renderCalendarPage = async (req, res) => {
+  try {
+    res.render('staff/calendar', {
+      user: req.session.user
+    });
+  } catch (err) {
+    console.error('Error rendering calendar:', err);
+    res.render('staff/calendar', { user: req.session.user });
+  }
+};
+
+exports.getCalendarEvents = async (req, res) => {
+  try {
+    const reservations = await Reservation.find({
+      status: { $in: ['pending', 'confirmed'] }
+    })
+      .populate('tableId', 'name')
+      .populate('userId', 'firstname lastname email mobile') // populate user info if needed
+      .lean();
+
+    const events = reservations.map(r => ({
+      id: r._id,
+      title: `Reservation - ${r.tableId?.name || 'Table'} (${r.fullName})`,
+      start: r.dineInDateTime,
+      color: r.status === 'confirmed' ? '#28a745' : '#ffc107',
+      extendedProps: {  // ✅ additional info for modal
+        fullName: r.fullName,
+        email: r.email,
+        phone: r.phone,
+        table: r.tableId?.name,
+        refNo: r.referenceNumber,
+        price: r.totalPrice,
+        fee: r.reservation_fee,
+        status: r.status,
+        proof: r.proofOfPayment
+      }
+    }));
+
+    res.json(events);
+  } catch (err) {
+    console.error('Error fetching events:', err);
+    res.status(500).json({ error: 'Failed to fetch events' });
+  }
+};

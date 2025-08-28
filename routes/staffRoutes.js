@@ -19,4 +19,8 @@ router.post('/orders/reject/:id', checkStaffAuth, staffController.rejectOrder);
 router.post('/orders/complete/:id', staffController.completeOrder);
 router.post('/orders/ready/:id', checkStaffAuth, staffController.readyToPickupOrder);
 
+
+router.get('/calendar', checkStaffAuth, staffController.renderCalendarPage);
+
+router.get('/calendar/events', staffController.getCalendarEvents);
 module.exports = router;

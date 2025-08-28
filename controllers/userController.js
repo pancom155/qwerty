@@ -529,7 +529,6 @@ exports.renderOrdersPage = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
-
 exports.getReviewsPage = async (req, res) => {
   try {
     if (!req.session.user || !req.session.user._id) {
@@ -537,15 +536,19 @@ exports.getReviewsPage = async (req, res) => {
     }
 
     const userId = req.session.user._id;
-    const user = req.session.user; 
+
+    // Fetch full user with profileImage and other fields
+    const user = await User.findById(userId).lean();
 
     const completedOrders = await Order.find({
       userId,
       status: 'completed',
       'items.0': { $exists: true }
-    }).populate('items.productId');
+    })
+      .populate('items.productId')
+      .lean();
 
-    const userReviews = await Review.find({ userId });
+    const userReviews = await Review.find({ userId }).lean();
     const reviewsMap = {};
     userReviews.forEach(review => {
       reviewsMap[review.orderId.toString()] = review;
