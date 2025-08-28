@@ -132,3 +132,64 @@
         width: 55%;
         padding: 24px;
     }
+ /* 📱 Mobile Responsive (max-width: 768px) */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* hidden by default */
+    width: 250px;
+    height: 100%;
+    background-color: #f8f9fa;
+    padding: 20px 10px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    transition: left 0.3s ease;
+    z-index: 1100;
+  }
+
+  /* Sidebar when active */
+  .sidebar.active {
+    left: 0;
+  }
+
+  /* Overlay when sidebar is open */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    z-index: 1000;
+  }
+
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  /* Add a hamburger button */
+  .hamburger {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    z-index: 1200;
+  }
+
+  /* Adjust main content */
+  .main-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .navbar-custom-wrapper {
+    margin-left: 0;
+  }
+}

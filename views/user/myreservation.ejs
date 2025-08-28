@@ -156,6 +156,107 @@
     .btn-delete:hover {
       background: #cc0000;
     }
+/* 📱 Mobile (max-width: 768px) */
+@media (max-width: 768px) {
+  /* Sidebar hidden by default */
+  .sidebar {
+    left: -260px; /* hidden offscreen */
+    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1); /* smoother easing */
+  }
+
+  /* Active state (when opened) */
+  .sidebar.active {
+    left: 0;
+  }
+
+  /* Overlay */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 900;
+  }
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* Hamburger button */
+  .hamburger {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 1201;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .hamburger:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  .hamburger:active {
+    transform: scale(0.95);
+  }
+
+  /* Adjust content */
+  .main-content {
+    margin: 70px 0 0 0;
+    padding: 15px;
+    transition: filter 0.3s ease;
+  }
+
+  /* Blur effect when sidebar is open */
+  body.sidebar-open .main-content {
+    filter: blur(2px);
+  }
+
+  .navbar-custom-wrapper {
+    margin: 0;
+    padding: 10px 20px;
+  }
+}
+
+/* 💻 Desktop (min-width: 769px) */
+@media (min-width: 769px) {
+  .sidebar {
+    left: 0;
+    transition: none;
+  }
+  .hamburger {
+    display: none;
+  }
+  .sidebar-overlay {
+    display: none !important;
+  }
+  .main-content {
+    margin-left: 250px;
+    padding: 20px;
+  }
+  .navbar-custom-wrapper {
+    margin-left: 250px;
+    padding: 3px 40px;
+  }
+}
+
+
   </style>
 </head>
 <body>
@@ -170,6 +271,7 @@
       <a href="/user/reviews"><i class="bi bi-star"></i> Reviews</a>
       <a href="/user/voucher"><i class="bi bi-ticket-perforated"></i> Voucher</a>
       <a href="/user/myreservation" class="active"><i class="bi bi-calendar-event"></i> My Reservations</a>
+      <a href="/user/Profile" ><i class="bi bi-calendar-event"></i>Profile</a>
     </nav>
   </div>
 
@@ -199,6 +301,11 @@
       <% } %>
     </nav>
   </div>
+<!-- Hamburger Button -->
+<button class="hamburger">☰</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay"></div>
 
   <div class="container py-1">
     <div class="main-content">
@@ -394,6 +501,22 @@
         }
       });
     });
+
+    const hamburger = document.querySelector('.hamburger');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+
+  // Open / Close sidebar
+  hamburger.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  });
+
+  // Close when clicking outside
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
   </script>
 </body>
 </html>

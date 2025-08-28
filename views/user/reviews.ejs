@@ -23,6 +23,7 @@
       <a href="/user/reviews" class="active"><i class="bi bi-star"></i> Reviews</a>
       <a href="/user/voucher"><i class="bi bi-ticket-perforated"></i> Voucher</a>
       <a href="/user/myreservation"><i class="bi bi-calendar-event"></i> My Reservations</a>
+      <a href="/user/Profile" ><i class="bi bi-calendar-event"></i>Profile</a>
     </nav>
   </div>
 
@@ -52,6 +53,11 @@
       <% } %>
     </nav>
   </div>
+<!-- Hamburger Button (Mobile Only) -->
+<button class="hamburger">☰</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay"></div>
 
   <div class="container py-1">
     <div class="main-content">
@@ -152,6 +158,20 @@
     const cleanUrl = window.location.origin + window.location.pathname;
     window.history.replaceState({}, document.title, cleanUrl);
   }
+
+   const hamburger = document.querySelector('.hamburger');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.querySelector('.sidebar-overlay');
+
+  hamburger.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
 </script>
 </body>
 </html>

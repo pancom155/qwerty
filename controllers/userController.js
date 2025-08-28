@@ -588,3 +588,42 @@ exports.submitReview = async (req, res) => {
 };
 
 
+/* -------------------- PROFILE -------------------- */
+exports.renderProfilePage = async (req, res) => {
+  try {
+    const user = await User.findById(req.session.user._id).lean();
+    if (!user) return res.redirect('/login');
+    res.render('user/profile', { user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.renderEditProfilePage = async (req, res) => {
+  try {
+    const user = await User.findById(req.session.user._id).lean();
+    if (!user) return res.redirect('/login');
+    res.render('user/editProfile', { user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const { firstName, lastName, address, contactNo } = req.body;
+    const updateData = { firstName, lastName, address, contactNo };
+
+    if (req.file) {
+      updateData.profileImage = `/uploads/${req.file.filename}`;
+    }
+
+    await User.findByIdAndUpdate(req.session.user._id, updateData, { new: true });
+    res.redirect('/user/profile');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error updating profile');
+  }
+};

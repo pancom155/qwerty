@@ -48,4 +48,10 @@ router.get('/order-success/:orderId', userController.renderOrderSuccess);
 router.get('/reviews', isLoggedIn, userController.getReviewsPage);
 router.post('/reviews/:orderId', isLoggedIn, userController.submitReview);
 
+
+// Profile routes
+router.get('/profile', isLoggedIn, userController.renderProfilePage);
+router.get('/edit-profile', isLoggedIn, userController.renderEditProfilePage);
+router.post('/edit-profile', isLoggedIn, upload.single('profileImage'), userController.updateProfile);
+
 module.exports = router;

@@ -25,6 +25,7 @@
       <a href="/user/reviews"><i class="bi bi-star"></i> Reviews</a>
       <a href="/user/voucher"><i class="bi bi-ticket-perforated"></i> Voucher</a>
       <a href="/user/myreservation"><i class="bi bi-calendar-event"></i> My Reservations</a>
+      <a href="/user/Profile" ><i class="bi bi-calendar-event"></i>Profile</a>
      
     </nav>
   </div>
@@ -55,6 +56,11 @@
       <% } %>
     </nav>
   </div>
+<!-- Hamburger Button -->
+<button class="hamburger" id="hamburgerBtn">☰</button>
+
+<!-- Sidebar Overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="container py-1">
     <div class="main-content">
@@ -218,5 +224,30 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+
+  // Toggle sidebar
+  hamburgerBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+  });
+
+  // Close sidebar when overlay clicked
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+  });
+
+  // Optional: close sidebar when a nav link is clicked
+  document.querySelectorAll('.sidebar nav a').forEach(link => {
+    link.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+  });
+  </script>
 </body>
 </html>
