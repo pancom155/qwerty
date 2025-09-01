@@ -120,13 +120,33 @@
       <td><%= r.dineInDateTime.split(' ')[0] %></td>
       <td><%= r.dineInDateTime.split(' ')[1] %></td>
       <td><%= r.referenceNumber %></td>
-      <td>
-        <% if (r.proofOfPayment) { %>
-          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
-        <% } else { %>
-          N/A
-        <% } %>
-      </td>
+     <td>
+  <% if (r.proofOfPayment) { %>
+    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Proof of Payment</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+     <img src="/uploads/<%= r.proofOfPayment %>" alt="Proof" class="img-fluid rounded shadow">
+
+
+
+
+          </div>
+        </div>
+      </div>
+    </div>
+  <% } else { %>
+    N/A
+  <% } %>
+</td>
+
       <td>
         <span class="badge bg-info text-dark">Done</span>
       </td>

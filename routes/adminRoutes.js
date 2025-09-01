@@ -25,7 +25,7 @@ router.get('/settings', adminController.getSettings);
 
 router.post('/settings/upload-order-qr', upload.single('orderQR'), adminController.uploadOrderQR);
 router.post('/admin/upload-logo', upload.single('logo'), adminController.uploadLogo);
-router.get('/settings', adminController.getSettings);
+
 router.post('/settings/upload-logo', upload.single('logo'), adminController.uploadLogo);
 
 

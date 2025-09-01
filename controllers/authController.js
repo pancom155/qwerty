@@ -419,10 +419,17 @@ exports.getDashboard = async (req, res) => {
   }
   
 };
-
-
 exports.getAdminIndex = async (req, res) => {
   try {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    // ✅ Start and End of current month
+    const monthStart = new Date(currentYear, currentMonth, 1, 0, 0, 0);
+    const monthEnd = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59, 999);
+
+    // ✅ Monthly-based counts
     const [
       pendingOrders, processingOrders, readyToPickupOrders,
       completedOrders, rejectedOrders, cancelledOrders,
@@ -430,34 +437,30 @@ exports.getAdminIndex = async (req, res) => {
       pendingReservations, confirmedReservations, cancelledReservations,
       doneReservations, totalOrders, totalReviews
     ] = await Promise.all([
-      Order.countDocuments({ status: 'pending' }),
-      Order.countDocuments({ status: 'processing' }),
-      Order.countDocuments({ status: 'ready_to_pickup' }),
-      Order.countDocuments({ status: 'completed' }),
-      Order.countDocuments({ status: 'rejected' }),
-      Order.countDocuments({ status: 'cancelled' }),
-      Product.countDocuments(),
-      User.countDocuments(),
-      Table.countDocuments(),
-      Reservation.countDocuments({ status: 'pending' }),
-      Reservation.countDocuments({ status: 'confirmed' }),
-      Reservation.countDocuments({ status: 'cancelled' }),
-      Reservation.countDocuments({ status: 'done' }),
-      Order.countDocuments(),
-      Review.countDocuments()
+      Order.countDocuments({ status: 'pending', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Order.countDocuments({ status: 'processing', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Order.countDocuments({ status: 'ready_to_pickup', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Order.countDocuments({ status: 'completed', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Order.countDocuments({ status: 'rejected', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Order.countDocuments({ status: 'cancelled', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Product.countDocuments(), // products are lifetime, not monthly
+      User.countDocuments(),    // users are lifetime, not monthly
+      Table.countDocuments(),   // tables are lifetime, not monthly
+      Reservation.countDocuments({ status: 'pending', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Reservation.countDocuments({ status: 'confirmed', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Reservation.countDocuments({ status: 'cancelled', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Reservation.countDocuments({ status: 'done', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Order.countDocuments({ createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Review.countDocuments({ createdAt: { $gte: monthStart, $lte: monthEnd } })
     ]);
 
-    const now = new Date();
-    const currentYear = now.getFullYear();
-    const currentMonth = now.getMonth();
-
     /** ----------------
-     * MONTHLY SALES
+     * Your existing sales analytics (monthly, daily, weekly, yearly)
      * ---------------- */
     const monthlySalesArray = [];
     for (let month = 0; month < 12; month++) {
-      const start = new Date(currentYear, month, 1);
-      const end = new Date(currentYear, month + 1, 0);
+      const start = new Date(currentYear, month, 1, 0, 0, 0);
+      const end = new Date(currentYear, month + 1, 0, 23, 59, 59, 999);
 
       const monthlyOrders = await Order.find({
         status: 'completed',
@@ -472,14 +475,12 @@ exports.getAdminIndex = async (req, res) => {
     const lastMonthSales = currentMonth > 0 ? monthlySalesArray[currentMonth - 1] : 0;
     const monthlySalesDiff = currentMonthSales - lastMonthSales;
 
-    /** ----------------
-     * DAILY SALES (current month)
-     * ---------------- */
+    // ✅ Daily Sales (current month)
     const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
     const dailySalesArray = [];
     for (let day = 1; day <= daysInMonth; day++) {
       const start = new Date(currentYear, currentMonth, day, 0, 0, 0);
-      const end = new Date(currentYear, currentMonth, day, 23, 59, 59);
+      const end = new Date(currentYear, currentMonth, day, 23, 59, 59, 999);
 
       const dailyOrders = await Order.find({
         status: 'completed',
@@ -490,17 +491,16 @@ exports.getAdminIndex = async (req, res) => {
       dailySalesArray.push(totalSales);
     }
 
-    /** ----------------
-     * WEEKLY SALES (current month)
-     * ---------------- */
+    // ✅ Weekly Sales (current month)
     const weeklySalesArray = [];
-    let weekStart = new Date(currentYear, currentMonth, 1);
+    let weekStart = new Date(currentYear, currentMonth, 1, 0, 0, 0);
     while (weekStart.getMonth() === currentMonth) {
       const weekEnd = new Date(weekStart);
       weekEnd.setDate(weekEnd.getDate() + 6);
       if (weekEnd.getMonth() !== currentMonth) {
         weekEnd.setDate(new Date(currentYear, currentMonth + 1, 0).getDate());
       }
+      weekEnd.setHours(23, 59, 59, 999);
 
       const weeklyOrders = await Order.find({
         status: 'completed',
@@ -513,13 +513,11 @@ exports.getAdminIndex = async (req, res) => {
       weekStart.setDate(weekStart.getDate() + 7);
     }
 
-    /** ----------------
-     * YEARLY SALES (last 5 years)
-     * ---------------- */
+    // ✅ Yearly Sales (last 5 years)
     const yearlySalesArray = [];
     for (let year = currentYear - 4; year <= currentYear; year++) {
-      const start = new Date(year, 0, 1);
-      const end = new Date(year, 11, 31, 23, 59, 59);
+      const start = new Date(year, 0, 1, 0, 0, 0);
+      const end = new Date(year, 11, 31, 23, 59, 59, 999);
 
       const yearlyOrders = await Order.find({
         status: 'completed',
@@ -530,26 +528,23 @@ exports.getAdminIndex = async (req, res) => {
       yearlySalesArray.push(totalSales);
     }
 
-    /** ----------------
-     * RECENT ORDERS & REVIEWS
-     * ---------------- */
-    const recentOrders = await Order.find({})
+    // ✅ Recent Orders & Reviews
+    const recentOrders = await Order.find({ createdAt: { $gte: monthStart, $lte: monthEnd } })
       .sort({ createdAt: -1 })
       .limit(3)
       .populate('userId');
 
-  const recentReviews = await Review.find()
-  .sort({ createdAt: -1 })
-  .limit(3)
-  .populate({
-    path: 'orderId',
-    populate: [
-      { path: 'userId', select: 'firstName lastName' },
-      { path: 'items.productId', model: 'Product', select: 'name image' }
-    ]
-  })
-  .lean();
-
+    const recentReviews = await Review.find({ createdAt: { $gte: monthStart, $lte: monthEnd } })
+      .sort({ createdAt: -1 })
+      .limit(3)
+      .populate({
+        path: 'orderId',
+        populate: [
+          { path: 'userId', select: 'firstName lastName' },
+          { path: 'items.productId', model: 'Product', select: 'name image' }
+        ]
+      })
+      .lean();
 
     res.render('admin/index', {
       totalOrders,
@@ -650,25 +645,35 @@ exports.downloadSalesReportPDF = async (req, res) => {
 
     doc.moveDown(2);
 
-    // ===== TABLE HEADER =====
-    const tableTop = doc.y + 20;
-    const customerX = 50;
-    const dateX = 250;
-    const amountX = 420;
-
-    doc.fontSize(12).text("Customer", customerX, tableTop);
-    doc.text("Date & Time", dateX, tableTop);
-    doc.text("Amount (₱)", amountX, tableTop);
-    doc.moveTo(50, tableTop + 15).lineTo(550, tableTop + 15).stroke();
+    // ===== TABLE HEADER FUNCTION =====
+    const drawTableHeader = (yPos) => {
+      doc.fontSize(12).text("Customer", 50, yPos);
+      doc.text("Date & Time", 250, yPos);
+      doc.text("Amount (₱)", 420, yPos);
+      doc.moveTo(50, yPos + 15).lineTo(550, yPos + 15).stroke();
+    };
 
     // ===== TABLE BODY =====
-    let y = tableTop + 25;
+    let y = doc.y + 20;
     let total = 0;
+    const lineHeight = 20;
+    const bottomMargin = 100;
+
+    drawTableHeader(y);
+    y += 25;
 
     if (sales.length === 0) {
       doc.fontSize(12).text("No sales found in this date range.", 50, y);
     } else {
       sales.forEach((order) => {
+        // check page overflow
+        if (y + lineHeight > doc.page.height - bottomMargin) {
+          doc.addPage();
+          y = 50;
+          drawTableHeader(y);
+          y += 25;
+        }
+
         const customerName =
           order.fullName ||
           `${order.userId?.firstName || ""} ${order.userId?.lastName || ""}`.trim() ||
@@ -679,18 +684,23 @@ exports.downloadSalesReportPDF = async (req, res) => {
           timeStyle: "short",
         });
 
-        doc.fontSize(10).text(customerName, customerX, y, { width: 180 });
-        doc.text(dateTime, dateX, y, { width: 150 });
-        doc.text(order.netTotal.toFixed(2), amountX, y, {
+        doc.fontSize(10).text(customerName, 50, y, { width: 180 });
+        doc.text(dateTime, 250, y, { width: 150 });
+        doc.text(order.netTotal.toFixed(2), 420, y, {
           width: 100,
           align: "right",
         });
 
-        y += 20;
+        y += lineHeight;
         total += order.netTotal;
       });
 
       // ===== TOTAL =====
+      if (y + 40 > doc.page.height - bottomMargin) {
+        doc.addPage();
+        y = 50;
+      }
+
       y += 30;
       doc.fontSize(12).text(`Grand Total Sales: ₱${total.toFixed(2)}`, 50, y, {
         align: "right",
@@ -699,6 +709,11 @@ exports.downloadSalesReportPDF = async (req, res) => {
 
     // ===== SIGNATURE =====
     y += 80;
+    if (y + 60 > doc.page.height - 50) {
+      doc.addPage();
+      y = 50;
+    }
+
     doc.fontSize(12).text("Prepared by:", 50, y);
     y += 60;
     doc.fontSize(12).text("__________________________", 50, y);
@@ -710,6 +725,7 @@ exports.downloadSalesReportPDF = async (req, res) => {
     res.status(500).send("Failed to generate report (PDF)");
   }
 };
+
 
 // ================= EXCEL EXPORT =================
 exports.downloadSalesReportExcel = async (req, res) => {

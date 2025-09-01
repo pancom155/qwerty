@@ -76,12 +76,12 @@
             <div class="modal-body">
               <div class="row g-3">
                 <div class="col-md-4">
-                  <label class="form-label fw-semibold">Code</label>
+                  <label class="form-label fw-semibold">Code Name</label>
                   <input name="code" class="form-control" required>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label fw-semibold">Discount (%)</label>
-                  <input name="discount" type="number" min="1" max="100" class="form-control" required>
+                  <label class="form-label fw-semibold">Discount (₱)</label>
+                  <input name="discount" type="number" min="1" max="2000" class="form-control" required>
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Min Spend (₱)</label>
@@ -152,11 +152,11 @@
             <div class="modal-body">
               <div class="row g-3">
                 <div class="col-md-4">
-                  <label class="form-label fw-semibold">Code</label>
+                  <label class="form-label fw-semibold">Code Name</label>
                   <input name="code" value="<%= v.code %>" class="form-control" required>
                 </div>
                 <div class="col-md-4">
-                  <label class="form-label fw-semibold">Discount (%)</label>
+                  <label class="form-label fw-semibold">Discount (₱)</label>
                   <input name="discount" type="number" min="1" max="100"
                          value="<%= v.discount %>" class="form-control" required>
                 </div>

@@ -186,6 +186,7 @@
                 <h6 class="text-muted">COMPLETED RESERVATIONS</h6>
               </div>
               <div style="position: relative;">
+                
                 <canvas id="done_reservationChart"></canvas>
                 <div class="status-percentage"><%= doneReservations %></div>
               </div>
@@ -206,12 +207,12 @@
             </select>
           </div>
 
-          <h3 class="text-success mt-2">
-            ₱<%= monthlySales.toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
-            <span class="text-secondary fs-6">
-              +₱<%= monthlySalesDiff.toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
-            </span>
-          </h3>
+         <h3 id="salesDisplay" class="text-success mt-2">
+    ₱<%= monthlySales.toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
+    <span class="text-secondary fs-6">
+      +₱<%= monthlySalesDiff.toLocaleString(undefined, { minimumFractionDigits: 2 }) %>
+    </span>
+  </h3>
 
           <canvas id="salesChart" height="190"></canvas>
         </div>
@@ -413,7 +414,6 @@ createCircleChart(document.getElementById('done_reservationChart').getContext('2
 
 
 
-
   // Sample data passed from backend
   const dailySales   = <%- JSON.stringify(dailySalesArray) %>;   // length = days of month
   const weeklySales  = <%- JSON.stringify(weeklySalesArray) %>;  // length = 4/5 weeks
@@ -448,6 +448,53 @@ createCircleChart(document.getElementById('done_reservationChart').getContext('2
     }
   });
 
+  // Function to format ₱ with commas + 2 decimals
+  function formatCurrency(value) {
+    return "₱" + value.toLocaleString(undefined, { minimumFractionDigits: 2 });
+  }
+
+  // Function to update sales display
+  function updateSalesDisplay(filter) {
+    const salesDisplay = document.getElementById("salesDisplay");
+    let currentValue = 0;
+    let prevValue = 0;
+
+    switch (filter) {
+      case "daily":
+        const todayIndex = new Date().getDate() - 1;
+        currentValue = dailySales[todayIndex] || 0;
+        prevValue = todayIndex > 0 ? dailySales[todayIndex - 1] : 0;
+        break;
+
+      case "weekly":
+        const currentWeek = Math.floor((new Date().getDate() - 1) / 7);
+        currentValue = weeklySales[currentWeek] || 0;
+        prevValue = currentWeek > 0 ? weeklySales[currentWeek - 1] : 0;
+        break;
+
+      case "monthly":
+        const currentMonth = new Date().getMonth();
+        currentValue = monthlySales[currentMonth] || 0;
+        prevValue = currentMonth > 0 ? monthlySales[currentMonth - 1] : 0;
+        break;
+
+      case "yearly":
+        const yearIndex = yearlySales.length - 1; // last = current year
+        currentValue = yearlySales[yearIndex] || 0;
+        prevValue = yearIndex > 0 ? yearlySales[yearIndex - 1] : 0;
+        break;
+    }
+
+    const diff = currentValue - prevValue;
+
+    salesDisplay.innerHTML = `
+      ${formatCurrency(currentValue)}
+      <span class="text-secondary fs-6">
+        +${formatCurrency(diff)}
+      </span>
+    `;
+  }
+
   // Filter change event
   document.getElementById("salesFilter").addEventListener("change", function(e) {
     const filter = e.target.value;
@@ -479,37 +526,41 @@ createCircleChart(document.getElementById('done_reservationChart').getContext('2
     salesChart.data.datasets[0].data = data;
     salesChart.data.datasets[0].label = labelText;
     salesChart.update();
+
+    // ✅ Update sales display
+    updateSalesDisplay(filter);
   });
 
+  // Initial load
+  updateSalesDisplay("monthly");
 
+  // ================================
+  // Restaurant open/close button
+  // ================================
+  function toggleRestaurantStatus() {
+    const button = document.getElementById("restaurantStatusButton");
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
 
+    localStorage.setItem("restaurantClosed", !isClosed);
+    updateRestaurantButton(button, !isClosed);
 
-
-
-
-function toggleRestaurantStatus() {
-  const button = document.getElementById("restaurantStatusButton");
-  const isClosed = localStorage.getItem("restaurantClosed") === "true";
-
-  localStorage.setItem("restaurantClosed", !isClosed);
-  updateRestaurantButton(button, !isClosed);
-
-  alert(`The restaurant is now ${!isClosed ? "closed" : "open"} for orders.`);
-}
-
-function updateRestaurantButton(button, isClosed) {
-  if (isClosed) {
-    button.innerHTML = `<i class="bi bi-door-closed-fill"></i> Open Restaurant`;
-    button.style.backgroundColor = "#28a745"; 
-    button.classList.remove("btn-danger");
-    button.classList.add("btn-success");
-  } else {
-    button.innerHTML = `<i class="bi bi-door-open-fill"></i> Close Restaurant`;
-    button.style.backgroundColor = "#dc3545";
-    button.classList.remove("btn-success");
-    button.classList.add("btn-danger");
+    alert(`The restaurant is now ${!isClosed ? "closed" : "open"} for orders.`);
   }
-}
+
+  function updateRestaurantButton(button, isClosed) {
+    if (isClosed) {
+      button.innerHTML = `<i class="bi bi-door-closed-fill"></i> Open Restaurant`;
+      button.style.backgroundColor = "#28a745"; 
+      button.classList.remove("btn-danger");
+      button.classList.add("btn-success");
+    } else {
+      button.innerHTML = `<i class="bi bi-door-open-fill"></i> Close Restaurant`;
+      button.style.backgroundColor = "#dc3545";
+      button.classList.remove("btn-success");
+      button.classList.add("btn-danger");
+    }
+  }
+  
 </script>
 </body>
 

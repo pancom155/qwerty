@@ -388,14 +388,22 @@ exports.getReservation_done = async (req, res) => {
     const reservations = await Reservation.find({ status: 'done' })
       .populate('userId', 'firstName lastName email')
       .populate('tableId', 'name price')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
-    res.render('admin/reservation_done', { reservations });
+    res.render('admin/reservation_done', {
+      reservations,
+      user: req.session.user // para consistent kung may session info ka
+    });
   } catch (err) {
     console.error('Error fetching reservations:', err);
-    res.render('admin/reservation_done', { reservations: [] });
+    res.render('admin/reservation_done', {
+      reservations: [],
+      user: req.session.user
+    });
   }
 };
+
 
 exports.getReservation_cancelled = async (req, res) => {
   try {
