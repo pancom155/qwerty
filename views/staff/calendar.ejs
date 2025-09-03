@@ -13,6 +13,133 @@
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+  /* Notification container */
+.notification-container {
+    position: relative;
+    margin-right: 15px;
+}
+
+/* Notification badge */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+/* Badge pulse animation when updated */
+.notification-badge.updated {
+    transform: scale(1.3);
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Dropdown styling */
+.notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    padding: 15px;
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Notification items */
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: slideIn 0.5s forwards;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Slide-in effect for new notifications */
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Notification text */
+.notification-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #343a40;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* "No Notifications" message */
+.notification-empty {
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* View all orders button */
+.view-orders-btn {
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* Scrollbar for dropdown */
+.notification-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+
+.notification-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+</style>
 <body>
 
 <div class="sidebar" id="sidebar">
@@ -40,9 +167,28 @@
         </div>
       </div>
 
-      <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
-        <i class="bi bi-box-arrow-right"></i> Logout
-      </a>
+      <div class="d-flex align-items-center">
+        <!-- Notification Container -->
+        <div class="notification-container me-3">
+          <button class="btn btn-outline-secondary position-relative" id="notificationBtn">
+            <i class="bi bi-bell"></i>
+            <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+          </button>
+          
+          <!-- Notification Dropdown -->
+          <div class="notification-dropdown" id="notificationDropdown">
+            <h6 class="mb-3">Recent Notifications</h6>
+            <div id="notificationList">
+              <!-- Notifications will be added here dynamically -->
+            </div>
+          
+          </div>
+        </div>
+        
+        <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+          <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+      </div>
     </nav>
   </div>
 
@@ -100,6 +246,7 @@
 
 
 <!-- ✅ Scripts -->
+ <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
@@ -138,30 +285,130 @@
         modal.show();
       },
 
-      // ✅ Optional: Add new event on date click
-      dateClick: function (info) {
-        Swal.fire({
-          title: 'New Event',
-          text: `You clicked on ${info.dateStr}`,
-          input: 'text',
-          inputPlaceholder: 'Enter event title',
-          showCancelButton: true,
-          confirmButtonText: 'Add Event'
-        }).then((result) => {
-          if (result.isConfirmed && result.value) {
-            calendar.addEvent({
-              title: result.value,
-              start: info.dateStr,
-              allDay: true
-            });
-            Swal.fire('Added!', 'Your event has been added.', 'success');
-          }
-        });
-      }
+     
     });
 
     calendar.render();
   });
+document.addEventListener('DOMContentLoaded', () => {
+  const notificationBtn = document.getElementById('notificationBtn');
+  const notificationDropdown = document.getElementById('notificationDropdown');
+  const notificationBadge = document.getElementById('notificationBadge');
+  const notificationList = document.getElementById('notificationList');
+
+  let pendingCount = 0;
+
+  // Update bell badge
+  function updateBadge() {
+    if (pendingCount > 0) {
+      notificationBadge.textContent = pendingCount;
+      notificationBadge.style.display = 'flex';
+    } else {
+      notificationBadge.style.display = 'none';
+    }
+  }
+
+  // Show "No Notifications" if empty
+  function checkEmpty() {
+    const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
+    if (!hasItems) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'notification-empty text-center text-muted';
+      emptyMsg.textContent = 'No Notifications';
+      notificationList.appendChild(emptyMsg);
+    } else {
+      const emptyMsg = notificationList.querySelector('.notification-empty');
+      if (emptyMsg) emptyMsg.remove();
+    }
+  }
+
+  async function loadPendingOrders() {
+  try {
+    const res = await fetch('/staff/pending-orders');
+    const data = await res.json();
+    const orders = data.pendingOrders || [];
+    const reservations = data.pendingReservations || [];
+
+    // Helper function to create notification item
+    function createNotificationItem(type, item) {
+      const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
+      const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
+      const notificationItem = document.createElement('div');
+      notificationItem.className = 'notification-item';
+      notificationItem.innerHTML = `
+        <div class="notification-title">${type}</div>
+        <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
+        <div class="notification-time">${time}</div>
+      `;
+      notificationItem.addEventListener('click', () => {
+        window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+      });
+      return notificationItem;
+    }
+
+    // Add pending orders
+    orders.forEach(order => {
+      const notificationItem = createNotificationItem('New Order', order);
+      notificationList.insertBefore(notificationItem, notificationList.firstChild);
+    });
+
+    // Add pending reservations
+    reservations.forEach(reservation => {
+      const notificationItem = createNotificationItem('New Reservation', reservation);
+      notificationList.insertBefore(notificationItem, notificationList.firstChild);
+    });
+
+    // Update badge count
+    pendingCount = orders.length + reservations.length;
+    updateBadge();
+    checkEmpty();
+  } catch (err) {
+    console.error('Error fetching pending orders/reservations:', err);
+  }
+}
+
+
+  loadPendingOrders(); // Load pending orders on page load
+
+  // Toggle dropdown
+  notificationBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = notificationDropdown.style.display === 'block';
+    notificationDropdown.style.display = isOpen ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+      notificationDropdown.style.display = 'none';
+    }
+  });
+
+  // Socket.IO for new orders
+  const socket = io();
+  socket.on('newOrder', (data) => {
+    // Remove empty message if exists
+    const emptyMsg = notificationList.querySelector('.notification-empty');
+    if (emptyMsg) emptyMsg.remove();
+
+    const notificationItem = document.createElement('div');
+    notificationItem.className = 'notification-item new-notification';
+    notificationItem.innerHTML = `
+      <div class="notification-title">${data.title}</div>
+      <div class="notification-message">${data.message}</div>
+      <div class="notification-time">${data.time}</div>
+    `;
+    notificationItem.addEventListener('click', () => {
+      window.location.href = '/staff/order';
+    });
+    notificationList.insertBefore(notificationItem, notificationList.firstChild);
+
+    pendingCount += 1;
+    updateBadge();
+
+    setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
+  });
+});
+
 </script>
 
 </body>

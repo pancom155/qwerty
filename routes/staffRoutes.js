@@ -19,6 +19,9 @@ router.post('/orders/reject/:id', checkStaffAuth, staffController.rejectOrder);
 router.post('/orders/complete/:id', staffController.completeOrder);
 router.post('/orders/ready/:id', checkStaffAuth, staffController.readyToPickupOrder);
 
+router.get('/pending-count', staffController.getPendingOrderCount);
+router.get('/pending-orders', staffController.getPendingOrders);
+
 router.get('/order_done', checkStaffAuth, staffController.getOrdersDone);
 router.get('/orders/receipt/:id', checkStaffAuth, staffController.downloadReceiptPDF);
 

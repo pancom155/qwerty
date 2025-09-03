@@ -178,7 +178,7 @@ exports.bookTable = async (req, res) => {
     const dineInDateTime = `${dineDate} ${dineTime}`;
     const proofPath = req.file ? req.file.filename : null;
 
-    await Reservation.create({
+    const newReservation = await Reservation.create({
       userId: req.session.user._id,
       tableId: id,
       fullName,
@@ -192,6 +192,18 @@ exports.bookTable = async (req, res) => {
       status: 'pending'
     });
 
+    // --- Emit Socket.IO notification to staff dashboard ---
+    const io = req.app.get("io");
+    io.emit("newReservation", {
+      title: "New Reservation",
+      message: `Reservation #${newReservation._id} has been made by ${fullName}.`,
+      time: new Date().toLocaleTimeString('en-PH', { hour12: true }),
+      reservationId: newReservation._id,
+      customerName: fullName,
+      userId: req.session.user._id
+    });
+
+    // --- Send confirmation email ---
     await sendReservationEmail({ to: email, name: fullName, tableName: table.name });
 
     res.redirect('/user/reservation?success=1');
@@ -387,21 +399,23 @@ exports.renderCheckoutPage = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
-
 exports.placeOrder = async (req, res) => {
   try {
     const userId = req.session.user._id;
     const { voucherCode, referenceNumber } = req.body;
 
+    // --- Payment proof check ---
     if (!req.file) {
       return res.redirect('/user/placeorder?error=Please upload proof of payment.');
     }
 
+    // --- Get user cart ---
     const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart || cart.items.length === 0) {
       return res.status(400).send('Cart is empty');
     }
 
+    // --- Format items ---
     const items = cart.items.filter(i => i.productId).map(i => ({
       productId: i.productId._id,
       name: i.productId.name,
@@ -414,6 +428,7 @@ exports.placeOrder = async (req, res) => {
     const gross = items.reduce((sum, item) => sum + item.subtotal, 0);
     const discounts = [];
 
+    // --- PWD discount check ---
     const hasPWD = await PWDRequest.exists({ userId, status: 'Approved' });
     if (hasPWD) {
       const todayStart = new Date();
@@ -450,9 +465,9 @@ exports.placeOrder = async (req, res) => {
       }
     }
 
-    let voucher;
+    // --- Voucher check ---
     if (voucherCode) {
-      voucher = await Voucher.findOne({
+      const voucher = await Voucher.findOne({
         code: voucherCode,
         claimedBy: userId,
         expiryDate: { $gte: new Date() },
@@ -474,13 +489,11 @@ exports.placeOrder = async (req, res) => {
         description: `Voucher ${voucher.code}`
       });
 
-      // Mark voucher as redeemed by user
-      await Voucher.updateOne(
-        { _id: voucher._id },
-        { $addToSet: { redeemedBy: userId } }
-      );
+      // Mark voucher as redeemed
+      await Voucher.updateOne({ _id: voucher._id }, { $addToSet: { redeemedBy: userId } });
     }
 
+    // --- Create order ---
     const newOrder = await Order.create({
       userId,
       items,
@@ -491,22 +504,40 @@ exports.placeOrder = async (req, res) => {
       }
     });
 
+    // --- Get user info for notification ---
+    const user = await User.findById(userId).lean();
+    const customerName = newOrder.fullName || `${user.firstName} ${user.lastName}`;
+
+    // --- Emit Socket.IO notification to staff dashboard ---
+    const io = req.app.get("io");
+    io.emit("newOrder", {
+      title: "New Order",
+      message: `Order #${newOrder._id} has been placed by ${customerName}.`,
+      time: new Date().toLocaleTimeString('en-PH', { hour12: true }),
+      orderId: newOrder._id,
+      customerName,
+      userId
+    });
+
+    // --- Clear cart ---
     cart.items = [];
     await cart.save();
 
-    const user = await User.findById(userId).lean();
+    // --- Send confirmation email ---
     await sendOrderConfirmationEmail({
       to: user.email,
-      name: `${user.firstName} ${user.lastName}`,
+      name: customerName,
       orderId: newOrder._id
     });
 
+    // --- Redirect to success page ---
     res.redirect(`/user/order-success/${newOrder._id}`);
   } catch (err) {
     console.error('Place-order error:', err);
     res.status(500).send('Server Error');
   }
 };
+
 
 exports.renderOrdersPage = async (req, res) => {
   try {

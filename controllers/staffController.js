@@ -7,32 +7,48 @@ const path = require('path');
 const Settings = require('../models/Settings'); 
 exports.renderStaffDashboard = async (req, res) => {
   try {
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+
+    const endOfMonth = new Date(startOfMonth);
+    endOfMonth.setMonth(endOfMonth.getMonth() + 1);
+
+    // Kunin lang ang orders at reservations sa current month
     const [orders, reservations] = await Promise.all([
-      Order.find().lean(),
-      Reservation.find().lean()
+      Order.find({ createdAt: { $gte: startOfMonth, $lt: endOfMonth } }).lean(),
+      Reservation.find({ createdAt: { $gte: startOfMonth, $lt: endOfMonth } }).lean()
     ]);
 
-    res.render('staff/index', {
-      user: req.session.user,
+    const orderStats = {
       totalOrders: orders.length,
       pendingOrders: orders.filter(o => o.status === 'pending').length,
       processingOrders: orders.filter(o => o.status === 'processing').length,
       readyToPickupOrders: orders.filter(o => o.status === 'ready_to_pickup').length,
-      completedOrders: orders.filter(o => o.status === 'completed').length,
+      completedOrders: orders.filter(o => o.status === 'completed').length
+    };
 
+    const reservationStats = {
       totalReservations: reservations.length,
       pendingReservations: reservations.filter(r => r.status === 'pending').length,
       confirmedReservations: reservations.filter(r => r.status === 'confirmed').length
+    };
+
+    res.render('staff/index', {
+      user: req.session.user,
+      ...orderStats,
+      ...reservationStats
     });
 
   } catch (err) {
     console.error('Dashboard fetch error:', err);
+
     res.render('staff/index', {
       user: req.session.user,
-      readyToPickupOrders: 0,
       totalOrders: 0,
       pendingOrders: 0,
       processingOrders: 0,
+      readyToPickupOrders: 0,
       completedOrders: 0,
       totalReservations: 0,
       pendingReservations: 0,
@@ -43,21 +59,30 @@ exports.renderStaffDashboard = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
+    // Kunin ang mga orders na may status pending, processing, o ready_to_pickup
     const orders = await Order.find({
       status: { $in: ['pending', 'processing', 'ready_to_pickup'] }
     })
-      .populate('userId', 'firstName lastName email')
-      .populate('items.productId', 'image name')
-      .sort({ createdAt: -1 })
+      .populate('userId', 'firstName lastName email') // populate user info
+      .populate('items.productId', 'image name')     // populate product info sa bawat item
+      .sort({ createdAt: -1 })                        // pinakabagong orders muna
       .lean();
 
+    // I-compute ang totals kung wala pa
     const updatedOrders = orders.map(order => {
+      // Kung walang grossTotal, compute mula sa items subtotals
       order.grossTotal = order.grossTotal ?? order.items.reduce((sum, item) => sum + (item.subtotal || 0), 0);
+
+      // Kung walang discountTotal, compute mula sa discounts array
       order.discountTotal = order.discountTotal ?? (order.discounts ? order.discounts.reduce((sum, d) => sum + (d.amount || 0), 0) : 0);
+
+      // Compute netTotal bilang grossTotal minus discountTotal, minimum 0
       order.netTotal = order.netTotal ?? Math.max(0, order.grossTotal - order.discountTotal);
+
       return order;
     });
 
+    // I-render ang view na may orders at user info
     res.render('staff/order', {
       orders: updatedOrders,
       user: req.session.user
@@ -65,12 +90,55 @@ exports.getOrders = async (req, res) => {
 
   } catch (error) {
     console.error('Error fetching staff orders:', error);
+
+    // Kapag may error, mag-render ng walang orders pero may user info pa rin
     res.render('staff/order', {
       orders: [],
       user: req.session.user
     });
   }
 };
+
+
+// Get count of pending orders and reservations
+exports.getPendingOrderCount = async (req, res) => {
+  try {
+    const pendingOrderCount = await Order.countDocuments({ status: 'pending' });
+    const pendingReservationCount = await Reservation.countDocuments({ status: 'pending' });
+    const totalPending = pendingOrderCount + pendingReservationCount;
+
+    res.json({ pendingCount: totalPending });
+  } catch (err) {
+    console.error('Error fetching pending orders/reservations count:', err);
+    res.status(500).json({ pendingCount: 0 });
+  }
+};
+
+// Get pending orders and reservations for notifications
+exports.getPendingOrders = async (req, res) => {
+  try {
+    // Pending orders
+    const pendingOrders = await Order.find({ status: 'pending' })
+      .populate('userId', 'firstName lastName') // populate user info if exists
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Pending reservations
+    const pendingReservations = await Reservation.find({ status: 'pending' })
+      .select('fullName createdAt') // send only the fields you need
+      .sort({ createdAt: -1 })
+      .lean();
+
+    res.json({ pendingOrders, pendingReservations });
+  } catch (err) {
+    console.error('Error fetching pending orders/reservations:', err);
+    res.status(500).json({ pendingOrders: [], pendingReservations: [] });
+  }
+};
+
+
+
+
 
 exports.getOrdersDone = async (req, res) => {
   try {
@@ -100,8 +168,6 @@ exports.getOrdersDone = async (req, res) => {
     });
   }
 };
-
-
 exports.downloadReceiptPDF = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id)
@@ -163,17 +229,31 @@ exports.downloadReceiptPDF = async (req, res) => {
     doc.fontSize(8).text('================================', { align: 'center' });
 
     // --- ORDER INFO ---
-    doc.fontSize(9).text(`Order #: ${order._id}`);
-    doc.text(`Date: ${new Date(order.createdAt).toLocaleString()}`);
-    doc.text(
-      `Customer: ${
-        order.userId
-          ? order.userId.firstName + ' ' + order.userId.lastName
-          : order.fullName || 'Guest'
-      }`
-    );
-    doc.moveDown();
-    doc.fontSize(8).text('--------------------------------', { align: 'center' });
+doc.fontSize(9).text(`Order #: ${order._id}`);
+
+// Convert order.createdAt to Philippine Time (UTC+8)
+const manilaTime = new Date(order.createdAt).toLocaleString('en-PH', {
+  timeZone: 'Asia/Manila',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: true
+});
+
+doc.text(`Date: ${manilaTime}`);
+
+doc.text(
+  `Customer: ${
+    order.userId
+      ? `${order.userId.firstName} ${order.userId.lastName}`
+      : order.fullName || 'Guest'
+  }`
+);
+
+doc.moveDown();
+doc.fontSize(8).text('--------------------------------', { align: 'center' });
 
     // --- ITEMS ---
     order.items.forEach((item) => {
