@@ -1,7 +1,10 @@
 const Reservation = require('../models/Reservation');
 const Order = require('../models/Order');
 const { sendReservationConfirmedEmail, sendRejectionEmail, sendOrderProcessedEmail, sendOrderRejectedEmail, sendOrderCompletedEmail, sendReadyToPickupEmail } = require('../middleware/emailService');
-
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
+const path = require('path');
+const Settings = require('../models/Settings'); 
 exports.renderStaffDashboard = async (req, res) => {
   try {
     const [orders, reservations] = await Promise.all([
@@ -69,7 +72,164 @@ exports.getOrders = async (req, res) => {
   }
 };
 
+exports.getOrdersDone = async (req, res) => {
+  try {
+    const orders = await Order.find({ status: 'completed' })
+      .populate('userId', 'firstName lastName email')
+      .populate('items.productId', 'image name')
+      .sort({ createdAt: -1 })
+      .lean();
 
+    const updatedOrders = orders.map(order => {
+      order.grossTotal = order.grossTotal ?? order.items.reduce((sum, item) => sum + (item.subtotal || 0), 0);
+      order.discountTotal = order.discountTotal ?? (order.discounts ? order.discounts.reduce((sum, d) => sum + (d.amount || 0), 0) : 0);
+      order.netTotal = order.netTotal ?? Math.max(0, order.grossTotal - order.discountTotal);
+      return order;
+    });
+
+    res.render('staff/order_done', {
+      orders: updatedOrders,
+      user: req.session.user
+    });
+
+  } catch (error) {
+    console.error('Error fetching completed staff orders:', error);
+    res.render('staff/order_done', {
+      orders: [],
+      user: req.session.user
+    });
+  }
+};
+
+
+exports.downloadReceiptPDF = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id)
+      .populate('userId', 'firstName lastName email')
+      .populate('items.productId', 'name')
+      .lean();
+
+    if (!order) {
+      return res.status(404).send('Order not found');
+    }
+
+    // Get settings for logo
+    const settings = await Settings.findOne().lean();
+
+    // Resolve logo path (absolute)
+    let logoPath;
+    if (settings && settings.logo) {
+      logoPath = path.join(__dirname, '../public', settings.logo);
+    } else {
+      logoPath = path.join(__dirname, '../public/images/napslogo.png');
+    }
+
+    // ✅ POS-style receipt
+    const doc = new PDFDocument({
+      size: [226, 600],
+      margins: { top: 10, left: 10, right: 10, bottom: 10 }
+    });
+
+    // ✅ Use built-in Helvetica (no .ttf needed, peso sign supported)
+    doc.font('Helvetica');
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=receipt-${order._id}.pdf`
+    );
+    doc.pipe(res);
+
+    // --- LOGO ---
+    if (fs.existsSync(logoPath)) {
+      const logoWidth = 70;
+      const pageWidth = doc.page.width;
+      const x = (pageWidth - logoWidth) / 2;
+
+      doc.image(logoPath, x, 10, { width: logoWidth });
+      doc.moveDown(6);
+    } else {
+      doc.moveDown(2);
+    }
+
+    // --- STORE INFO ---
+    doc.fontSize(12).text("Nap's Grill and Restobar", { align: 'center' });
+    doc.fontSize(8).text(
+      '32nd Street corner Melencio St.,\nKapitan Pepe Phase II Subd.,\nCabanatuan City, Philippines',
+      { align: 'center' }
+    );
+    doc.text('Tel: 0994 705 8003', { align: 'center' });
+    doc.moveDown();
+    doc.fontSize(8).text('================================', { align: 'center' });
+
+    // --- ORDER INFO ---
+    doc.fontSize(9).text(`Order #: ${order._id}`);
+    doc.text(`Date: ${new Date(order.createdAt).toLocaleString()}`);
+    doc.text(
+      `Customer: ${
+        order.userId
+          ? order.userId.firstName + ' ' + order.userId.lastName
+          : order.fullName || 'Guest'
+      }`
+    );
+    doc.moveDown();
+    doc.fontSize(8).text('--------------------------------', { align: 'center' });
+
+    // --- ITEMS ---
+    order.items.forEach((item) => {
+      doc.fontSize(9).text(`${item.name}`);
+      doc.text(
+        `${item.quantity} x ₱${item.price.toFixed(2)}   ₱${item.subtotal.toFixed(2)}`,
+        { align: 'right' }
+      );
+    });
+
+    doc.fontSize(8).text('--------------------------------', { align: 'center' });
+
+    // --- DISCOUNTS ---
+    if (order.discounts && order.discounts.length > 0) {
+      doc.fontSize(9).text('Discounts:', { underline: true });
+      order.discounts.forEach((d) => {
+        doc.text(`${d.description || d.type}: - ₱${d.amount.toFixed(2)}`);
+      });
+      doc.moveDown();
+    }
+
+    // --- TOTALS ---
+    doc.fontSize(10).text(`Gross Total: ₱${order.grossTotal.toFixed(2)}`, {
+      align: 'right'
+    });
+    doc.text(`Discount: - ₱${order.discountTotal.toFixed(2)}`, {
+      align: 'right'
+    });
+    doc.fontSize(11).text(`Net Total: ₱${order.netTotal.toFixed(2)}`, {
+      align: 'right'
+    });
+    doc.moveDown();
+
+    // --- PAYMENT ---
+    if (order.payment) {
+      doc.fontSize(9).text(`Payment: ${order.payment.method || 'Gcash'}`);
+      if (order.payment.referenceNumber) {
+        doc.text(`Ref No: ${order.payment.referenceNumber}`);
+      }
+      doc.moveDown();
+    }
+
+    doc.fontSize(8).text('================================', { align: 'center' });
+
+    // --- FOOTER ---
+    doc.fontSize(9).text('Thank you for dining with us!', { align: 'center' });
+    doc.fontSize(8).text("Visit again at Nap's Grill and Restobar", {
+      align: 'center'
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error('Error generating PDF receipt:', error);
+    res.status(500).send('Error generating receipt');
+  }
+};
 exports.getReservations = async (req, res) => {
   try {
    const reservations = await Reservation.find({ status: 'pending' })
