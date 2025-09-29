@@ -206,7 +206,7 @@ exports.bookTable = async (req, res) => {
     // --- Send confirmation email ---
     await sendReservationEmail({ to: email, name: fullName, tableName: table.name });
 
-    res.redirect('/user/reservation?success=1');
+ res.redirect(`${req.protocol}://${req.get('host')}/user/reservation?success=1`);
   } catch (err) {
     console.error('Reservation booking error:', err);
     res.status(500).send('Server error');
@@ -531,7 +531,7 @@ exports.placeOrder = async (req, res) => {
     });
 
     // --- Redirect to success page ---
-    res.redirect(`/user/order-success/${newOrder._id}`);
+    res.redirect(`${req.protocol}://${req.get('host')}/user/order-success/${newOrder._id}`);
   } catch (err) {
     console.error('Place-order error:', err);
     res.status(500).send('Server Error');
