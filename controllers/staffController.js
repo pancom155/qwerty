@@ -59,30 +59,29 @@ exports.renderStaffDashboard = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-    // Kunin ang mga orders na may status pending, processing, o ready_to_pickup
+  
     const orders = await Order.find({
       status: { $in: ['pending', 'processing', 'ready_to_pickup'] }
     })
-      .populate('userId', 'firstName lastName email') // populate user info
-      .populate('items.productId', 'image name')     // populate product info sa bawat item
-      .sort({ createdAt: -1 })                        // pinakabagong orders muna
+      .populate('userId', 'firstName lastName email') 
+      .populate('items.productId', 'image name')    
+      .sort({ createdAt: -1 })                      
       .lean();
 
-    // I-compute ang totals kung wala pa
     const updatedOrders = orders.map(order => {
-      // Kung walang grossTotal, compute mula sa items subtotals
+     
       order.grossTotal = order.grossTotal ?? order.items.reduce((sum, item) => sum + (item.subtotal || 0), 0);
 
-      // Kung walang discountTotal, compute mula sa discounts array
+   
       order.discountTotal = order.discountTotal ?? (order.discounts ? order.discounts.reduce((sum, d) => sum + (d.amount || 0), 0) : 0);
 
-      // Compute netTotal bilang grossTotal minus discountTotal, minimum 0
+   
       order.netTotal = order.netTotal ?? Math.max(0, order.grossTotal - order.discountTotal);
 
       return order;
     });
 
-    // I-render ang view na may orders at user info
+
     res.render('staff/order', {
       orders: updatedOrders,
       user: req.session.user
@@ -91,7 +90,7 @@ exports.getOrders = async (req, res) => {
   } catch (error) {
     console.error('Error fetching staff orders:', error);
 
-    // Kapag may error, mag-render ng walang orders pero may user info pa rin
+
     res.render('staff/order', {
       orders: [],
       user: req.session.user
@@ -100,7 +99,7 @@ exports.getOrders = async (req, res) => {
 };
 
 
-// Get count of pending orders and reservations
+
 exports.getPendingOrderCount = async (req, res) => {
   try {
     const pendingOrderCount = await Order.countDocuments({ status: 'pending' });
@@ -114,18 +113,17 @@ exports.getPendingOrderCount = async (req, res) => {
   }
 };
 
-// Get pending orders and reservations for notifications
+
 exports.getPendingOrders = async (req, res) => {
   try {
-    // Pending orders
+
     const pendingOrders = await Order.find({ status: 'pending' })
-      .populate('userId', 'firstName lastName') // populate user info if exists
+      .populate('userId', 'firstName lastName') 
       .sort({ createdAt: -1 })
       .lean();
 
-    // Pending reservations
     const pendingReservations = await Reservation.find({ status: 'pending' })
-      .select('fullName createdAt') // send only the fields you need
+      .select('fullName createdAt')
       .sort({ createdAt: -1 })
       .lean();
 
@@ -297,12 +295,18 @@ doc.fontSize(8).text('--------------------------------', { align: 'center' });
     }
 
     doc.fontSize(8).text('================================', { align: 'center' });
+// --- FOOTER ---
+doc.fontSize(9).text('Thank you for dining with us!', { align: 'center' });
+doc.fontSize(8).text("Visit again at Nap's Grill and Restobar", {
+  align: 'center'
+});
 
-    // --- FOOTER ---
-    doc.fontSize(9).text('Thank you for dining with us!', { align: 'center' });
-    doc.fontSize(8).text("Visit again at Nap's Grill and Restobar", {
-      align: 'center'
-    });
+doc.moveDown(2); // adds a little spacing
+doc.fontSize(10).text(
+  "This receipt is not an official receipt. For an official receipt, please contact the restaurant.",
+  { align: 'center' }
+);
+
 
     doc.end();
   } catch (error) {
@@ -310,6 +314,10 @@ doc.fontSize(8).text('--------------------------------', { align: 'center' });
     res.status(500).send('Error generating receipt');
   }
 };
+
+
+
+
 exports.getReservations = async (req, res) => {
   try {
    const reservations = await Reservation.find({ status: 'pending' })

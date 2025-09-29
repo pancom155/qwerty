@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const express = require('express');
-const app = express(); // <--- Add this line
+const app = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
@@ -67,9 +67,7 @@ app.use((req, res, next) => {
 
 // --- SOCKET.IO CONNECTION ---
 io.on('connection', (socket) => {
-  console.log('New client connected');
   socket.on('disconnect', () => {
-    console.log('Client disconnected');
   });
 });
 
