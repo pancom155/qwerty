@@ -22,32 +22,45 @@ const loadSettings = require('./middleware/loadSettings');
 const http = require('http');
 const { Server } = require("socket.io");
 
-// --- CREATE SERVER AFTER app IS DEFINED ---
+// --- CREATE SERVER ---
 const server = http.createServer(app);
 const io = new Server(server);
 
 // --- MIDDLEWARES ---
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // important for Render/Heroku
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cookieParser());
-app.use(loadSettings); 
+app.use(loadSettings);
+
+// --- SESSION (set secure based on env) ---
 app.use(session({
-  secret: 'secret-key',
+  secret: process.env.SESSION_SECRET || 'secret-key',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false }
+  cookie: { 
+    secure: process.env.NODE_ENV === "production", // only secure in production
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax"
+  }
 }));
-app.set("io", io);
-app.use(flash());
 
+// --- FLASH MESSAGES ---
+app.use(flash());
 app.use((req, res, next) => {
   res.locals.success = req.flash('success');
   res.locals.editSuccess = req.flash('editSuccess');
   res.locals.error = req.flash('error');
+  next();
+});
+
+// --- MAKE io ACCESSIBLE ---
+app.set("io", io);
+app.use((req, res, next) => {
+  req.io = io;
   next();
 });
 
@@ -61,27 +74,23 @@ app.use('/waiter', waiterRoutes);
 app.use('/kitchen', kitchenStaffRoutes);
 app.use("/", reportRoutes);
 
-// --- MAKE io ACCESSIBLE IN REQ OBJECT ---
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
-
 // --- SOCKET.IO CONNECTION ---
 io.on('connection', (socket) => {
+  console.log('A user connected');
   socket.on('disconnect', () => {
+    console.log('User disconnected');
   });
 });
 
 // --- MONGODB CONNECTION ---
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+  .then(() => console.log(''))
+  .catch(err => console.log('', err));
 
 // --- START SERVER ---
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => { 
-  console.log(`Server running at http://localhost:${PORT}`);
+  console.log(`http://localhost:${PORT}`);
 });
 
 module.exports = { io, server };
