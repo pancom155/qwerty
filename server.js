@@ -27,6 +27,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 // --- MIDDLEWARES ---
+app.set("trust proxy", 1);
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
