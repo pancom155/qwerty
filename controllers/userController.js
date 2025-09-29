@@ -188,11 +188,10 @@ exports.bookTable = async (req, res) => {
       referenceNumber,
       proofOfPayment: proofPath,
       totalPrice: table.price,
-      reservation_fee: table.reservation_fee || 0, 
+      reservation_fee: table.reservation_fee || 0,
       status: 'pending'
     });
 
-    // --- Emit Socket.IO notification to staff dashboard ---
     const io = req.app.get("io");
     io.emit("newReservation", {
       title: "New Reservation",
@@ -203,15 +202,18 @@ exports.bookTable = async (req, res) => {
       userId: req.session.user._id
     });
 
-    // --- Send confirmation email ---
+    // Confirmation email
     await sendReservationEmail({ to: email, name: fullName, tableName: table.name });
 
+    // --- Redirect (relative is enough) ---
     res.redirect('/user/reservation?success=1');
+
   } catch (err) {
-    console.error('Reservation booking error:', err);
-    res.status(500).send('Server error');
+    console.error("Reservation booking error:", err.stack || err);
+    res.status(500).send("Server error (check logs)");
   }
 };
+
 
 
 exports.renderVoucherPage = async (req, res) => {
@@ -401,10 +403,15 @@ exports.renderCheckoutPage = async (req, res) => {
 };
 exports.placeOrder = async (req, res) => {
   try {
+    // --- Check logged in ---
+    if (!req.session.user || !req.session.user._id) {
+      return res.redirect('/login?error=Session expired. Please login again.');
+    }
     const userId = req.session.user._id;
+
     const { voucherCode, referenceNumber } = req.body;
 
-    // --- Payment proof check ---
+    // --- Check proof of payment ---
     if (!req.file) {
       return res.redirect('/user/placeorder?error=Please upload proof of payment.');
     }
@@ -412,18 +419,20 @@ exports.placeOrder = async (req, res) => {
     // --- Get user cart ---
     const cart = await Cart.findOne({ userId }).populate('items.productId');
     if (!cart || cart.items.length === 0) {
-      return res.status(400).send('Cart is empty');
+      return res.redirect('/cart?error=Your cart is empty.');
     }
 
     // --- Format items ---
-    const items = cart.items.filter(i => i.productId).map(i => ({
-      productId: i.productId._id,
-      name: i.productId.name,
-      image: i.productId.image || '',
-      price: i.productId.price,
-      quantity: i.quantity,
-      subtotal: i.productId.price * i.quantity
-    }));
+    const items = cart.items
+      .filter(i => i.productId)
+      .map(i => ({
+        productId: i.productId._id,
+        name: i.productId.name,
+        image: i.productId.image || '',
+        price: i.productId.price,
+        quantity: i.quantity,
+        subtotal: i.productId.price * i.quantity
+      }));
 
     const gross = items.reduce((sum, item) => sum + item.subtotal, 0);
     const discounts = [];
@@ -431,10 +440,8 @@ exports.placeOrder = async (req, res) => {
     // --- PWD discount check ---
     const hasPWD = await PWDRequest.exists({ userId, status: 'Approved' });
     if (hasPWD) {
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const todayEnd = new Date();
-      todayEnd.setHours(23, 59, 59, 999);
+      const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+      const todayEnd = new Date(); todayEnd.setHours(23,59,59,999);
 
       const alreadyUsedPWD = await Order.exists({
         userId,
@@ -489,8 +496,10 @@ exports.placeOrder = async (req, res) => {
         description: `Voucher ${voucher.code}`
       });
 
-      // Mark voucher as redeemed
-      await Voucher.updateOne({ _id: voucher._id }, { $addToSet: { redeemedBy: userId } });
+      await Voucher.updateOne(
+        { _id: voucher._id },
+        { $addToSet: { redeemedBy: userId } }
+      );
     }
 
     // --- Create order ---
@@ -504,11 +513,11 @@ exports.placeOrder = async (req, res) => {
       }
     });
 
-    // --- Get user info for notification ---
+    // --- Get user info for notifications & emails ---
     const user = await User.findById(userId).lean();
-    const customerName = newOrder.fullName || `${user.firstName} ${user.lastName}`;
+    const customerName = `${user.firstName} ${user.lastName}`;
 
-    // --- Emit Socket.IO notification to staff dashboard ---
+    // --- Emit socket event for staff ---
     const io = req.app.get("io");
     io.emit("newOrder", {
       title: "New Order",
@@ -523,18 +532,24 @@ exports.placeOrder = async (req, res) => {
     cart.items = [];
     await cart.save();
 
-    // --- Send confirmation email ---
-    await sendOrderConfirmationEmail({
-      to: user.email,
-      name: customerName,
-      orderId: newOrder._id
-    });
+    // --- Send confirmation email (only if mailer is configured) ---
+    try {
+      await sendOrderConfirmationEmail({
+        to: user.email,
+        name: customerName,
+        orderId: newOrder._id
+      });
+    } catch (mailErr) {
+      console.error("Email sending failed:", mailErr.message);
+      // Don’t crash, just log
+    }
 
     // --- Redirect to success page ---
-    res.redirect(`/user/order-success/${newOrder._id}`);
+    return res.redirect(`/user/order-success/${newOrder._id}`);
+
   } catch (err) {
-    console.error('Place-order error:', err);
-    res.status(500).send('Server Error');
+    console.error('Place-order error:', err.stack || err);
+    return res.status(500).send('Server Error');
   }
 };
 
