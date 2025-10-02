@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const staffController = require('../controllers/staffController');
-
+const upload = require('../middleware/upload');
 function checkStaffAuth(req, res, next) {
   if (!req.session.user || req.session.user.role !== 'staff') {
     return res.redirect('/login');
@@ -29,4 +29,11 @@ router.get('/orders/receipt/:id', checkStaffAuth, staffController.downloadReceip
 router.get('/calendar', checkStaffAuth, staffController.renderCalendarPage);
 
 router.get('/calendar/events', staffController.getCalendarEvents);
+
+// Staff chat with users
+router.post('/chat/add', staffController.addChat);
+router.delete('/chat/:chatId', staffController.deleteChat);
+router.get('/chat', checkStaffAuth, staffController.getAllChats);
+router.post('/chat/send', upload.single('image'), staffController.sendMessage);
+
 module.exports = router;

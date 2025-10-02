@@ -132,12 +132,20 @@
                 <input type="email" name="email" class="form-control" placeholder="Email" required>
               </div>
             </div>
-            <div class="col">
-              <div class="mb-3 input-group">
-                <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                <input type="text" name="contactNo" class="form-control" placeholder="Contact Number" required>
-              </div> 
+          <div class="col">
+            <div class="mb-3 input-group">
+              <span class="input-group-text"><i class="fas fa-phone"></i></span>
+              <input type="text" id="contactNo" name="contactNo" 
+                    class="form-control" 
+                    placeholder="Contact Number (e.g., 09123456789)" 
+                    maxlength="11" required>
             </div>
+            <div id="phoneHelper" class="small text-muted" style="display: none;">
+              <p id="startsWith09" class="mb-1">Must start with 09</p>
+              <p id="length11" class="mb-1">Must be exactly 11 digits</p>
+              <p id="onlyDigits" class="mb-1">Must contain only numbers</p>
+            </div>
+          </div>
           </div>
           <div class="mb-3 input-group">
             <span class="input-group-text"><i class="fas fa-home"></i></span>
@@ -362,18 +370,43 @@
   });
 
   const form = document.querySelector("form");
+  const contactInput = document.getElementById("contactNo");
+  const phoneHelper = document.getElementById("phoneHelper");
+
+  const startsWith09 = document.getElementById("startsWith09");
+  const length11 = document.getElementById("length11");
+  const onlyDigits = document.getElementById("onlyDigits");
+
+  contactInput.addEventListener("input", () => {
+    const value = contactInput.value;
+    phoneHelper.style.display = value.length > 0 ? "block" : "none";
+    startsWith09.style.color = value.startsWith("09") ? "green" : "red";
+    length11.style.color = value.length === 11 ? "green" : "red";
+    onlyDigits.style.color = /^\d*$/.test(value) ? "green" : "red";
+  });
+
   form.addEventListener("submit", (e) => {
     const value = passwordInput.value;
-    const valid =
+    const validPassword =
       value.length >= 8 &&
       /[A-Z]/.test(value) &&
       /[a-z]/.test(value) &&
       /\d/.test(value) &&
       /[!@#$%^&*(),.?":{}|<>_]/.test(value);
 
-    if (!valid) {
+    if (!validPassword) {
       e.preventDefault();
       Swal.fire("Weak Password", "Please create a stronger password before continuing.", "warning");
+      return;
+    }
+
+    const phoneValue = contactInput.value;
+    const validPhone = /^09\d{9}$/.test(phoneValue);
+
+    if (!validPhone) {
+      e.preventDefault();
+      Swal.fire("Invalid Phone Number", "Please enter a valid Philippine number starting with 09 and exactly 11 digits.", "error");
+      return;
     }
   });
 </script>

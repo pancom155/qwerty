@@ -354,6 +354,7 @@ body {
 <a href="/staff/order_done"><i class="bi bi-receipt"></i> Order Receipt</a>
 <a href="/staff/reservation"><i class="bi bi-journal-bookmark"></i> Reservation</a>
 <a href="/staff/calendar" ><i class="bi bi-calendar-event"></i> Calendar</a>
+<a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
 
   </nav>
 </div>
@@ -409,7 +410,9 @@ body {
             
             <i class="bi bi-hourglass-split position-absolute top-50 start-50 translate-middle"></i>
           </div>
-          <span><%= pendingOrders %></span>
+          
+            <h3 class="fw-bold text-primary mb-1">  <span><%= pendingOrders %></span></h3>
+          
           <p>Pending Orders</p>
         </div>
       </div>
@@ -421,7 +424,7 @@ body {
            
             <i class="bi bi-gear-fill position-absolute top-50 start-50 translate-middle"></i>
           </div>
-           <span><%= processingOrders %></span>
+             <h3 class="fw-bold text-primary mb-1">   <span><%= processingOrders %></span></h3>
           <p>Processing Orders</p>
         </div>
       </div>
@@ -433,7 +436,8 @@ body {
            
             <i class="bi bi-check-circle-fill position-absolute top-50 start-50 translate-middle"></i>
           </div>
-           <span><%= completedOrders %></span>
+          
+              <h3 class="fw-bold text-primary mb-1">  <span><%= completedOrders %></span></h3>
           <p>Completed Orders</p>
         </div>
       </div>
@@ -445,7 +449,8 @@ body {
             
             <i class="bi bi-cart-check position-absolute top-50 start-50 translate-middle"></i>
           </div>
-          <span><%= totalOrders %></span>
+          
+            <h3 class="fw-bold text-primary mb-1"> <span><%= totalOrders %></span></h3>
           <p>Total Orders</p>
         </div>
       </div>
@@ -457,7 +462,8 @@ body {
            
             <i class="bi bi-calendar2-week position-absolute top-50 start-50 translate-middle"></i>
           </div>
-           <span><%= pendingReservations %></span>
+         
+               <h3 class="fw-bold text-primary mb-1">  <span><%= pendingReservations %></span></h3>
           <p>Pending Reservations</p>
         </div>
       </div>
@@ -469,7 +475,7 @@ body {
            
             <i class="bi bi-calendar-check-fill position-absolute top-50 start-50 translate-middle"></i>
           </div>
-           <span><%= confirmedReservations %></span>
+            <h3 class="fw-bold text-primary mb-1"><%= confirmedReservations %></h3>
           <p>Confirmed Reservations</p>
         </div>
       </div>
@@ -481,7 +487,8 @@ body {
             
             <i class="bi bi-calendar-event-fill position-absolute top-50 start-50 translate-middle"></i>
           </div>
-          <span><%= totalReservations %></span>
+        
+             <h3 class="fw-bold text-primary mb-1"><%= totalReservations %></h3>
           <p>Total Reservations</p>
         </div>
       </div>
@@ -489,11 +496,11 @@ body {
        <div class="col-md-3">
         <div class="stat-box total-res">
           <div class="circle position-relative">
-            <canvas id="totalResChart"></canvas>
+            <canvas id="readypick"></canvas>
            <i class="bi bi-truck position-absolute top-50 start-50 translate-middle"></i>
 
           </div>
-          <span><%= readyToPickupOrders %></span>
+      <h3 class="fw-bold text-primary mb-1"><%= readyToPickupOrders %></h3>
           <p>Ready To Pickup</p>
         </div>
       </div>
@@ -506,12 +513,12 @@ body {
 <script>
   // Function to create circle charts
   function createCircleChart(id, value, total, color) {
-    const percentage = total > 0 ? (value / total) * 100 : 0;
+    const percentage = total > 0 ? (value / total) * 0 : 0;
     new Chart(document.getElementById(id), {
       type: 'doughnut',
       data: {
         datasets: [{
-          data: [percentage, 100 - percentage],
+          data: [percentage, 10 - percentage],
           backgroundColor: [color, '#e9ecef'],
           borderWidth: 0
         }]
@@ -531,6 +538,7 @@ body {
   createCircleChart("pendingResChart", <%= pendingReservations %>, <%= reservationsTotal %>, "#FF5722");
   createCircleChart("confirmedResChart", <%= confirmedReservations %>, <%= reservationsTotal %>, "#4CAF50");
   createCircleChart("totalResChart", <%= totalReservations %>, <%= totalReservations %>, "#9C27B0");
+   createCircleChart("readypick", <%= readyToPickupOrders %>, <%= readyToPickupOrders %>, "#28a745");
 
 document.addEventListener('DOMContentLoaded', () => {
   const notificationBtn = document.getElementById('notificationBtn');

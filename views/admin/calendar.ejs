@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Dashboard | Calendar</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/StaffOrder.css">
+
+  <!-- ✅ FullCalendar CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<style>
+  /* Notification container */
+.notification-container {
+    position: relative;
+    margin-right: 15px;
+}
+
+/* Notification badge */
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+/* Badge pulse animation when updated */
+.notification-badge.updated {
+    transform: scale(1.3);
+    animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Dropdown styling */
+.notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    padding: 15px;
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Notification items */
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: slideIn 0.5s forwards;
+}
+
+.notification-item:last-child {
+    border-bottom: none;
+}
+
+.notification-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Slide-in effect for new notifications */
+@keyframes slideIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Notification text */
+.notification-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #343a40;
+}
+
+.notification-message {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 5px;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* "No Notifications" message */
+.notification-empty {
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* View all orders button */
+.view-orders-btn {
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* Scrollbar for dropdown */
+.notification-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 3px;
+}
+
+.notification-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+</style>
+<body>
+
+<div class="sidebar" id="sidebar">
+    <div class="d-flex justify-content-center mb-5 mt-3">
+      <img src="<%= settings && settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+    </div>
+    <nav>
+      <a href="/admin/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="/admin/users"><i class="bi bi-person-circle"></i> Users Profile</a>
+      <a href="/admin/staff"><i class="bi bi-people-fill"></i> Account Creation</a>
+      <a href="/admin/orders"><i class="bi bi-receipt"></i> Orders</a>
+      <a href="/admin/reservations"><i class="bi bi-journal-bookmark"></i> Reservations</a>
+      <a href="/admin/discounts"><i class="bi bi-percent"></i> Discounts</a>
+      <a href="/admin/reviews"><i class="bi bi-chat-dots"></i> Users Reviews</a>
+      <a href="/admin/products"><i class="bi bi-box-seam"></i> Inventory</a>
+      <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
+      <a href="/admin/calendar" class="active"><i class="bi bi-calendar-event"></i> Calendar</a>
+      <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
+    </nav>
+</div>
+
+<div class="main-content">
+  <div class="navbar-custom-wrapper">
+    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center px-3 py-2 shadow-sm bg-light">
+      <div class="d-flex align-items-center">
+        <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3" width="40" height="40">
+        <div class="admin-info">
+          <div class="fw-semibold mb-0">Super Admin</div>
+          <small class="text-muted">napsgrillrestobar08@gmail.com</small>
+        </div>
+      </div>
+
+      <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </a>
+    </nav>
+  </div>
+
+  <div class="container-fluid mt-4">
+    <h3 class="mb-4">Calendar</h3>
+    <div id="calendar"></div>
+  </div>
+</div>
+
+<!-- Reservation Details Modal -->
+<div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-lg border-0 rounded-3">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title"><i class="bi bi-calendar-event me-2"></i> Reservation Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+              <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>User Information</h6>
+                <p><strong>Full Name:</strong> <span id="resFullName"></span></p>
+                <p><strong>Email:</strong> <span id="resEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="resPhone"></span></p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+              <div class="card-body">
+                <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Reservation Info</h6>
+                <p><strong>Table:</strong> <span id="resTable"></span></p>
+                <p><strong>Reference No.:</strong> <span id="resRef"></span></p>
+                <p><strong>Total Price:</strong> ₱<span id="resPrice"></span></p>
+                <p><strong>Reservation Fee:</strong> ₱<span id="resFee"></span></p>
+                <p><strong>Status:</strong> <span id="resStatus" class="badge bg-warning text-dark px-3 py-2 rounded-pill"></span></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ✅ Scripts -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+      initialView: 'dayGridMonth',
+      themeSystem: 'bootstrap5',
+      height: 'auto',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: '/admin/calendar/events',
+      eventClick: function (info) {
+        const props = info.event.extendedProps;
+        document.getElementById('resFullName').innerText = props.fullName;
+        document.getElementById('resEmail').innerText = props.email;
+        document.getElementById('resPhone').innerText = props.phone;
+        document.getElementById('resTable').innerText = props.table;
+        document.getElementById('resRef').innerText = props.refNo;
+        document.getElementById('resPrice').innerText = props.price;
+        document.getElementById('resFee').innerText = props.fee;
+        document.getElementById('resStatus').innerText = props.status;
+        new bootstrap.Modal(document.getElementById('reservationModal')).show();
+      }
+    });
+    calendar.render();
+  });
+
+  // Notifications (Admin version)
+  document.addEventListener('DOMContentLoaded', () => {
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const notificationBadge = document.getElementById('notificationBadge');
+    const notificationList = document.getElementById('notificationList');
+    let pendingCount = 0;
+
+    function updateBadge() {
+      notificationBadge.style.display = pendingCount > 0 ? 'flex' : 'none';
+      notificationBadge.textContent = pendingCount;
+    }
+
+    function checkEmpty() {
+      if (!notificationList.querySelector('.notification-item')) {
+        notificationList.innerHTML = '<div class="notification-empty">No Notifications</div>';
+      }
+    }
+
+    async function loadPendingOrders() {
+      try {
+        const res = await fetch('/admin/pending-orders');
+        const data = await res.json();
+        const orders = data.pendingOrders || [];
+        const reservations = data.pendingReservations || [];
+
+        function createNotificationItem(type, item) {
+          const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
+          const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
+          const el = document.createElement('div');
+          el.className = 'notification-item';
+          el.innerHTML = `
+            <div class="notification-title">${type}</div>
+            <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
+            <div class="notification-time">${time}</div>
+          `;
+          el.addEventListener('click', () => {
+            window.location.href = type === 'New Order' ? '/admin/orders' : '/admin/reservations';
+          });
+          return el;
+        }
+
+        orders.forEach(o => notificationList.prepend(createNotificationItem('New Order', o)));
+        reservations.forEach(r => notificationList.prepend(createNotificationItem('New Reservation', r)));
+        pendingCount = orders.length + reservations.length;
+        updateBadge(); checkEmpty();
+      } catch (err) {
+        console.error('Error loading admin pending:', err);
+      }
+    }
+    loadPendingOrders();
+
+    notificationBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      notificationDropdown.style.display = notificationDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', e => {
+      if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+        notificationDropdown.style.display = 'none';
+      }
+    });
+
+    const socket = io();
+    socket.on('newOrder', data => {
+      const el = document.createElement('div');
+      el.className = 'notification-item';
+      el.innerHTML = `<div class="notification-title">${data.title}</div>
+                      <div class="notification-message">${data.message}</div>
+                      <div class="notification-time">${data.time}</div>`;
+      el.addEventListener('click', () => window.location.href = '/admin/orders');
+      notificationList.prepend(el);
+      pendingCount++; updateBadge();
+    });
+  });
+</script>
+</body>
+</html>

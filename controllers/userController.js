@@ -4,6 +4,8 @@ const Table = require('../models/Table');
 const Cart = require('../models/Cart');
 const Voucher = require('../models/Voucher');
 const PWDRequest = require('../models/PWDRequest');
+const CustomerSupport = require('../models/CustomerSupport');
+
 const Reservation = require('../models/Reservation');
 const Order = require('../models/Order');
 const Review = require('../models/Review');
@@ -674,5 +676,85 @@ exports.updateProfile = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error updating profile');
+  }
+};
+
+exports.renderCustomerSupport = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const user = await User.findById(userId).lean();
+    if (!user) return res.redirect('/login');
+
+    res.render('user/customer_support', {
+      user,
+      pageTitle: 'Customer Support'
+    });
+  } catch (err) {
+    console.error('Error rendering customer support page:', err);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+
+
+
+exports.renderCustomerSupport = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const user = await User.findById(userId).lean();
+
+    if (!user) return res.redirect('/login');
+
+    const chats = await CustomerSupport.find({ userId })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    res.render('user/customer_support', {
+      user,
+      chats
+    });
+  } catch (err) {
+    console.error('Error rendering customer support page:', err);
+    res.status(500).send('Internal Server Error');
+  }
+};
+exports.sendMessage = async (req, res) => {
+  const { message } = req.body;                // user’s text message
+  const userEmail = req.session.user.email;    // logged-in user’s email from session
+  const image = req.file ? `/uploads/${req.file.filename}` : null; // optional image path
+
+  try {
+    // find user in database
+    const user = await User.findOne({ email: userEmail });
+    if (!user) return res.status(404).send('User not found');
+
+    // check if user already has an active chat
+    let chat = await CustomerSupport.findOne({ userId: user._id });
+
+    // if no chat, create one
+    if (!chat) {
+      chat = new CustomerSupport({
+        userId: user._id,
+        messages: []
+      });
+    }
+
+    // push new message
+    chat.messages.push({
+      sender: 'user',         // mark as user message
+      email: userEmail,       // email of sender
+      message,                // text content
+      image,                  // image if uploaded
+      timestamp: new Date()   // when message sent
+    });
+
+    // save updated chat
+    await chat.save();
+
+    // redirect back to chat page
+    res.redirect('/user/customer_support');
+  } catch (err) {
+    console.error(err);
+    res.send('Error sending message');
   }
 };

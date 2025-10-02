@@ -21,13 +21,16 @@ router.get('/reservation', adminController.getReservationPage);
 router.get('/settings', adminController.getSettings);
 
 
+router.get('/calendar', adminController.renderCalendarPage);
 
+router.get('/calendar/events', adminController.getCalendarEvents);
 
 router.post('/settings/upload-order-qr', upload.single('orderQR'), adminController.uploadOrderQR);
 router.post('/admin/upload-logo', upload.single('logo'), adminController.uploadLogo);
 
 router.post('/settings/upload-logo', upload.single('logo'), adminController.uploadLogo);
 
+router.post('/reviews/:id/delete', adminController.deleteReview);
 
 router.get('/reviews',adminController.getReviews);
 router.get('/orders', adminController.getOrdersPage);

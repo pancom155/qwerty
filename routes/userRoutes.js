@@ -31,6 +31,14 @@ router.get('/menu', userController.menuPage);
 router.get('/reservation', isLoggedIn, userController.renderReservationPage);
 router.get('/orders', isLoggedIn, userController.renderOrdersPage);
 
+router.get('/customer_support', isLoggedIn, userController.renderCustomerSupport);
+router.post( '/customer_support/send',isLoggedIn,upload.single('image'), userController.sendMessage);
+
+
+
+
+
+
 router.get('/table/:id', isLoggedIn, userController.viewTableDetails);
 router.post('/reservation/:id/book', isLoggedIn, upload.single('proofOfPayment'), userController.bookTable);
 

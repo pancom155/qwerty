@@ -11,9 +11,10 @@
 </head>
 <body>
 
+<!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <div class="d-flex justify-content-center mb-5 mt-3">
-  <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+    <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
   </div>
   <nav>
     <a href="/admin/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -25,10 +26,12 @@
     <a href="/admin/reviews"><i class="bi bi-chat-dots"></i> Users Reviews</a>
     <a href="/admin/products" class="active"><i class="bi bi-box-seam"></i> Inventory</a>
     <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
-  <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
+    <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+    <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
   </nav>
 </div>
 
+<!-- Main Content -->
 <div class="main-content">
   <div class="navbar-custom-wrapper">
     <nav class="navbar navbar-custom sticky-top d-flex justify-content-between align-items-center">
@@ -46,38 +49,175 @@
   </div>
 
   <div class="container-fluid px-4">
+    <!-- Header + Search + Add Button -->
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Inventory</h1>
-      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
-        <i class="bi bi-plus-circle me-2"></i>Add Product
-      </button>
+      <div class="d-flex gap-2">
+        <!-- Search Bar -->
+        <div class="input-group">
+          <span class="input-group-text bg-light border-0">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input 
+            type="text" 
+            id="productSearch" 
+            class="form-control border-0 shadow-sm" 
+            placeholder="Search products..."
+          >
+        </div>
+        <!-- Add Product Button -->
+        <button class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#addProductModal">
+          <i class="bi bi-plus-circle me-2"></i> Add Product
+        </button>
+      </div>
     </div>
 
+    <!-- Products Table -->
+    <div class="table-responsive mt-4">
+      <table class="table table-hover align-middle shadow-sm" id="productsTable">
+        <thead class="table-dark text-center">
+          <tr>
+            <th>#</th>
+            <th>Image</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach((product, index) => { %>
+            <tr class="text-center">
+              <td><%= index + 1 %></td>
+              <td>
+                <img src="/uploads/<%= product.image %>" alt="<%= product.name %>" 
+                     style="width: 60px; height: 60px; object-fit: cover;" class="rounded">
+              </td>
+              <td class="fw-semibold"><%= product.name %></td>
+              <td>
+                <span class="badge bg-info text-dark">
+                  <i class="bi bi-tags-fill me-1"></i> <%= product.category %>
+                </span>
+              </td>
+              <td class="text-muted small"><%= product.description %></td>
+              <td class="fw-bold text-success">₱<%= product.price.toFixed(2) %></td>
+              <td>
+                <span class="badge <%= product.status === 'available' ? 'bg-success' : 'bg-danger' %>">
+                  <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %>
+                </span>
+              </td>
+              <td>
+                <div class="d-flex justify-content-center gap-2">
+                  <!-- Edit -->
+                  <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal-<%= product._id %>">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <!-- Delete -->
+                  <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="<%= product._id %>">
+                    <i class="bi bi-trash3-fill"></i>
+                  </button>
+                  <!-- Toggle Status -->
+                  <form action="/admin/products/status/<%= product._id %>" method="POST" class="d-inline">
+                    <% if (product.status === 'available') { %>
+                      <button type="submit" class="btn btn-sm btn-warning">
+                        <i class="bi bi-x-circle"></i>
+                      </button>
+                    <% } else { %>
+                      <button type="submit" class="btn btn-sm btn-success">
+                        <i class="bi bi-check-circle"></i>
+                      </button>
+                    <% } %>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Product Modals -->
+<% products.forEach((product) => { %>
+  <div class="modal fade" id="editModal-<%= product._id %>" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" class="modal-content">
+        <div class="modal-header text-white justify-content-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF);">
+          <h5 class="modal-title w-100 text-center"><i class="bi bi-pencil-square me-2"></i>Edit Product</h5>
+          <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body row g-3">
+          <div class="col-md-6">
+            <label class="form-label"><i class="bi bi-type me-2"></i>Name</label>
+            <input type="text" name="name" class="form-control" value="<%= product.name %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label"><i class="bi bi-tags-fill me-2"></i>Category</label>
+            <select name="category" class="form-select" required>
+              <option value="seafood" <%= product.category === 'seafood' ? 'selected' : '' %>>Seafood</option>
+              <option value="appetizer" <%= product.category === 'appetizer' ? 'selected' : '' %>>Appetizer</option>
+              <option value="meat" <%= product.category === 'meat' ? 'selected' : '' %>>Meat</option>
+              <option value="vegetable" <%= product.category === 'vegetable' ? 'selected' : '' %>>Vegetable</option>
+              <option value="dessert" <%= product.category === 'dessert' ? 'selected' : '' %>>Dessert</option>
+              <option value="beverage" <%= product.category === 'beverage' ? 'selected' : '' %>>Beverage</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label"><i class="fa-solid fa-peso-sign me-2"></i>Price</label>
+            <input type="number" name="price" class="form-control" value="<%= product.price %>" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label"><i class="bi bi-toggle-on me-2"></i>Status</label>
+            <select name="status" class="form-select" required>
+              <option value="available" <%= product.status === 'available' ? 'selected' : '' %>>Available</option>
+              <option value="unavailable" <%= product.status === 'unavailable' ? 'selected' : '' %>>Unavailable</option>
+            </select>
+          </div>
+          <div class="col-md-12">
+            <label class="form-label"><i class="bi bi-image-fill me-2"></i>Change Image (optional)</label>
+            <input type="file" name="image" class="form-control">
+          </div>
+          <div class="col-12">
+            <label class="form-label"><i class="bi bi-card-text me-2"></i>Description</label>
+            <textarea name="description" class="form-control" required><%= product.description %></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn text-white" style="background: linear-gradient(90deg, #03C4E7, #0047FF);">
+            <i class="bi bi-check-circle me-2"></i>Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+<% }) %>
+<!-- Add Product Modal -->
 <div class="modal fade" id="addProductModal" tabindex="-1">
   <div class="modal-dialog modal-lg">
     <form action="/admin/products/add" method="POST" enctype="multipart/form-data" class="modal-content">
       
+      <!-- Modal Header -->
       <div class="modal-header text-white justify-content-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF);">
         <h5 class="modal-title text-center w-100">
-          <i class="bi bi-plus-circle-fill me-2"></i>Add New Product
+          <i class="bi bi-plus-circle me-2"></i> Add Product
         </h5>
         <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal"></button>
       </div>
 
+      <!-- Modal Body -->
       <div class="modal-body row g-3">
         <div class="col-md-6">
-          <label class="form-label">
-            <i class="bi bi-type me-2"></i>Name
-          </label>
-          <input type="text" name="name" class="form-control" required>
+          <label class="form-label"><i class="bi bi-type me-2"></i>Name</label>
+          <input type="text" name="name" class="form-control" placeholder="Enter product name" required>
         </div>
 
         <div class="col-md-6">
-          <label class="form-label">
-            <i class="bi bi-tags-fill me-2"></i>Category
-          </label>
+          <label class="form-label"><i class="bi bi-tags-fill me-2"></i>Category</label>
           <select name="category" class="form-select" required>
-            <option value="">Select</option>
+            <option value="" disabled selected>Select category</option>
             <option value="seafood">Seafood</option>
             <option value="appetizer">Appetizer</option>
             <option value="meat">Meat</option>
@@ -88,30 +228,33 @@
         </div>
 
         <div class="col-md-6">
-          <label class="form-label">
-            <i class="bi bi-currency-dollar me-2"></i>Price
-          </label>
-          <input type="number" name="price" class="form-control" required>
+          <label class="form-label"><i class="fa-solid fa-peso-sign me-2"></i>Price</label>
+          <input type="number" name="price" class="form-control" placeholder="Enter price" required>
         </div>
 
         <div class="col-md-6">
-          <label class="form-label">
-            <i class="bi bi-image-fill me-2"></i>Image
-          </label>
-          <input type="file" name="image" class="form-control" required>
+          <label class="form-label"><i class="bi bi-toggle-on me-2"></i>Status</label>
+          <select name="status" class="form-select" required>
+            <option value="available">Available</option>
+            <option value="unavailable">Unavailable</option>
+          </select>
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label"><i class="bi bi-image-fill me-2"></i>Upload Image</label>
+          <input type="file" name="image" class="form-control" accept="image/*" required>
         </div>
 
         <div class="col-12">
-          <label class="form-label">
-            <i class="bi bi-card-text me-2"></i>Description
-          </label>
-          <textarea name="description" class="form-control" required></textarea>
+          <label class="form-label"><i class="bi bi-card-text me-2"></i>Description</label>
+          <textarea name="description" class="form-control" placeholder="Enter description" required></textarea>
         </div>
       </div>
 
+      <!-- Modal Footer -->
       <div class="modal-footer">
         <button type="submit" class="btn text-white" style="background: linear-gradient(90deg, #03C4E7, #0047FF);">
-          <i class="bi bi-save2 me-2"></i>Save Product
+          <i class="bi bi-check-circle me-2"></i> Save Product
         </button>
       </div>
 
@@ -120,162 +263,32 @@
 </div>
 
 
-  <div class="row">
-    <% products.forEach((product, index) => { %>
-      <div class="col-6 col-sm-4 col-md-3 col-lg-2-4 mb-4">
-        <div class="card h-100 shadow-sm">
-          <img src="/uploads/<%= product.image %>" class="card-img-top" alt="<%= product.name %>" style="height: 200px; object-fit: cover;">
-          <div class="card-body text-center">
-            <h5 class="card-title"><%= product.name %></h5>
-            <p class="card-text"><%= product.description %></p>
-            <p class="mb-1">
-              <span class="badge bg-info text-dark text-capitalize">
-                <i class="bi bi-tags-fill me-1"></i><%= product.category %>
-              </span>
-            </p>
-            <p class="mb-1 fw-semibold text-success">₱<%= product.price.toFixed(2) %></p>
-            <span class="badge <%= product.status === 'available' ? 'bg-success' : 'bg-danger' %>">
-              <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %>
-            </span>
-          </div>
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <button type="button" class="btn btn-sm btn-danger delete-btn" data-id="<%= product._id %>">
-              <i class="bi bi-trash3-fill"></i>
-            </button>
-            <form action="/admin/products/status/<%= product._id %>" method="POST" class="d-inline">
-              <% if (product.status === 'available') { %>
-                <button type="submit" class="btn btn-sm btn-gradient">Set Unavailable</button>
-              <% } else { %>
-                <button type="submit" class="btn btn-sm btn-gradient">Set Available</button>
-              <% } %>
-            </form>           
-            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editModal-<%= product._id %>">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-    <% }) %>
-  </div>
-  </div>
-</div>
-
-<% products.forEach((product) => { %>
-  <div class="modal fade" id="editModal-<%= product._id %>" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <form action="/admin/products/edit/<%= product._id %>" method="POST" enctype="multipart/form-data" class="modal-content">
-
-        <div class="modal-header text-white justify-content-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF);">
-          <h5 class="modal-title text-center w-100">
-            <i class="bi bi-pencil-square me-2"></i>Edit Product
-          </h5>
-          <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal"></button>
-        </div>
-
-        <div class="modal-body row g-3">
-          <div class="col-md-6">
-            <label class="form-label">
-              <i class="bi bi-type me-2"></i>Name
-            </label>
-            <input type="text" name="name" class="form-control" value="<%= product.name %>" required>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              <i class="bi bi-tags-fill me-2"></i>Category
-            </label>
-            <select name="category" class="form-select" required>
-              <option value="seafood" <%= product.category === 'seafood' ? 'selected' : '' %>>Seafood</option>
-              <option value="appetizer" <%= product.category === 'appetizer' ? 'selected' : '' %>>Appetizer</option>
-              <option value="meat" <%= product.category === 'meat' ? 'selected' : '' %>>Meat</option>
-              <option value="vegetable" <%= product.category === 'vegetable' ? 'selected' : '' %>>Vegetable</option>
-              <option value="dessert" <%= product.category === 'dessert' ? 'selected' : '' %>>Dessert</option>
-              <option value="beverage" <%= product.category === 'beverage' ? 'selected' : '' %>>Beverage</option>
-            </select>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              <i class="fa-solid fa-peso-sign me-2"></i>Price
-            </label>
-            <input type="number" name="price" class="form-control" value="<%= product.price %>" required>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label">
-              <i class="bi bi-toggle-on me-2"></i>Status
-            </label>
-            <select name="status" class="form-select" required>
-              <option value="available" <%= product.status === 'available' ? 'selected' : '' %>>Available</option>
-              <option value="unavailable" <%= product.status === 'unavailable' ? 'selected' : '' %>>Unavailable</option>
-            </select>
-          </div>
-
-          <div class="col-md-12">
-            <label class="form-label">
-              <i class="bi bi-image-fill me-2"></i>Change Image (optional)
-            </label>
-            <input type="file" name="image" class="form-control">
-          </div>
-
-          <div class="col-12">
-            <label class="form-label">
-              <i class="bi bi-card-text me-2"></i>Description
-            </label>
-            <textarea name="description" class="form-control" required><%= product.description %></textarea>
-          </div>
-        </div>
-
-        <div class="modal-footer">
-          <button type="submit" class="btn text-white" style="background: linear-gradient(90deg, #03C4E7, #0047FF);">
-            <i class="bi bi-check-circle me-2"></i>Save Changes
-          </button>
-        </div>
-
-      </form>
-    </div>
-  </div>
-<% }) %>
-
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- Alerts -->
 <% if (success) { %>
   <script>
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: "<%= success %>",
-      timer: 2000,
-      showConfirmButton: false
-    });
+    Swal.fire({ icon: 'success', title: 'Success', text: "<%= success %>", timer: 2000, showConfirmButton: false });
   </script>
 <% } %>
-
 <% if (editSuccess) { %>
   <script>
-    Swal.fire({
-      icon: 'success',
-      title: 'Product Updated',
-      text: "<%= editSuccess %>",
-      timer: 2000,
-      showConfirmButton: false
-    });
+  
+    Swal.fire({ icon: 'success', title: 'Product Updated', text: "<%= editSuccess %>", timer: 2000, showConfirmButton: false });
   </script>
 <% } %>
-
 <% if (error) { %>
   <script>
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: "<%= error %>"
-    });
+    Swal.fire({ icon: 'error', title: 'Error', text: "<%= error %>" });
   </script>
 <% } %>
 
+<!-- Delete + Search -->
 <script>
   document.addEventListener('DOMContentLoaded', function () {
+    // Delete Confirmation
     document.querySelectorAll('.delete-btn').forEach(button => {
       button.addEventListener('click', function () {
         const productId = this.getAttribute('data-id');
@@ -299,8 +312,19 @@
         });
       });
     });
+
+    // Table Search
+    const searchInput = document.getElementById("productSearch");
+    const rows = document.querySelectorAll("#productsTable tbody tr");
+
+    searchInput.addEventListener("keyup", function () {
+      const query = this.value.toLowerCase();
+      rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(query) ? "" : "none";
+      });
+    });
   });
 </script>
-
 </body>
 </html>

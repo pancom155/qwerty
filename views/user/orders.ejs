@@ -12,7 +12,110 @@
   <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+<style>
+ .pending-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 300px;
+  max-width: 500px;
+  background-color: #f0f8ff;
+  color: #0d6efd;
+  font-weight: 600;
+  padding: 12px 20px;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  font-size: 1rem;
+}
+
+/* Cooking animation: pan flipping */
+.cooking .animation-icon {
+  display: inline-block;
+  animation: flip 1s infinite;
+}
+@keyframes flip {
+  0% { transform: rotate(0deg); }
+  50% { transform: rotate(20deg) translateY(-5px); }
+  100% { transform: rotate(0deg); }
+}
+
+/* Processing animation: simmering steam */
+.processing .animation-icon {
+  display: inline-block;
+  animation: steam 1s infinite;
+}
+@keyframes steam {
+  0% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(-8px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.6; }
+}
+
+/* Ready to pickup animation: truck moving */
+.ready .animation-icon {
+  display: inline-block;
+  animation: drive 2s linear infinite;
+}
+@keyframes drive {
+  0% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+  100% { transform: translateX(-10px); }
+}
+
+/* Chat Button */
+.chat-button {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background-color: #0d6efd;
+  color: white;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 2000;
+  transition: background 0.3s;
+}
+.chat-button:hover {
+  background-color: #0b5ed7;
+}
+</style>
 <body>
+<% 
+  const pendingOrder = orders.find(o => o.status === 'pending');
+  const processingOrder = orders.find(o => o.status === 'processing');
+  const readyOrder = orders.find(o => o.status === 'ready_to_pickup');
+%>
+
+<% if (pendingOrder) { %>
+  <div class="pending-notification cooking">
+    <div class="animation-icon">🍳</div>
+    <strong>Preparing your order...</strong>
+  </div>
+<% } else if (processingOrder) { %>
+  <div class="pending-notification processing">
+    <div class="animation-icon">🥘</div>
+    <strong>Your order is being processed...</strong>
+  </div>
+<% } else if (readyOrder) { %>
+  <div class="pending-notification ready">
+    <div class="animation-icon">🚚</div>
+    <strong>Your order is ready for pickup!</strong>
+  </div>
+<% } %>
+
+
+
   <div class="sidebar" id="sidebar">
     <div class="d-flex justify-content-center mb-5 mt-3">
      <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
@@ -26,6 +129,7 @@
       <a href="/user/voucher"><i class="bi bi-ticket-perforated"></i> Voucher</a>
       <a href="/user/myreservation"><i class="bi bi-calendar-event"></i> My Reservations</a>
      <a href="/user/profile"><i class="bi bi-person-circle"></i> Profile</a>
+     <a href="/user/customer_support"><i class="bi bi-headset"></i> Support</a>
 
      
     </nav>
@@ -237,10 +341,20 @@
 
   </div>
     </div>
+   <!-- Customer Support Chat Button -->
+<div id="chatButton" class="chat-button" style="cursor:pointer;">
+  <i class="bi bi-chat-dots-fill"></i>
+</div>
   </div>
-
+<script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+
+      const chatButton = document.getElementById('chatButton');
+  chatButton.addEventListener('click', () => {
+    window.location.href = '/user/customer_support';
+  });
+
     const hamburgerBtn = document.getElementById('hamburgerBtn');
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.getElementById('sidebarOverlay');
@@ -264,6 +378,9 @@
       overlay.classList.remove('active');
     });
   });
+setInterval(() => {
+      location.reload();
+    }, 5000);
   </script>
 </body>
 </html>

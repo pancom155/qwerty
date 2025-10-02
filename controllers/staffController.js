@@ -1,5 +1,7 @@
 const Reservation = require('../models/Reservation');
 const Order = require('../models/Order');
+const CustomerSupport = require('../models/CustomerSupport');
+const User = require('../models/User');
 const { sendReservationConfirmedEmail, sendRejectionEmail, sendOrderProcessedEmail, sendOrderRejectedEmail, sendOrderCompletedEmail, sendReadyToPickupEmail } = require('../middleware/emailService');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
@@ -303,7 +305,7 @@ doc.fontSize(8).text("Visit again at Nap's Grill and Restobar", {
 
 doc.moveDown(2); // adds a little spacing
 doc.fontSize(10).text(
-  "This receipt is not an official receipt. For an official receipt, please contact the restaurant.",
+  "This is not an official receipt and not a valid source of claiming input VAT. Please request the official invoice from the merchant.",
   { align: 'center' }
 );
 
@@ -543,3 +545,120 @@ exports.getCalendarEvents = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch events' });
   }
 };
+exports.getAllChats = async (req, res) => {
+    try {
+        const chats = await CustomerSupport.find().sort({ 'messages.createdAt': 1 }).lean(); // use .lean() to get plain objects
+        res.render('staff/chat', { 
+            chats,
+            user: req.session.user, // use session user
+        });
+    } catch (err) {
+        console.error(err);
+        res.send('Error fetching chats');
+    }
+};
+
+// Staff sends a message to existing chat
+exports.sendMessage = async (req, res) => {
+  const { userId, message } = req.body;
+
+  try {
+    if (!req.session.user || !req.session.user.email) {
+      console.error('[Send Staff Message Error]: Staff session not found.');
+      req.flash('error', 'Staff not logged in.');
+      return res.redirect('/staff/chat');
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error('[Send Staff Message Error]: User not found for ID', userId);
+      req.flash('error', 'User not found.');
+      return res.redirect('/staff/chat');
+    }
+
+    let chat = await CustomerSupport.findOne({ userId: user._id });
+    if (!chat) {
+      chat = new CustomerSupport({
+        userId: user._id,
+        userEmail: user.email, // ✅ Save user email here
+        messages: []
+      });
+    }
+
+    chat.messages.push({
+  sender: 'staff',
+  email: req.session.user.email,
+  message: message || null,
+  image: req.file ? `/uploads/${req.file.filename}` : null  // ✅ save uploaded image path
+});
+
+
+    await chat.save();
+    res.redirect('/staff/chat');
+  } catch (err) {
+    console.error('[Send Staff Message Error]:', err);
+    res.redirect('/staff/chat');
+  }
+};
+
+
+// Staff starts a new chat
+exports.addChat = async (req, res) => {
+  try {
+    const { email, message } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.json({ success: false, message: 'User not found' });
+    }
+
+    // ✅ Check if chat already exists
+    let existingChat = await CustomerSupport.findOne({ userId: user._id });
+    if (existingChat) {
+      return res.json({
+        success: false,
+        reminder: true,
+        message: `A chat with (${user.email}) already exists.`,
+        chatId: existingChat._id
+      });
+    }
+
+    // If not exist, create new chat
+    const newChat = await CustomerSupport.create({
+      userId: user._id,
+      userEmail: user.email, // ✅ Save user email here
+      messages: [
+        {
+          sender: 'staff',
+          email: req.session.user.email, // staff email only
+          message
+        }
+      ]
+    });
+
+    res.json({
+      success: true,
+      chatId: newChat._id,
+      name: `${user.firstname} ${user.lastname}`,
+      email: user.email
+    });
+  } catch (err) {
+    console.error('[Add Chat Error]:', err);
+    res.json({ success: true, message: 'add chat' });
+  }
+};
+
+
+
+
+exports.deleteChat = async (req, res) => {
+  try {
+    const { chatId } = req.params;
+    await CustomerSupport.findByIdAndDelete(chatId);
+    res.json({ success: true, message: 'Chat deleted' });
+  } catch (err) {
+    console.error(err);
+    res.json({ success: false, message: 'Error deleting chat' });
+  }
+};
+
