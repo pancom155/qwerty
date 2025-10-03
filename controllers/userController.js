@@ -169,17 +169,34 @@ exports.viewTableDetails = async (req, res) => {
   }
 };
 
+// userController.js
+
 exports.bookTable = async (req, res) => {
   try {
     const { id } = req.params;
     const { fullName, email, contactNo, dineDate, dineTime, referenceNumber } = req.body;
 
+    // 🟢 1. Check kung may user sa session
+    if (!req.session.user) {
+      console.error("❌ No user in session.");
+      return res.status(403).send("Not logged in");
+    }
+
+    // 🟢 2. Hanapin yung table
     const table = await Table.findById(id).lean();
-    if (!table) return res.status(404).send('Table not found.');
+    if (!table) {
+      console.error("❌ Table not found:", id);
+      return res.status(404).send("Table not found.");
+    }
 
+    // 🟢 3. Handle dine-in date/time
     const dineInDateTime = `${dineDate} ${dineTime}`;
-    const proofPath = req.file ? req.file.filename : null;
 
+    // 🟢 4. Handle file upload (kung meron)
+    const proofPath = req.file ? req.file.filename : null;
+    console.log("📂 Uploaded file:", proofPath);
+
+    // 🟢 5. Create reservation
     const newReservation = await Reservation.create({
       userId: req.session.user._id,
       tableId: id,
@@ -191,28 +208,48 @@ exports.bookTable = async (req, res) => {
       proofOfPayment: proofPath,
       totalPrice: table.price,
       reservation_fee: table.reservation_fee || 0,
-      status: 'pending'
+      status: "pending"
     });
 
+    console.log("✅ Reservation saved:", newReservation._id);
+
+    // 🟢 6. Socket.IO notification (kung available)
     const io = req.app.get("io");
-    io.emit("newReservation", {
-      title: "New Reservation",
-      message: `Reservation #${newReservation._id} has been made by ${fullName}.`,
-      time: new Date().toLocaleTimeString('en-PH', { hour12: true }),
-      reservationId: newReservation._id,
-      customerName: fullName,
-      userId: req.session.user._id
-    });
+    if (io) {
+      io.emit("newReservation", {
+        title: "New Reservation",
+        message: `Reservation #${newReservation._id} has been made by ${fullName}.`,
+        time: new Date().toLocaleTimeString("en-PH", { hour12: true }),
+        reservationId: newReservation._id,
+        customerName: fullName,
+        userId: req.session.user._id
+      });
+    } else {
+      console.warn("⚠️ io not available in app");
+    }
 
-    // Confirmation email
-    await sendReservationEmail({ to: email, name: fullName, tableName: table.name });
+    // 🟢 7. Send confirmation email (kung available function)
+    if (typeof sendReservationEmail === "function") {
+      try {
+        await sendReservationEmail({
+          to: email,
+          name: fullName,
+          tableName: table.name
+        });
 
-    // --- Redirect (relative is enough) ---
-    res.redirect('/user/reservation?success=1');
+      } catch (mailErr) {
+        console.error("❌ Email sending error:", mailErr);
+      }
+    } else {
+
+    }
+
+    // 🟢 8. Redirect after success
+    return res.redirect("/user/reservation?success=1");
 
   } catch (err) {
-    console.error("Reservation booking error:", err.stack || err);
-    res.status(500).send("Server error (check logs)");
+    console.error("❌ Reservation booking error:", err.stack || err);
+    return res.status(500).send("Server error (check logs)");
   }
 };
 
