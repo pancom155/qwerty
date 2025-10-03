@@ -23,9 +23,10 @@ const http = require('http');
 const { Server } = require("socket.io");
 
 
-const server = http.createServer(app);
-const io = new Server(server);
 
+const io = new Server(server);
+const serverless = require("serverless-http");
+const server = require("http").createServer(app);
 
 app.set("trust proxy", 1); 
 
@@ -89,4 +90,8 @@ server.listen(PORT, () => {
   console.log(`http://localhost:${PORT}`);
 });
 
-module.exports = { io, server };
+module.exports = {
+  io,
+  server,
+  handler: serverless(app)   // Vercel will use this
+};
