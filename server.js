@@ -2,13 +2,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const express = require('express');
-const app = express();
 const mongoose = require('mongoose');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const flash = require('connect-flash');
-const Settings = require('./models/Settings');
-const CustomerSupport = require('./models/CustomerSupport');
+const serverless = require('serverless-http');
+
+const loadSettings = require('./middleware/loadSettings');
+
+// Routes
 const authRoutes = require('./routes/authRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const reportRoutes = require("./routes/reportRoutes");
@@ -17,19 +19,11 @@ const cartRoutes = require('./routes/cartRoutes');
 const staffRoutes = require('./routes/staffRoutes');
 const waiterRoutes = require('./routes/waiterRoutes');
 const kitchenStaffRoutes = require('./routes/kitchenStaffRoutes');
-const loadSettings = require('./middleware/loadSettings');
 
-const http = require('http');
-const { Server } = require("socket.io");
+const app = express();
 
-
-
-const io = new Server(server);
-const serverless = require("serverless-http");
-const server = require("http").createServer(app);
-
-app.set("trust proxy", 1); 
-
+// Middleware
+app.set("trust proxy", 1);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static('public'));
@@ -56,14 +50,7 @@ app.use((req, res, next) => {
   next();
 });
 
-
-app.set("io", io);
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
-
-
+// Routes
 app.use('/', authRoutes);
 app.use('/cart', cartRoutes);
 app.use('/user', userRoutes);
@@ -71,27 +58,15 @@ app.use('/admin', adminRoutes);
 app.use('/staff', staffRoutes);
 app.use('/waiter', waiterRoutes);
 app.use('/kitchen', kitchenStaffRoutes);
-app.use("/", reportRoutes);
+app.use('/', reportRoutes);
 
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB error:', err));
 
-io.on('connection', (socket) => {
-  socket.on('disconnect', () => {
-  });
-});
-
-
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log(''))
-  .catch(err => console.log('', err));
-
-
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => { 
-  console.log(`http://localhost:${PORT}`);
-});
-
-module.exports = {
-  io,
-  server,
-  handler: serverless(app)   // Vercel will use this
-};
+// 👉 Export handler for Vercel
+module.exports = serverless(app);
