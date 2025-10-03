@@ -61,7 +61,7 @@ exports.renderStaffDashboard = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-
+  
     const orders = await Order.find({
       status: { $in: ['pending', 'processing', 'ready_to_pickup'] }
     })
@@ -71,13 +71,13 @@ exports.getOrders = async (req, res) => {
       .lean();
 
     const updatedOrders = orders.map(order => {
-
+     
       order.grossTotal = order.grossTotal ?? order.items.reduce((sum, item) => sum + (item.subtotal || 0), 0);
 
-
+   
       order.discountTotal = order.discountTotal ?? (order.discounts ? order.discounts.reduce((sum, d) => sum + (d.amount || 0), 0) : 0);
 
-
+   
       order.netTotal = order.netTotal ?? Math.max(0, order.grossTotal - order.discountTotal);
 
       return order;
@@ -661,3 +661,4 @@ exports.deleteChat = async (req, res) => {
     res.json({ success: false, message: 'Error deleting chat' });
   }
 };
+
