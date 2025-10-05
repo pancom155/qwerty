@@ -65,7 +65,8 @@ exports.getOrders = async (req, res) => {
     const orders = await Order.find({
       status: { $in: ['pending', 'processing', 'ready_to_pickup'] }
     })
-      .populate('userId', 'firstName lastName email') 
+      .populate('userId', 'firstName lastName email contactNo')
+
       .populate('items.productId', 'image name')    
       .sort({ createdAt: -1 })                      
       .lean();

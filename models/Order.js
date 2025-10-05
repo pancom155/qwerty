@@ -28,7 +28,7 @@ const orderSchema = new mongoose.Schema({
   grossTotal: { type: Number, required: true },
   discountTotal: { type: Number, default: 0 },
   netTotal: { type: Number, required: true },
-
+  note: { type: String, trim: true, default: '' },
   status: {
     type: String,
     enum: ['pending', 'processing','ready_to_pickup','completed', 'rejected', 'cancelled'],

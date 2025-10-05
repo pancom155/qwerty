@@ -440,6 +440,9 @@ exports.renderCheckoutPage = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
+
+
 exports.placeOrder = async (req, res) => {
   try {
     // --- Check logged in ---
@@ -448,7 +451,7 @@ exports.placeOrder = async (req, res) => {
     }
     const userId = req.session.user._id;
 
-    const { voucherCode, referenceNumber } = req.body;
+    const { voucherCode, referenceNumber, note } = req.body; // ✅ include note
 
     // --- Check proof of payment ---
     if (!req.file) {
@@ -546,6 +549,7 @@ exports.placeOrder = async (req, res) => {
       userId,
       items,
       discounts,
+      note: note || '', // ✅ save note here
       payment: {
         referenceNumber,
         proofOfPayment: req.file.filename
@@ -571,7 +575,7 @@ exports.placeOrder = async (req, res) => {
     cart.items = [];
     await cart.save();
 
-    // --- Send confirmation email (only if mailer is configured) ---
+    // --- Send confirmation email ---
     try {
       await sendOrderConfirmationEmail({
         to: user.email,
@@ -580,7 +584,6 @@ exports.placeOrder = async (req, res) => {
       });
     } catch (mailErr) {
       console.error("Email sending failed:", mailErr.message);
-      // Don’t crash, just log
     }
 
     // --- Redirect to success page ---
