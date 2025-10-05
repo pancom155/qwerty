@@ -301,6 +301,18 @@
       overlay.classList.remove('active');
     });
   });
+
+
+
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', e => {
+      const submitButton = form.querySelector('button[type="submit"]');
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Processing...';
+      }
+    });
+  });
 </script>
 
 </body>
