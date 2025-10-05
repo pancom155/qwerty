@@ -79,9 +79,18 @@
       </div>
     </nav>
   </div>
- <div class="d-flex justify-content-between align-items-center p-3">
-  <h5 style="margin:0;">Users</h5>
-  <button id="addChatBtn" class="btn btn-sm btn-primary">Add Chat</button>
+<div class="d-flex justify-content-between align-items-center p-3">
+  <h5 style="margin:0; font-weight:600; color:#222;"></h5>
+  <button id="addChatBtn" class="btn btn-sm"
+          style="background:linear-gradient(90deg,#0047FF,#03C4E7);
+                 color:#fff; border:none; border-radius:25px;
+                 padding:8px 18px; font-weight:500;
+                 display:flex; align-items:center; gap:6px;
+                 box-shadow:0 3px 6px rgba(0,0,0,0.15);
+                 transition:all 0.3s ease;">
+    <i class="bi bi-chat-square-text" style="font-size:16px;"></i>
+    <span>Add Chat</span>
+  </button>
 </div>
 
 
@@ -121,10 +130,7 @@
     <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; color:#777;">
       <i class="bi bi-chat-dots" style="font-size:50px; color:#0047FF; margin-bottom:15px;"></i>
       <h5 style="margin-bottom:10px; font-weight:600; color:#333;">No chat available</h5>
-      <button type="button" class="btn btn-primary" 
-              style="border-radius:25px; padding:10px 20px; font-weight:500; background:linear-gradient(90deg,#0047FF,#03C4E7); border:none;">
-        <i class="bi bi-plus-circle"></i> Add Chat
-      </button>
+   
     </div>
   <% } else { %>
     <!-- Sidebar: Users List -->
@@ -258,100 +264,65 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   /** ---------------- IMAGE MODAL ---------------- */
- const modalEl = document.getElementById("imageModal");
+  const modalEl = document.getElementById("imageModal");
   const modalImg = document.getElementById("modalImage");
-  const bsModal = new bootstrap.Modal(modalEl);
-
-  document.querySelectorAll(".chat-image").forEach(img => {
-    img.addEventListener("click", () => {
-      modalImg.src = img.src;  
-      bsModal.show();          
+  if (modalEl && modalImg) {
+    const bsModal = new bootstrap.Modal(modalEl);
+    document.querySelectorAll(".chat-image").forEach(img => {
+      img.addEventListener("click", () => {
+        modalImg.src = img.src;
+        bsModal.show();
+      });
     });
-  });
+  }
 
   /** ---------------- ADD CHAT ---------------- */
   const addChatBtn = document.getElementById("addChatBtn");
- const addChatModal = new bootstrap.Modal(document.getElementById("addChatModal"));
-const addChatForm = document.getElementById("addChatForm");
+  const addChatModalEl = document.getElementById("addChatModal");
+  const addChatForm = document.getElementById("addChatForm");
+  const addChatModal = new bootstrap.Modal(addChatModalEl);
 
-addChatBtn.addEventListener("click", () => addChatModal.show());
+  if (addChatBtn && addChatForm) {
+    addChatBtn.addEventListener("click", () => addChatModal.show());
 
-addChatForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  const email = document.getElementById("chatEmail").value.trim();
-  const message = document.getElementById("chatMessage").value.trim();
+    addChatForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("chatEmail").value.trim();
+      const message = document.getElementById("chatMessage").value.trim();
 
-  if (!email || !message) return;
+      if (!email || !message) return;
 
-  try {
-    const res = await fetch("/staff/chat/add", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, message })
-    });
+      try {
+        const res = await fetch("/staff/chat/add", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, message })
+        });
 
-    const data = await res.json();
-
-    if (res.ok && data.success) {
-      addChatModal.hide();
-
-      Swal.fire({
-        title: "Success",
-        text: "Chat started!",
-        icon: "success",
-        confirmButtonText: "OK"
-      }).then(() => {
-        // ✅ redirect after user clicks OK
-        window.location.href = "/staff/chat";
-      });
-
-      // optional: kung gusto mo pa ring magdagdag ng sidebar + panel bago mag-redirect
-      const usersList = document.querySelector(".users-sidebar");
-      const chatPanels = document.querySelector(".chat-view");
-
-      if (usersList && chatPanels) {
-        // sidebar item
-        const newUser = document.createElement("div");
-        newUser.className = "user-item p-3";
-        newUser.setAttribute("data-chat-index", data.chatId);
-        newUser.innerHTML = `
-          <div style="font-weight:600;">${email.split("@")[0]}</div>
-          <small>${email}</small>
-        `;
-        usersList.appendChild(newUser);
-
-        // chat panel
-        const newPanel = document.createElement("div");
-        newPanel.className = "chat-panel";
-        newPanel.setAttribute("data-chat-index", data.chatId);
-        newPanel.style.display = "none";
-        newPanel.innerHTML = `
-          <div class="chat-box p-3">
-            <div class="message staff-message">
-              <div class="sender-email">staff@system.com</div>
-              <div class="message-text">${message}</div>
-            </div>
-          </div>
-        `;
-        chatPanels.appendChild(newPanel);
-
-        attachSidebarLogic();
-        newUser.click();
+        const data = await res.json();
+        if (res.ok && data.success) {
+          addChatModal.hide();
+          Swal.fire({
+            title: "Success",
+            text: "Chat started!",
+            icon: "success",
+            confirmButtonText: "OK"
+          }).then(() => window.location.reload());
+        } else {
+          Swal.fire("Error", data?.message || "Unexpected response", "error");
+        }
+      } catch (err) {
+        Swal.fire("Error", err.message || "Something went wrong", "error");
       }
-    } else {
-      Swal.fire("Error", data?.message || "Unexpected response", "error");
-    }
-  } catch (err) {
-    console.error(err);
-    Swal.fire("Error", err.message || "Something went wrong", "error");
+    });
   }
-});
 
   /** ---------------- SIDEBAR CLICK LOGIC ---------------- */
   function attachSidebarLogic() {
     const userItems = document.querySelectorAll(".user-item");
     const chatPanels = document.querySelectorAll(".chat-panel");
 
+    if (!userItems.length) return; // skip if no sidebar
     userItems.forEach(item => {
       item.onclick = () => {
         const index = item.getAttribute("data-chat-index");
@@ -380,8 +351,9 @@ addChatForm.addEventListener("submit", async (e) => {
             const res = await fetch(`/staff/chat/${chatId}`, { method: "DELETE" });
             const data = await res.json();
             if (data.success) {
-              Swal.fire("Deleted!", "Chat has been deleted.", "success");
-              location.reload();
+              Swal.fire("Deleted!", "Chat has been deleted.", "success").then(() => {
+                location.reload();
+              });
             } else {
               Swal.fire("Error", data.message, "error");
             }
@@ -401,6 +373,7 @@ addChatForm.addEventListener("submit", async (e) => {
   let pendingCount = 0;
 
   function updateBadge() {
+    if (!notificationBadge) return;
     if (pendingCount > 0) {
       notificationBadge.textContent = pendingCount;
       notificationBadge.style.display = "flex";
@@ -410,12 +383,15 @@ addChatForm.addEventListener("submit", async (e) => {
   }
 
   function checkEmpty() {
+    if (!notificationList) return;
     const hasItems = notificationList.querySelectorAll(".notification-item").length > 0;
     if (!hasItems) {
-      const emptyMsg = document.createElement("div");
-      emptyMsg.className = "notification-empty text-center text-muted";
-      emptyMsg.textContent = "No Notifications";
-      notificationList.appendChild(emptyMsg);
+      if (!notificationList.querySelector(".notification-empty")) {
+        const emptyMsg = document.createElement("div");
+        emptyMsg.className = "notification-empty text-center text-muted";
+        emptyMsg.textContent = "No Notifications";
+        notificationList.appendChild(emptyMsg);
+      }
     } else {
       const emptyMsg = notificationList.querySelector(".notification-empty");
       if (emptyMsg) emptyMsg.remove();
@@ -429,6 +405,8 @@ addChatForm.addEventListener("submit", async (e) => {
       const orders = data.pendingOrders || [];
       const reservations = data.pendingReservations || [];
 
+      if (!notificationList) return;
+
       function createNotificationItem(type, item) {
         const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || "Guest";
         const time = new Date(item.createdAt).toLocaleTimeString("en-PH", { hour12: true });
@@ -436,7 +414,11 @@ addChatForm.addEventListener("submit", async (e) => {
         div.className = "notification-item";
         div.innerHTML = `
           <div class="notification-title">${type}</div>
-          <div class="notification-message">${type === "New Order" ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
+          <div class="notification-message">${
+            type === "New Order"
+              ? `Order #${item._id} by ${userName}`
+              : `Reservation #${item._id} by ${userName}`
+          }</div>
           <div class="notification-time">${time}</div>
         `;
         div.onclick = () => window.location.href = type === "New Order" ? "/staff/order" : "/staff/reservation";
@@ -455,20 +437,23 @@ addChatForm.addEventListener("submit", async (e) => {
   }
   loadPendingOrders();
 
-  notificationBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    notificationDropdown.style.display = notificationDropdown.style.display === "block" ? "none" : "block";
-  });
+  if (notificationBtn && notificationDropdown) {
+    notificationBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      notificationDropdown.style.display = notificationDropdown.style.display === "block" ? "none" : "block";
+    });
 
-  document.addEventListener("click", (e) => {
-    if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
-      notificationDropdown.style.display = "none";
-    }
-  });
+    document.addEventListener("click", (e) => {
+      if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+        notificationDropdown.style.display = "none";
+      }
+    });
+  }
 
   /** ---------------- SOCKET.IO ---------------- */
   const socket = io();
   socket.on("newOrder", (data) => {
+    if (!notificationList) return;
     const emptyMsg = notificationList.querySelector(".notification-empty");
     if (emptyMsg) emptyMsg.remove();
 
@@ -484,12 +469,10 @@ addChatForm.addEventListener("submit", async (e) => {
 
     pendingCount += 1;
     updateBadge();
-
     setTimeout(() => div.classList.remove("new-notification"), 500);
   });
 });
 </script>
-
 
 
 </html>
