@@ -250,6 +250,16 @@
 </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  const stepOneModal = document.getElementById('stepOneModal');
+  stepOneModal.addEventListener('hidden.bs.modal', () => {
+    // Remove focus from any element inside the closed modal
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+  });
+</script>
+
 
   <% if (pwdCooldownRemaining > 0 && pwdCountdownEnd) { %>
   <script>
