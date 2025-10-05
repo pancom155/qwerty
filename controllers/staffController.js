@@ -1,5 +1,6 @@
 const Reservation = require('../models/Reservation');
 const Order = require('../models/Order');
+
 const CustomerSupport = require('../models/CustomerSupport');
 const User = require('../models/User');
 const { sendReservationConfirmedEmail, sendRejectionEmail, sendOrderProcessedEmail, sendOrderRejectedEmail, sendOrderCompletedEmail, sendReadyToPickupEmail } = require('../middleware/emailService');
@@ -662,4 +663,24 @@ exports.deleteChat = async (req, res) => {
     res.json({ success: false, message: 'Error deleting chat' });
   }
 };
+exports.updateOrderItem = async (req, res) => {
+  try {
+    const { itemId } = req.params;
+    const { quantity } = req.body;
 
+    const order = await Order.findOne({ "items._id": itemId });
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    const item = order.items.id(itemId);
+    if (!item) return res.status(404).json({ message: "Item not found" });
+
+    item.quantity = quantity;
+    item.subtotal = item.price * quantity;
+
+    await order.save();
+    res.json({ message: "Item quantity updated successfully!" });
+  } catch (err) {
+    console.error("Error updating quantity:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

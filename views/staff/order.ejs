@@ -119,66 +119,70 @@
               <i class="bi bi-list-ul"></i> Items
             </button>
             <!-- Existing items modal -->
-            <div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                  <div class="modal-header justify-content-center text-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF); color: white;">
-                    <h5 class="modal-title w-100"><i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %></h5>
-                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
-                  </div>
-                  <div class="modal-body bg-light">
-                    <% order.items.forEach(item => { %>
-                      <div class="card mb-2 shadow-sm border-0">
-                        <div class="card-body d-flex align-items-center gap-3">
-                          <img src="/uploads/<%= item.productId?.image || 'default.png' %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                          <div class="flex-grow-1">
-                            <div class="fw-semibold fs-6"><%= item.name %></div>
-                            <small class="text-muted">₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
-                          </div>
-                          <div class="text-success fw-bold fs-6">₱<%= item.subtotal.toFixed(2) %></div>
-                        </div>
-                      </div>
-                    <% }) %>
+<div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header justify-content-center text-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF); color: white;">
+        <h5 class="modal-title w-100"><i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %></h5>
+        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-light">
 
-                    <% if (order.discounts?.length > 0) { 
-                       let shownDiscount = 0;
-                    %>
-                      <div class="mt-4">
-                        <h6 class="fw-bold"><i class="bi bi-tags-fill me-2"></i>Discount Details</h6>
-                        <% order.discounts.forEach(discount => { 
-                             if (shownDiscount < 250) {
-                               const remaining = 250 - shownDiscount;
-                               const toShow = Math.min(discount.amount, remaining);
-                               shownDiscount += toShow;
-                        %>
-                          <div class="text-muted"><%= discount.description %> — ₱<%= toShow.toFixed(2) %></div>
-                        <%   } 
-                           }); 
-                        %>
-                      </div>
-                    <% } %>
+        <% order.items.forEach(item => { %>
+          <div class="card mb-2 shadow-sm border-0" id="itemCard-<%= item._id %>">
+            <div class="card-body d-flex align-items-center gap-3">
+              <img src="/uploads/<%= item.productId?.image || 'default.png' %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+              <div class="flex-grow-1">
+                <div class="fw-semibold fs-6"><%= item.name %></div>
 
-                    <div class="p-3 mt-3 rounded bg-white shadow-sm">
-                      <h6 class="fw-bold text-primary"><i class="bi bi-calculator-fill me-2"></i>Order Summary</h6>
-                      <div class="d-flex justify-content-between border-bottom py-1">
-                        <span><i class="bi bi-cash-coin me-1"></i>Gross Total:</span>
-                        <span class="fw-semibold">₱<%= order.grossTotal.toFixed(2) %></span>
-                      </div>
-                      <% if (order.discountTotal > 0) { %>
-                        <div class="d-flex justify-content-between border-bottom py-1 text-success">
-                          <span><i class="bi bi-patch-check-fill me-1"></i>Discount:</span>
-                          <span class="fw-semibold">- ₱<%= order.discountTotal.toFixed(2) %></span>
-                        </div>
-                      <% } %>
-                      <div class="d-flex justify-content-between pt-2 fw-bold fs-5 text-success">
-                        <span><i class="bi bi-wallet2 me-1"></i>Net Total:</span>
-                        <span>₱<%= order.netTotal.toFixed(2) %></span>
-                      </div>
-                    </div>
+                <!-- Normal view -->
+                <div class="quantity-view">
+                  <small class="text-muted">₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
+                </div>
+
+                <!-- Edit mode -->
+                <div class="quantity-edit d-none">
+                  <input type="number" class="form-control form-control-sm w-50" value="<%= item.quantity %>" min="1">
+                  <div class="mt-1">
+                    <button class="btn btn-success btn-sm save-qty" data-id="<%= item._id %>">Save</button>
+                    <button class="btn btn-secondary btn-sm cancel-qty">Cancel</button>
                   </div>
                 </div>
               </div>
+              <div class="text-success fw-bold fs-6 subtotal">₱<%= item.subtotal.toFixed(2) %></div>
+
+          <button type="button" class="btn btn-outline-primary btn-sm edit-qty">
+  <i class="bi bi-pencil-square"></i>
+</button>
+
+
             </div>
+          </div>
+        <% }) %>
+
+        <!-- Order Summary -->
+        <div class="p-3 mt-3 rounded bg-white shadow-sm">
+          <h6 class="fw-bold text-primary"><i class="bi bi-calculator-fill me-2"></i>Order Summary</h6>
+          <div class="d-flex justify-content-between border-bottom py-1">
+            <span><i class="bi bi-cash-coin me-1"></i>Gross Total:</span>
+            <span class="fw-semibold">₱<%= order.grossTotal.toFixed(2) %></span>
+          </div>
+          <% if (order.discountTotal > 0) { %>
+            <div class="d-flex justify-content-between border-bottom py-1 text-success">
+              <span><i class="bi bi-patch-check-fill me-1"></i>Discount:</span>
+              <span class="fw-semibold">- ₱<%= order.discountTotal.toFixed(2) %></span>
+            </div>
+          <% } %>
+          <div class="d-flex justify-content-between pt-2 fw-bold fs-5 text-success">
+            <span><i class="bi bi-wallet2 me-1"></i>Net Total:</span>
+            <span>₱<%= order.netTotal.toFixed(2) %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
           </td>
 
           <td><%= order.payment?.referenceNumber || 'N/A' %></td>
@@ -539,8 +543,64 @@
     setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
   });
 });
+document.addEventListener("DOMContentLoaded", () => {
+  // When user clicks edit
+  document.querySelectorAll('.edit-qty').forEach((editBtn) => {
+    editBtn.addEventListener('click', (e) => {
+      const card = e.target.closest('.card-body');
+      card.querySelector('.quantity-view').classList.add('d-none');
+      card.querySelector('.quantity-edit').classList.remove('d-none');
+    });
+  });
+
+  // When user clicks cancel
+  document.querySelectorAll('.cancel-qty').forEach((cancelBtn) => {
+    cancelBtn.addEventListener('click', (e) => {
+      const card = e.target.closest('.card-body');
+      card.querySelector('.quantity-view').classList.remove('d-none');
+      card.querySelector('.quantity-edit').classList.add('d-none');
+    });
+  });
+
+  // When user clicks save
+  document.querySelectorAll('.save-qty').forEach((saveBtn) => {
+    saveBtn.addEventListener('click', async (e) => {
+      const btn = e.target;
+      const card = btn.closest('.card-body');
+      const newQty = card.querySelector('input[type="number"]').value;
+      const itemId = btn.dataset.id;
+
+      try {
+        const res = await fetch(`/staff/update-item/${itemId}`, {
+  method: 'PUT',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ quantity: newQty }),
+});
 
 
+        const data = await res.json();
+
+        if (res.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Quantity Updated',
+            text: data.message,
+            timer: 1200,
+            showConfirmButton: false,
+          }).then(() => window.location.reload());
+        } else {
+          Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+        }
+      } catch (err) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Server Error',
+          text: 'Failed to update item quantity.',
+        });
+      }
+    });
+  });
+});
 </script>
 </body>
 </html>

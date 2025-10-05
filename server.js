@@ -71,6 +71,11 @@ app.use('/staff', staffRoutes);
 app.use('/waiter', waiterRoutes);
 app.use('/kitchen', kitchenStaffRoutes);
 app.use("/", reportRoutes);
+app.use('/staff', staffRoutes);
+
+app.use('/staff/order', staffRoutes);
+
+
 
 
 io.on('connection', (socket) => {
