@@ -171,8 +171,8 @@
   /* Add a hamburger button */
   .hamburger {
     position: fixed;
-    top: 15px;
-    left: 15px;
+    top: 10px;
+    left: 10px;
     background: linear-gradient(90deg, #03C4E7, #0047FF);
     color: white;
     border: none;

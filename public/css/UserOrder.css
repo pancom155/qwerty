@@ -1,13 +1,13 @@
-      body {
+    body {
         background-color: #e6e6f0;
         font-family: 'Poppins', sans-serif;
-      }
+    }
 
-      html {
+    html {
         scroll-behavior: smooth;
-      }
+    }
 
-      .sidebar {
+    .sidebar {
         position: fixed;
         top: 0;
         left: 0;
@@ -20,24 +20,24 @@
         flex-direction: column;
         align-items: center;
         z-index: 1000;
-      }
+    }
 
-      .sidebar img {
+    .sidebar img {
         width: 100px;
         height: 100px;
         border-radius: 50%;
         object-fit: cover;
         margin: 20px 0;
-      }
+    }
 
-      .sidebar nav {
+    .sidebar nav {
         display: flex;
         flex-direction: column;
         width: 100%;
         align-items: center;
-      }
+    }
 
-      .sidebar nav a {
+    .sidebar nav a {
         padding: 10px 20px;
         color: #000;
         text-decoration: none;
@@ -48,46 +48,37 @@
         display: flex;
         align-items: center;
         gap: 10px;
-      }
+    }
 
-      .sidebar nav a:hover,
-      .sidebar nav a.active {
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
         background: linear-gradient(90deg, #03C4E7, #0047FF);
         color: #fff;
-      }
+    }
 
-      .main-content {
+    .main-content {
         margin-left: 250px;
         padding: 20px;
-      }
+    }
 
-      .navbar-custom-wrapper {
+    .navbar-custom-wrapper {
         margin-left: 250px;
         padding: 3px 40px;
         position: sticky;
         top: 0;
         z-index: 999;
-      }
+    }
 
-      .btn-primary {
+    .btn-primary {
         background: linear-gradient(90deg, #03C4E7, #0047FF);
         border: none;
-      }
+    }
 
-      .btn-primary:hover {
+    .btn-primary:hover {
         opacity: 0.9;
-      }
-
-      .offcanvas-backdrop.show {
-        opacity: 0 !important;
-      }
-
-      .btn-disabled {
-        pointer-events: none;
-        opacity: 0.5;
-      }
-
-      .navbar-custom {
+    } 
+    
+    .navbar-custom {
         background-color: #ffffff;
         border-bottom-left-radius: 20px;
         border-bottom-right-radius: 20px;
@@ -99,80 +90,143 @@
         align-items: center;
         justify-content: space-between;
     }
-
-     h3 span {
-       background-image: linear-gradient(to right, #03C4E7, #0047FF);
-       -webkit-background-clip: text;
-       -webkit-text-fill-color: transparent;
-       background-clip: text;
-       font-weight: bold;
+    
+    h3 span {
+        background-image: linear-gradient(to right, #03C4E7, #0047FF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
     }
-/* 📱 Mobile Responsive (max-width: 768px) */
-@media (max-width: 768px) {
-  /* Sidebar hidden by default */
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px; /* hidden off screen */
-    width: 250px;
-    height: 100vh;
-    background-color: #f8f9fa;
-    padding: 10px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1000;
-    transition: left 0.3s ease; /* always animate */
-  }
+    
+    @media (max-width: 1200px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            justify-content: center;
+        }
+        .product-name {
+            font-size: 1rem;
+        }
+        .product-price {
+            font-size: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .product-card img {
+            height: 150px;
+        }
+    }
+    
+    .filter-container {
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .custom-input {
+        position: relative;
+    }
+    
+    .custom-input i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+    
+    .custom-input input,
+    .custom-input select {
+        padding-left: 40px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .custom-input input:focus,
+    .custom-input select:focus {
+        border-color: #03C4E7;
+        box-shadow: 0 0 0 0.25rem rgba(3, 196, 231, 0.25);
+    }
+    
+    #orderMessage {
+        font-size: 1.1rem;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(to right, #03C4E7, #0047FF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text; 
+    }
 
-  /* Sidebar when active */
-  .sidebar.active {
-    left: 0;
-  }
 
-  /* Sidebar overlay */
-  .sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.3);
-    display: none;
-    z-index: 900;
-  }
+    /* Mobile Responsive (max-width: 768px) */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px; /* hidden by default */
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px 10px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 1100;
+        }
 
-  .sidebar-overlay.active {
-    display: block;
-  }
+        /* Sidebar when active */
+        .sidebar.active {
+            left: 0;
+        }
 
-  /* Hamburger button */
-  .hamburger {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 1.3rem;
-    cursor: pointer;
-    z-index: 1201; /* higher than sidebar */
-    display: block;
-  }
+        /* Overlay when sidebar is open */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+        }
 
-  /* Adjust main content since sidebar is hidden */
-  .main-content {
-    margin: 70px 0 0 0; /* push down under navbar */
-    padding: 15px;
-  }
+        .sidebar-overlay.active {
+            display: block;
+        }
 
-  .navbar-custom-wrapper {
-    margin: 0;
-    padding: 10px 20px;
-  }
+        /* Add a hamburger button */
+        .hamburger {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: linear-gradient(90deg, #03C4E7, #0047FF);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1200;
+        }
+
+        /* Adjust main content */
+        .main-content {
+            margin-left: 0;
+            padding: 20px;
+        }
+
+        .navbar-custom-wrapper {
+            margin-left: 0;
+        }
 
   /* 📋 Responsive Table */
   table, thead, tbody, th, td, tr {
@@ -205,29 +259,3 @@
   }
 }
 
-/* 💻 Desktop (sidebar always visible, no hamburger) */
-@media (min-width: 769px) {
-  .sidebar {
-    left: 0;
-    transition: none; /* no animation needed */
-  }
-
-  .hamburger {
-    display: none;
-  }
-
-  .sidebar-overlay {
-    display: none !important;
-  }
-
-  .main-content {
-    margin-left: 250px;
-    margin-top: 0;
-    padding: 20px;
-  }
-
-  .navbar-custom-wrapper {
-    margin-left: 250px;
-    padding: 3px 40px;
-  }
-}

@@ -8,18 +8,6 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/AdminDashboard.css">
   <style>
-    .table-striped > tbody > tr:nth-of-type(odd) {
-      background-color: #f8f9fa;
-    }
-
-    .table td, .table th {
-      vertical-align: middle;
-    }
-
-    img.rounded {
-      border: 1px solid #dee2e6;
-    }
-
     .modal-body img {
       width: 60px;
       height: 60px;
@@ -39,6 +27,84 @@
     .modal-footer {
       border-top: none;
     }
+    /* === Table Base === */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* === Header === */
+.table thead.table-dark {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  border: none;
+}
+
+.table thead th {
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 14px 16px;
+  text-transform: uppercase;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Rounded header corners */
+.table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+.table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* === Table Body === */
+.table tbody tr {
+  transition: all 0.25s ease;
+}
+
+.table tbody td {
+  border: none !important;
+  border-bottom: 1px solid #eee !important;
+  padding: 12px 14px;
+  text-align: center;
+  vertical-align: middle;
+  color: #333;
+}
+
+/* === Star Ratings === */
+.text-warning.fs-5 {
+  font-size: 1.2rem !important;
+  letter-spacing: 2px;
+}
+
+/* === View Items Button === */
+.btn-outline-primary {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: 0.3s;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0047FF;
+  color: #fff;
+  border-color: #0047FF;
+}
+
+/* === Delete Button === */
+.btn-danger {
+  background-color: #ea5455;
+  border: none;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.btn-danger:hover {
+  background-color: #d33;
+}
+
   </style>
 </head>
 <body>
@@ -57,10 +123,18 @@
       <a href="/admin/reviews" class="active"><i class="bi bi-chat-dots"></i> Users Reviews</a>
       <a href="/admin/products"><i class="bi bi-box-seam"></i> Inventory</a>
       <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
-        <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
-   <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
+      <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+      <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
     </nav>
+
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
   </div>
+</div>
 
   <div class="main-content">
     <div class="navbar-custom-wrapper">
@@ -179,5 +253,30 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
+  });
+</script>   
 </body>
 </html>

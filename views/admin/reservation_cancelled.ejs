@@ -2,66 +2,174 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Dashboard - Reservations</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/AdminRsv.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/AdminRsv.css" />
+
+  <style>
+    /* ====== Table ====== */
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.95rem;
+      color: #333;
+    }
+    .table th,
+    .table td {
+      border: none !important;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .table thead {
+      background: linear-gradient(90deg, #03C4E7, #0047FF);
+      color: #fff;
+    }
+    .table thead th {
+      padding: 14px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .table tbody tr {
+      transition: all 0.25s ease;
+      border-bottom: 1px solid #eee;
+    }
+    .table tbody td {
+      padding: 12px 14px;
+    }
+
+    /* Rounded corners */
+    .table thead th:first-child { border-top-left-radius: 12px; }
+    .table thead th:last-child { border-top-right-radius: 12px; }
+    .table tbody tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+    .table tbody tr:last-child td:last-child { border-bottom-right-radius: 12px; }
+
+    /* ====== Buttons ====== */
+    .btn-primary {
+      background-color: #0047FF;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #03C4E7;
+    }
+    .btn-danger {
+      border: none;
+      background-color: #EA5455;
+    }
+    .btn-danger:hover {
+      background-color: #d33;
+    }
+
+    /* ====== Status Badges ====== */
+    .badge {
+      border-radius: 25px;
+      font-size: 0.8rem;
+      padding: 7px 12px;
+      font-weight: 500;
+    }
+    .badge.bg-info {
+      background-color: #d1ebff !important;
+      color: #0047FF !important;
+    }
+
+    /* ====== Search Input ====== */
+    #searchInput {
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      padding: 8px 14px;
+      transition: 0.3s;
+    }
+    #searchInput:focus {
+      border-color: #0047FF;
+      box-shadow: 0 0 0 3px rgba(0, 71, 255, 0.1);
+    }
+
+    /* ====== Pagination ====== */
+    .pagination .page-item .page-link {
+      border: none;
+      color: #0047FF;
+      border-radius: 8px;
+      padding: 8px 14px;
+      transition: 0.3s;
+    }
+    .pagination .page-item.active .page-link {
+      background: linear-gradient(90deg, #03C4E7, #0047FF);
+      color: #fff;
+    }
+    .pagination .page-item .page-link:hover {
+      background-color: #0047FF;
+      color: #fff;
+    }
+
+    /* ====== Modal Styling ====== */
+    .modal-content {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .modal-header {
+      background: linear-gradient(90deg, #03C4E7, #0047FF);
+      color: #fff;
+    }
+    .modal-body img {
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    }
+  </style>
 </head>
 <body>
 
+  <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="d-flex justify-content-center mb-5 mt-3">
       <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
     </div>
+
     <nav>
       <a href="/admin/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
       <a href="/admin/users"><i class="bi bi-person-circle"></i> Users Profile</a>
       <a href="/admin/staff"><i class="bi bi-people-fill"></i> Account Creation</a>
       <a href="/admin/orders"><i class="bi bi-receipt"></i> Orders</a>
 
-
-      
-
-
-  <div class="dropdown custom-dropdown" style="position: relative; width: 100%; margin-left: 25px;">
-  <a href="#" class="dropdown-toggle d-block py-2 text-dark text-decoration-none rounded mb-2" id="ordersDropdown" style="background: linear-gradient(90deg, #03C4E7, #0047FF);
-    color: #fff;">
-    <i class="bi bi-journal-bookmark"></i> Reservations
-  </a>
-   <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-     <li>
-      <a class="dropdown-item" class="okay" href="/admin/reservations" >
-        <i class="bi bi-check-circle me-2"></i> Confirmed
-      </a>
-    </li>
-    <li>
-      <a class="dropdown-item" href="/admin/reservation_done">
-        <i class="bi bi-hourglass-split me-2"></i> Done
-      </a>
-    </li>
-    <li>
-      <a class="dropdown-item" href="/admin/reservation_cancelled">
-        <i class="bi bi-x-circle me-2"></i> Cancelled
-      </a>
-    </li>
-  </ul>
-</div>
+      <!-- Reservations Dropdown -->
+      <div class="dropdown custom-dropdown" style="position: relative; width: 100%; margin-left: 25px;">
+        <a href="#" 
+           class="dropdown-toggle d-block py-2 text-dark text-decoration-none rounded mb-2" 
+           id="ordersDropdown"
+           style="background: linear-gradient(90deg, #03C4E7, #0047FF); color: #fff;">
+          <i class="bi bi-journal-bookmark"></i> Reservations
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+          <li><a class="dropdown-item" href="/admin/reservations"><i class="bi bi-check-circle me-2"></i> Confirmed</a></li>
+          <li><a class="dropdown-item" href="/admin/reservation_done"><i class="bi bi-hourglass-split me-2"></i> Done</a></li>
+          <li><a class="dropdown-item" href="/admin/reservation_cancelled"><i class="bi bi-x-circle me-2"></i> Cancelled</a></li>
+        </ul>
+      </div>
 
       <a href="/admin/discounts"><i class="bi bi-percent"></i> Discounts</a>
       <a href="/admin/reviews"><i class="bi bi-chat-dots"></i> Users Reviews</a>
       <a href="/admin/products"><i class="bi bi-box-seam"></i> Inventory</a>
       <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
-        <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
-   <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
+      <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+      <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
     </nav>
-  </div>
 
+      <div class="mt-4 p-3 border-top">
+        <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="restaurantToggle">
+          <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+        </div>
+      </div>
+    </div>
+
+  <!-- Main Content -->
   <div class="main-content">
     <div class="navbar-custom-wrapper">
       <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
-          <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
+          <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3" />
           <div class="admin-info">
             <div class="fw-semibold">Super Admin</div>
             <p>napsgrillrestobar08@gmail.com</p>
@@ -75,24 +183,15 @@
 
     <div class="container-fluid">
       <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Reservations</h1>
+
+      <!-- Search -->
+      <div class="container mb-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
+        <input type="text" id="searchInput" class="form-control mb-2 mb-md-0 me-md-2"
+               style="width: 400px; margin-left: -50px;" placeholder="Search reservations...">
+      </div>
+
+      <!-- Table -->
       <div class="table-responsive">
-
-            <div class="container mb-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
-  <input 
-    type="text" 
-    id="searchInput" 
-    class="form-control mb-2 mb-md-0 me-md-2" 
-    style="width: 400px; margin-left: -50px;" 
-    placeholder="Search reservations...">
-</div>
-
-  <select id="statusFilter" class="form-select form-select-sm w-100 w-md-25 mb-2 mb-md-0 me-md-2 d-none">
-  <option value="">All Statuses</option>
-  <option value="Done">Done</option>
-</select>
-
-</div>
-
         <table class="table table-bordered table-hover">
           <thead class="table-dark">
             <tr>
@@ -107,218 +206,191 @@
               <th>Proof</th>
               <th>Status</th>
               <th>Booked At</th>
-              <th>Actions</th>
             </tr>
           </thead>
-        <tbody id="reservationTableBody">
-  <% reservations.filter(r => r.status === 'cancelled').forEach((r, i) => { %>
-    <tr>
-      <td><%= i + 1 %></td>
-      <td><%= r.userId?.firstName %> <%= r.userId?.lastName %></td>
-      <td><%= r.userId?.email %></td>
-      <td><%= r.tableId?.name %></td>
-      <td>₱<%= r.tableId?.price?.toFixed(2) %></td>
-      <td><%= r.dineInDateTime.split(' ')[0] %></td>
-      <td><%= r.dineInDateTime.split(' ')[1] %></td>
-      <td><%= r.referenceNumber %></td>
-      <td>
-  <% if (r.proofOfPayment) { %>
-    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
+          <tbody id="reservationTableBody">
+            <% reservations.filter(r => r.status === 'cancelled').forEach((r, i) => { %>
+              <tr>
+                <td><%= i + 1 %></td>
+                <td><%= r.userId?.firstName %> <%= r.userId?.lastName %></td>
+                <td><%= r.userId?.email %></td>
+                <td><%= r.tableId?.name %></td>
+                <td>₱<%= r.tableId?.price?.toFixed(2) %></td>
+                <td><%= r.dineInDateTime.split(' ')[0] %></td>
+                <td><%= r.dineInDateTime.split(' ')[1] %></td>
+                <td><%= r.referenceNumber %></td>
+                <td>
+                  <% if (r.proofOfPayment) { %>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
 
-    <!-- Modal -->
-    <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Proof of Payment</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center">
-     <img src="/uploads/<%= r.proofOfPayment %>" alt="Proof" class="img-fluid rounded shadow">
-
-
-
-
-          </div>
-        </div>
-      </div>
-    </div>
-  <% } else { %>
-    N/A
-  <% } %>
-</td>
-      <td>
-        <span class="badge bg-info text-dark">Cancelled</span>
-      </td>
-      <td><%= new Date(r.createdAt).toLocaleString() %></td>
-      <td>
-        <span class="text-muted">N/A</span>
-      </td>
-    </tr>
-  <% }); %>
-</tbody>
-
-
+                    <!-- Modal -->
+                    <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Proof of Payment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                          </div>
+                          <div class="modal-body text-center">
+                            <img src="/uploads/<%= r.proofOfPayment %>" alt="Proof" class="img-fluid rounded shadow" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% } else { %>
+                    N/A
+                  <% } %>
+                </td>
+                <td><span class="badge bg-info text-dark">Cancelled</span></td>
+                <td><%= new Date(r.createdAt).toLocaleString() %></td>
+              </tr>
+            <% }); %>
+          </tbody>
         </table>
-         <div class="d-flex justify-content-center mt-3">
-  <ul class="pagination pagination-sm" id="pagination"></ul>
+
+        <!-- Pagination -->
+        <div class="d-flex justify-content-center mt-3">
+          <ul class="pagination pagination-sm" id="pagination"></ul>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script>
-  function confirmAction(reservationId, action) {
-    const actions = {
-      cancelled: {
-        text: 'cancel this reservation',
-        confirmText: 'Yes, Cancel',
-      },
-      done: {
-        text: 'mark this reservation as done',
-        confirmText: 'Yes, Mark as Done',
-      },
-      confirmed: {
-        text: 'confirm this reservation',
-        confirmText: 'Yes, Confirm',
-      },
-      pending: {
-        text: 'mark this reservation as pending',
-        confirmText: 'Yes, Mark as Pending',
-      }
-    };
+    // Confirmation modal for actions
+    function confirmAction(reservationId, action) {
+      const actions = {
+        cancelled: { text: 'cancel this reservation', confirmText: 'Yes, Cancel' },
+        done: { text: 'mark this reservation as done', confirmText: 'Yes, Mark as Done' },
+        confirmed: { text: 'confirm this reservation', confirmText: 'Yes, Confirm' },
+        pending: { text: 'mark this reservation as pending', confirmText: 'Yes, Mark as Pending' }
+      };
 
-    const selectedAction = actions[action];
-    if (!selectedAction) {
-      alert("Invalid action.");
-      return;
+      const selectedAction = actions[action];
+      if (!selectedAction) return alert("Invalid action.");
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to ${selectedAction.text}.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: selectedAction.confirmText,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+      }).then((result) => {
+        if (result.isConfirmed) {
+          fetch(`/admin/reservation/${reservationId}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.message) {
+              Swal.fire({
+                title: 'Success!',
+                text: data.message,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              }).then(() => window.location.reload());
+            } else throw new Error();
+          })
+          .catch(() => Swal.fire('Error!', 'Failed to update status.', 'error'));
+        }
+      });
     }
 
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to ${selectedAction.text}.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: selectedAction.confirmText,
-      cancelButtonText: 'Cancel',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`/admin/reservation/${reservationId}/status`, {
-
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ action })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message) {
-            Swal.fire({
-              title: 'Success!',
-              text: data.message,
-              icon: 'success',
-              timer: 2000,
-              showConfirmButton: false
-            }).then(() => window.location.reload());
-          } else {
-            throw new Error();
-          }
-        })
-        .catch(() => {
-          Swal.fire('Error!', 'Failed to update status.', 'error');
+    // Dropdown logic
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
+        toggle.addEventListener("click", e => {
+          e.preventDefault();
+          const parent = toggle.closest(".dropdown");
+          document.querySelectorAll(".dropdown").forEach(d => {
+            if (d !== parent) d.classList.remove("show");
+          });
+          parent.classList.toggle("show");
         });
-      }
-    });
-  }
-
-   document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
-      toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-
-        const parentDropdown = this.closest(".dropdown");
-
-        // Close others
-        document.querySelectorAll(".dropdown").forEach(d => {
-          if (d !== parentDropdown) d.classList.remove("show");
-        });
-
-        parentDropdown.classList.toggle("show");
+      });
+      document.addEventListener("click", e => {
+        if (!e.target.closest(".dropdown")) {
+          document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
+        }
       });
     });
 
-    document.addEventListener("click", function (e) {
-      if (!e.target.closest(".dropdown")) {
-        document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
-      }
-    });
-  });
-  const rowsPerPage = 10;
-  let currentPage = 1;
+    // Pagination + Search
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
+    const searchInput = document.getElementById("searchInput");
+    const pagination = document.getElementById("pagination");
 
-  const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
-  const searchInput = document.getElementById("searchInput");
-  const statusFilter = document.getElementById("statusFilter");
-  const pagination = document.getElementById("pagination");
-
-  function filterRows() {
-    const searchValue = searchInput.value.toLowerCase();
-    const statusValue = statusFilter.value;
-
-    return rows.filter(row => {
-      const text = row.innerText.toLowerCase();
-      const matchesSearch = text.includes(searchValue);
-      const statusText = row.querySelector("td:nth-child(10)")?.innerText.trim().toLowerCase(); // Status column
-
-      const matchesStatus = !statusValue || statusText === statusValue.toLowerCase();
-      return matchesSearch && matchesStatus;
-    });
-  }
-
-  function renderTable() {
-    const filteredRows = filterRows();
-    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    rows.forEach(row => row.style.display = "none");
-    filteredRows.slice(start, end).forEach(row => row.style.display = "");
-
-    renderPagination(totalPages);
-  }
-
-  function renderPagination(totalPages) {
-    pagination.innerHTML = "";
-
-    for (let i = 1; i <= totalPages; i++) {
-      const li = document.createElement("li");
-      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-      li.addEventListener("click", e => {
-        e.preventDefault();
-        currentPage = i;
-        renderTable();
-      });
-      pagination.appendChild(li);
+    function filterRows() {
+      const searchValue = searchInput.value.toLowerCase();
+      return rows.filter(row => row.innerText.toLowerCase().includes(searchValue));
     }
-  }
 
-  searchInput.addEventListener("input", () => {
-    currentPage = 1;
+    function renderTable() {
+      const filteredRows = filterRows();
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+
+      rows.forEach(row => (row.style.display = "none"));
+      filteredRows.slice(start, end).forEach(row => (row.style.display = ""));
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      pagination.innerHTML = "";
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item ${i === currentPage ? "active" : ""}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener("click", e => {
+          e.preventDefault();
+          currentPage = i;
+          renderTable();
+        });
+        pagination.appendChild(li);
+      }
+    }
+
+    searchInput.addEventListener("input", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
     renderTable();
+  </script>
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
   });
-
-  statusFilter.addEventListener("change", () => {
-    currentPage = 1;
-    renderTable();
-  });
-
-  // Initial render
-  renderTable();
-</script>
-
+</script> 
 </body>
 </html>

@@ -243,6 +243,107 @@
     background: transparent;
 }
 
+/* ===== CLEAN TABLE DESIGN (Reservation Table) ===== */
+.table {
+  border-collapse: separate !important;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Remove all inner grid lines */
+.table th,
+.table td {
+  border: none !important;
+  vertical-align: middle;
+}
+
+/* Header styling */
+.table-dark th {
+  background: #29292b;
+  color: #fff !important;
+  font-weight: 600;
+  border: none !important;
+}
+
+/* Rounded header corners */
+.table thead.table-dark th:first-child {
+  border-top-left-radius: 10px;
+}
+
+.table thead.table-dark th:last-child {
+  border-top-right-radius: 10px;
+}
+
+/* Rounded bottom corners */
+.table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 10px;
+}
+
+.table tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 10px;
+}
+
+/* Row hover effect */
+.table tbody tr:hover {
+  background-color: #f8faff;
+  transition: background-color 0.25s ease-in-out;
+}
+
+/* Responsive scrollbar for table */
+.table-responsive {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Action buttons */
+.table .btn-success,
+.table .btn-danger {
+  border: none;
+  transition: 0.3s;
+}
+
+.table .btn-success:hover {
+  background-color: #03C4E7;
+}
+
+.table .btn-danger:hover {
+  background-color: #ff4b4b;
+}
+
+/* Badge style */
+.badge {
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.4px;
+}
+
+/* ===== Pagination ===== */
+.pagination {
+  margin-top: 25px;
+}
+
+.pagination .page-item .page-link {
+  border: none;
+  color: #0047FF;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.pagination .page-item.active .page-link {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  color: #fff;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #e6f0ff;
+}
+
 </style>
 <body>
 
@@ -257,9 +358,16 @@
 <a href="/staff/reservation" class="active"><i class="bi bi-journal-bookmark"></i> Reservation</a>
 <a href="/staff/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
 <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
+</nav>
 
-    </nav>
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
   </div>
+</div>
 
   <div class="main-content">
     <div class="navbar-custom-wrapper">
@@ -631,7 +739,31 @@
     setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
   });
 });
+</script>
 
-  </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
+  });
+</script>
 </body>
 </html>

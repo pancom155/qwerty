@@ -8,6 +8,149 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/AdminDashboard.css">
 </head>
+<style>
+  /* ===== Table Styling ===== */
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  background-color: #fff;
+}
+
+/* Header Styling */
+.table thead {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.table thead th {
+  padding: 14px 16px;
+  font-size: 15px;
+  border: none !important;
+}
+
+/* Table Body */
+.table tbody tr {
+  transition: all 0.2s ease-in-out;
+}
+
+.table tbody td {
+  padding: 14px 16px;
+  vertical-align: middle;
+  border: none !important;
+  border-bottom: 1px solid #eee !important;
+  font-size: 15px;
+  color: #333;
+}
+
+/* Row Hover */
+.table tbody tr:hover {
+  background-color: #f7faff;
+  transform: scale(1.01);
+}
+
+/* Center alignment */
+.table td, 
+.table th {
+  text-align: center;
+}
+
+/* ===== Status Badges ===== */
+.badge {
+  padding: 8px 14px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+}
+
+.badge.bg-success { background-color: #28a745 !important; }
+.badge.bg-danger { background-color: #dc3545 !important; }
+.badge.bg-warning { background-color: #ffc107 !important; color: #212529 !important; }
+.badge.bg-info { background-color: #0dcaf0 !important; color: #000 !important; }
+.badge.bg-primary { background-color: #0047FF !important; }
+.badge.bg-secondary { background-color: #6c757d !important; }
+
+/* ===== Buttons in Table ===== */
+.table .btn-sm {
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  transition: 0.2s;
+}
+
+.table .btn-sm:hover {
+  background-color: #0047FF;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* ===== Pagination ===== */
+.pagination {
+  margin-top: 25px;
+}
+
+.pagination .page-item .page-link {
+  border: none;
+  color: #0047FF;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: 0.2s;
+}
+
+.pagination .page-item.active .page-link {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  color: #fff;
+}
+
+.pagination .page-item .page-link:hover {
+  background-color: #e6f0ff;
+}
+
+/* ===== Filter Section ===== */
+#orderSearch, #dateFrom, #dateTo, #clearFilters {
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+#clearFilters {
+  transition: 0.2s;
+}
+
+#clearFilters:hover {
+  background: #0047FF;
+  color: #fff;
+  border-color: #0047FF;
+}
+/* Remove extra webkit scrollbar in table container */
+.table-responsive::-webkit-scrollbar {
+  height: 0px; /* hides horizontal scrollbar */
+}
+
+.table-responsive {
+  overflow-x: auto;
+  scrollbar-width: none; /* hides scrollbar in Firefox */
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+/* Optional: prevent table from overflowing weirdly */
+.table-responsive {
+  border-radius: 10px;
+}
+
+</style>
 <body>
 
 <div class="sidebar" id="sidebar">
@@ -54,7 +197,16 @@
     <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
     <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
   </nav>
+
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
+  </div>
 </div>
+
 <div class="main-content">
   <div class="navbar-custom-wrapper">
     <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
@@ -236,6 +388,7 @@
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
@@ -404,8 +557,30 @@ document.getElementById("clearFilters").addEventListener("click", () => {
   currentPage = 1;
   renderTable(); // re-render your table with cleared filters
 });
-
-
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
+  });
+</script>   
 </body>
 </html>

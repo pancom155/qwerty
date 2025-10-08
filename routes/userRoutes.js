@@ -56,7 +56,7 @@ router.get('/order-success/:orderId', userController.renderOrderSuccess);
 router.get('/reviews', isLoggedIn, userController.getReviewsPage);
 router.post('/reviews/:orderId', isLoggedIn, userController.submitReview);
 
-
+router.get('/customer_support/messages', userController.getMessages);
 // Profile routes
 router.get('/profile', isLoggedIn, userController.renderProfilePage);
 router.get('/edit-profile', isLoggedIn, userController.renderEditProfilePage);

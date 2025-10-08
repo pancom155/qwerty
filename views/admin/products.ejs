@@ -9,6 +9,210 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/AdminProduct.css">
 </head>
+<style>
+  .table-responsive {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  margin-top: 15px;
+}
+
+.table-responsive::-webkit-scrollbar {
+  height: 0;
+}
+.table-responsive {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.table thead.table-dark {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  border: none;
+}
+
+.table thead th {
+  color: #fff;
+  border: none;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  padding: 14px 16px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table thead th:first-child {
+  border-top-left-radius: 12px;
+}
+.table thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+.table tbody tr {
+  transition: all 0.25s ease;
+}
+
+.table tbody tr:hover {
+  background-color: #f5f9ff;
+  transform: scale(1.01);
+}
+
+.table tbody td {
+  border: none !important;
+  border-bottom: 1px solid #eee !important;
+  padding: 12px 14px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table tbody img.rounded {
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+}
+
+.table tbody img.rounded:hover {
+  transform: scale(1.1);
+}
+
+.badge.bg-info.text-dark {
+  background-color: #e0f7fa !important;
+  color: #007b83 !important;
+  font-weight: 500;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.fw-bold.text-success {
+  color: #000000 !important;
+  font-size: 1rem;
+}
+
+.badge.bg-success,
+.badge.bg-danger {
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.badge.bg-success {
+  background: #c3f8c0 !important;
+  color: #0a8a13 !important;
+}
+
+.badge.bg-danger {
+  background: #fcd2d2 !important;
+  color: #c82333 !important;
+}
+
+.btn-sm {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  border: none;
+}
+.btn-primary:hover {
+  background-color: #0047FF;
+}
+
+.btn-danger {
+  background-color: #ea5455;
+  border: none;
+}
+.btn-danger:hover {
+  background-color: #d33;
+}
+
+.btn-warning {
+  color: #fff;
+  background-color: #fbc02d;
+  border: none;
+}
+.btn-warning:hover {
+  background-color: #f9a825;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+}
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.table-hover tbody tr:hover td,
+.table-hover tbody tr:hover th {
+  background-color: #eef4ff;
+}
+
+.modal-content {
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.modal-header {
+  background: linear-gradient(90deg, #03C4E7, #0047FF);
+  color: #fff;
+  border-bottom: none;
+}
+
+.modal-footer {
+  border-top: none;
+}
+
+.modal-title {
+  font-weight: 600;
+}
+
+.input-group .form-control {
+  border-radius: 20px;
+  padding: 8px 15px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+}
+
+.input-group .form-control:focus {
+  border-color: #0047FF;
+  box-shadow: 0 0 5px rgba(0, 71, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+  .table thead {
+    display: none;
+  }
+  .table tbody td {
+    display: block;
+    text-align: right;
+    border-bottom: 1px solid #ddd;
+  }
+  .table tbody td::before {
+    content: attr(data-label);
+    float: left;
+    font-weight: 600;
+    color: #555;
+  }
+  .table tbody tr {
+    margin-bottom: 1rem;
+    display: block;
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+}
+</style>
 <body>
 
 <!-- Sidebar -->
@@ -29,6 +233,14 @@
     <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
     <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
   </nav>
+
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
+  </div>
 </div>
 
 <!-- Main Content -->
@@ -326,5 +538,29 @@
     });
   });
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
+  });
+</script>   
 </body>
 </html>

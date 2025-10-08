@@ -798,3 +798,18 @@ exports.sendMessage = async (req, res) => {
     res.send('Error sending message');
   }
 };
+
+
+exports.getMessages = async (req, res) => {
+  try {
+    const userId = req.session.user._id;
+    const chats = await CustomerSupport.find({ userId })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    res.json(chats); // send as JSON for polling
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    res.status(500).json({ error: 'Failed to fetch messages' });
+  }
+};
