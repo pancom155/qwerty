@@ -254,6 +254,7 @@
     });
   });
 
+<<<<<<< HEAD
   function showOtpModal(email) {
     Swal.fire({
       title: '<i class="fas fa-shield-alt text-primary"></i> Verify OTP',
@@ -269,6 +270,34 @@
                      border-radius: 8px; border: 2px solid #0d6efd; color: #0d6efd; 
                      font-weight: bold;">
           `).join('')}
+=======
+        <form method="POST" action="/login">
+          <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+            <input type="email" class="form-control" name="email" placeholder="Email" required>
+          </div>
+
+          <div class="mb-3 input-group">
+            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
+            <span class="input-group-text password-toggle" onclick="togglePassword('password', 'togglePasswordIcon1')">
+              <i id="togglePasswordIcon1" class="fas fa-eye"></i>
+            </span>
+          </div>
+
+          <div class="mb-3 text-center">
+            <a href="#" class="text-primary text-decoration-none" id="forgotPasswordLink">Forgot password?</a>
+          </div>
+
+    
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-gradient">Log In</button>
+          </div>
+        </form>
+
+        <div class="text-center mt-3">
+          <p class="mb-0">Don't have an account? <a href="/register" class="text-primary text-decoration-none">Sign up</a></p>
+>>>>>>> f5d475c0d19ab4dc0c9e6979d44104fbe2ba803f
         </div>
         <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
           Enter the 6-digit OTP sent to your email.
