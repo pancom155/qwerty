@@ -69,7 +69,7 @@ exports.postLogin = async (req, res) => {
   const { email, password } = req.body;
 
   // Admin login
-  if (email === 'napsgrillrestobar08@gmail.com' && password === '12345678') {
+  if (email === 'napsgrillrestobar@gmail.com' && password === '12345678') {
     req.session.user = { 
       _id: 'admin',     
       email, 
