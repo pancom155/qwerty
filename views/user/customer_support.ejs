@@ -144,85 +144,120 @@
   </div>
 </div>
 
-  <script>
-   const chatForm = document.getElementById('chatForm');
-const chatImageInput = document.getElementById('chatImageInput');
+<script>
 const uploadBtn = document.getElementById('uploadBtn');
+const chatImageInput = document.getElementById('chatImageInput');
+const chatForm = document.getElementById('chatForm');
 const chatBox = document.getElementById('chatBox');
 
-     const hamburger = document.querySelector('.hamburger');
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.querySelector('.sidebar-overlay');
+// Create a small image preview beside upload button
+const previewContainer = document.createElement('div');
+previewContainer.className = 'preview-img';
+previewContainer.style.display = 'flex';
+previewContainer.style.alignItems = 'center';
+previewContainer.style.marginLeft = '8px'; // small spacing
+previewContainer.style.position = 'relative';
 
-  // Toggle sidebar
-  hamburger.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-  });
-
-  // Close sidebar when overlay is clicked
-  overlay.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-  });
+// Insert preview container right after upload button
+uploadBtn.insertAdjacentElement('afterend', previewContainer);
 
 // Trigger file input when upload button is clicked
-uploadBtn.addEventListener('click', () => chatImageInput.click());
+uploadBtn.addEventListener('click', () => {
+  chatImageInput.click();
+});
 
-// Optional small preview (not mandatory)
-let previewContainer = document.createElement('div');
-previewContainer.className = 'preview-img';
-uploadBtn.parentNode.insertBefore(previewContainer, uploadBtn);
-
+// Show small image preview beside button
 chatImageInput.addEventListener('change', () => {
   const file = chatImageInput.files[0];
   if (file) {
     const reader = new FileReader();
     reader.onload = function(e) {
-      previewContainer.innerHTML = `<img src="${e.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
-    }
+      previewContainer.innerHTML = `
+        <img src="${e.target.result}" 
+             style="width: 45px; height: 45px; border-radius: 6px; object-fit: cover; border: 1px solid #ddd; margin-right: 10px">
+      `;
+    };
     reader.readAsDataURL(file);
   } else {
     previewContainer.innerHTML = '';
   }
 });
 
-// Validation: either message or image must be sent
-chatForm.addEventListener('submit', (e) => {
-  const message = chatForm.querySelector('input[name="message"]').value.trim();
-  const image = chatImageInput.files[0];
+// Fetch messages function
+async function fetchMessages() {
+  try {
+    const res = await fetch('/user/customer_support/messages');
+    const chats = await res.json();
+    chatBox.innerHTML = ''; // clear chat box
 
-  if (!message && !image) {
-    e.preventDefault();
-    alert('Please enter a message or attach an image before sending.');
-  }
-});
-// Scroll chat box to the bottom on page load
-function scrollToBottom() {
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-scrollToBottom();
- const socket = io();
+    chats.forEach(chat => {
+      chat.messages.forEach(msg => {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `d-flex mb-2 ${msg.sender === 'user' ? 'justify-content-end flex-row-reverse' : 'justify-content-start'} align-items-end`;
 
-  // send message (button click or Enter key)
-  function sendMessage() {
-    const msgInput = document.getElementById('msgInput');
-    const message = msgInput.value;
+        const profileIcon = document.createElement('div');
+        profileIcon.className = 'profile-icon ms-2';
+        profileIcon.innerHTML = `<i class="bi bi-person-circle fs-4 ${msg.sender === 'staff' ? 'text-primary' : 'text-success'}"></i>`;
 
-    if (message.trim() === '') return;
+        const bubble = document.createElement('div');
+        bubble.className = `message ${msg.sender === 'user' ? 'user-message' : 'staff-message'} shadow-sm`;
+        bubble.innerHTML = `
+          <div class="sender-email">${msg.email}</div>
+          ${msg.message ? `<div class="message-text">${msg.message}</div>` : ''}
+          ${msg.image ? `<img src="${msg.image}" alt="sent image" style="max-width:200px; border-radius:8px; margin-top:5px; display:block;">` : ''}
+          <div class="message-time">${msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }) : ''}</div>
+        `;
 
-    socket.emit('sendMessage', {
-      userId: "<%= user._id %>",
-      sender: "user",
-      email: "<%= user.email %>",
-      message
+        msgDiv.appendChild(profileIcon);
+        msgDiv.appendChild(bubble);
+        chatBox.appendChild(msgDiv);
+      });
     });
 
-    msgInput.value = '';
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } catch (err) {
+    console.error('Error fetching messages:', err);
   }
+}
 
+// Poll every 5 seconds
+setInterval(fetchMessages, 5000);
+fetchMessages();
 
-  </script>
+// Handle sending message
+chatForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const formData = new FormData(chatForm);
+
+  try {
+    await fetch(chatForm.action, {
+      method: 'POST',
+      body: formData
+    });
+
+    chatForm.reset();
+    previewContainer.innerHTML = ''; // clear preview
+    fetchMessages();
+  } catch (err) {
+    console.error('Error sending message:', err);
+  }
+});
+ const hamburger = document.querySelector('.hamburger');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.querySelector('.sidebar-overlay');
+
+    // Toggle sidebar
+    hamburger.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
+
+    // Close sidebar when overlay is clicked
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('active');
+      overlay.classList.remove('active');
+    });
+</script>
 
 </body>
 </html>

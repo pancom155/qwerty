@@ -33,7 +33,7 @@ router.get('/orders', isLoggedIn, userController.renderOrdersPage);
 
 router.get('/customer_support', isLoggedIn, userController.renderCustomerSupport);
 router.post( '/customer_support/send',isLoggedIn,upload.single('image'), userController.sendMessage);
-
+router.get('/customer_support/messages', userController.getMessages);
 
 
 
