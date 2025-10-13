@@ -63,7 +63,7 @@
   <div class="container py-1">
     <div class="main-content">
       <div class="container mt-4">
-        <h2 class="mb-4 text-center fw-bold">Orders <span>Review</span></h2>
+        <h3 class="mb-4 mt-5 text-center fw-bold">Order <span>Reviews</span></h3>
 
         <% if (completedOrders && completedOrders.length > 0) { %>
           <% completedOrders.forEach(order => { 
@@ -122,8 +122,18 @@
     </div>
   </div>
 
+    <!-- Customer Support Chat Button -->
+  <div id="chatButton" class="chat-button">
+    <i class="bi bi-chat-dots-fill"></i>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    const chatButton = document.getElementById('chatButton');
+    chatButton.addEventListener('click', () => {
+      window.location.href = '/user/customer_support';
+    }); 
+
   const reviewForms = document.querySelectorAll('.review-form');
   reviewForms.forEach(form => {
     form.addEventListener('submit', function (e) {

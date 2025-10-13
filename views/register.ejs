@@ -9,85 +9,432 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
+    /* Your existing CSS styles remain the same */
     .image-section {
       background: url('/images/naps.png') no-repeat center center;
       background-size: cover;
+      position: relative;
+      overflow: hidden;
     }
+
+    .image-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,102,0,0.1) 0%, rgba(255,102,0,0) 50%);
+      animation: floatBackground 15s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    @keyframes floatBackground {
+      0%, 100% { transform: translateY(0px) scale(1); }
+      50% { transform: translateY(-10px) scale(1.02); }
+    }
+    
     .gradient-btn {
-      background: linear-gradient(to right, #00ADEF, #0066FF);
+      background: #ff6600;
       color: white;
-      transition: 0.3s;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
+    
     .gradient-btn:hover {
-      background-color: #0056b3;
+      background-color: #d75600;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 102, 0, 0.4);
     }
+    
+    .gradient-btn:active {
+      transform: translateY(0);
+    }
+    
+    .gradient-btn::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+    
+    .gradient-btn:focus:not(:active)::after {
+      animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
+      }
+    }
+    
     .form-check-input {
       width: 18px;
       height: 18px;
       border: 1px solid black;
+      transition: all 0.2s ease;
     }
+    
+    .form-check-input:checked {
+      background-color: #ff6600;
+      border-color: #ff6600;
+    }
+    
     .password-toggle {
       cursor: pointer;
+      transition: all 0.2s ease;
     }
+    
+    .password-toggle:hover {
+      background-color: #f8f9fa;
+    }
+    
     .alert-danger {
       background-color: #fff !important;
       color: #dc3545 !important;
       border: 1px solid #ffffff !important;
+      animation: shake 0.5s ease-in-out;
     }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
     .modal-content {
       border-radius: 12px;
       padding: 20px;
+      animation: slideUp 0.4s ease-out;
     }
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
     .modal-header {
       border-bottom: none;
       text-align: center;
       flex-direction: column;
     }
+    
     .modal-header img {
       width: 80px;
       margin-bottom: 10px;
+      animation: bounceIn 0.8s ease-out;
     }
+    
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
     .modal-body {
       max-height: 300px;
       overflow-y: auto;
       text-align: justify;
     }
+    
     .modal-footer {
       border-top: none;
       justify-content: flex-end; 
       padding: 1rem;
     }
+    
     .btn-gradient {
-      background: linear-gradient(to right, #03C4E7, #0047FF);
+      background: #ff6600;
       color: white;
       transition: 0.3s;
     }
+    
     .otp-logo {
       width: 100px;
       margin-bottom: 10px;
     }
+    
     .otp-heading {
       font-weight: bold;
-      color: #0066FF;
+      color: #ffae00;
     }
+    
     .otp-subtext {
       font-size: 0.9rem;
       color: #555;
     }
+    
     .otp-input {
       letter-spacing: 10px;
       font-weight: bold;
       font-size: 1.5rem;
       text-align: center;
     }
+    
     .btn-primary-theme {
-      background: linear-gradient(to right, #00ADEF, #0066FF);
+      background: #ff6600;
       color: white;
       border: none;
+      transition: all 0.3s ease;
     }
+    
     .btn-primary-theme:hover {
-      background: #0056b3;
+      background: #d75600;
       color: #fff;
+      transform: translateY(-2px);
+    }
+    
+    .back-arrow {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.1rem;
+      color: #515152;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    
+    .back-arrow:hover {
+      color: #3f3f3f;
+      transform: scale(1.1) rotate(-5deg);
+    }
+    
+    .form-container {
+      animation: slideInRight 0.6s ease-out;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .input-group {
+      transition: all 0.3s ease;
+    }
+    
+    .input-group:focus-within {
+      transform: translateY(-2px);
+    }
+    
+    .input-group:focus-within .input-group-text {
+      background-color: #ff6600;
+      color: white;
+    }
+    
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+      0% { transform: translate(0, 0px); }
+      50% { transform: translate(0, -8px); }
+      100% { transform: translate(0, 0px); }
+    }
+    
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 2;
+      stroke: #4bb71b;
+      stroke-miterlimit: 10;
+      margin: 0 auto;
+      box-shadow: inset 0px 0px 0px #4bb71b;
+      animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+    
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: #4bb71b;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    @keyframes scale {
+      0%, 100% {
+        transform: none;
+      }
+      50% {
+        transform: scale3d(1.1, 1.1, 1);
+      }
+    }
+    
+    @keyframes fill {
+      100% {
+        box-shadow: inset 0px 0px 0px 30px #4bb71b;
+      }
+    }
+    
+    .helper-container {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease-out;
+    }
+    
+    .helper-container.show {
+      max-height: 150px;
+    }
+    
+    .progress {
+      height: 5px;
+      margin-top: 5px;
+      transition: all 0.3s ease;
+    }
+    
+    .terms-link {
+      color: #ff6600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .terms-link:hover {
+      text-decoration: underline;
+      transform: translateX(3px);
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .logo {
+      animation: bounceIn 0.8s ease-out;
+    }
+
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    /* New styles for name validation */
+    .name-helper {
+      font-size: 0.8rem;
+      color: #6c757d;
+      transition: all 0.3s ease;
+      max-height: 20px;
+      overflow: hidden;
+    }
+    
+    .valid-feedback, .invalid-feedback {
+      display: block;
+      font-size: 0.8rem;
+    }
+    
+    /* New styles to hide validation text when valid */
+    .validation-item {
+      transition: all 0.3s ease;
+      max-height: 20px;
+      overflow: hidden;
+    }
+    
+    .validation-item.valid {
+      max-height: 0;
+      opacity: 0;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .validation-item.invalid {
+      color: red;
+    }
+    
+    .validation-item.default {
+      color: #6c757d;
+    }
+    
+    /* New styles for password match validation */
+    .password-match-feedback {
+      font-size: 0.8rem;
+      margin-top: 5px;
+      max-height: 20px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .password-match-feedback.valid {
+      color: #198754;
+    }
+    
+    .password-match-feedback.invalid {
+      color: #dc3545;
+    }
+    
+    .password-match-feedback.hidden {
+      max-height: 0;
+      opacity: 0;
     }
   </style>
 </head>
@@ -96,31 +443,42 @@
 <div class="container-fluid vh-100 d-flex">
   <div class="row flex-grow-1 w-100">
     <div class="col-md-6 d-none d-md-block image-section"></div>
-    <div class="col-md-6 d-flex justify-content-center align-items-center bg-white shadow-lg">
-      <div class="w-100 px-4" style="max-width: 600px; width: 100%;">
+    <div class="col-md-6 d-flex justify-content-center align-items-center bg-white shadow-lg position-relative">
+      <!-- Back Arrow -->
+      <a href="/" class="back-arrow">
+        <i class="fas fa-arrow-left"></i>
+      </a>
+      
+      <div class="w-100 px-4 form-container" style="max-width: 600px; width: 100%;">
 
         <div class="text-center mb-4">
-          <img src="/images/napslogo.png" alt="Logo" class="mb-2" width="130">
+          <img src="/images/napslogo.png" alt="Logo" class="mb-2 logo" width="130">
           <h2 class="fw-bold">Sign Up</h2>
           <p class="text-muted">Please fill out the information below.</p>
         </div>
 
         <% if (typeof error !== 'undefined') { %>
-          <div class="alert alert-danger text-center"><%= error %></div>
+          <div class="alert alert-danger text-center fade-in"><%= error %></div>
         <% } %>
 
-        <form action="/register" method="post">
+        <form action="/register" method="post" id="registrationForm">
           <div class="row mb-3">
             <div class="col-6">
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" name="firstName" class="form-control" placeholder="First Name" required>
+                <input type="text" name="firstName" id="firstName" class="form-control" placeholder="First Name" required>
+              </div>
+              <div class="name-helper mt-1">
+                <small id="firstNameHelper" class="validation-item default">Only alphabetical characters allowed</small>
               </div>
             </div>
             <div class="col-6">
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" name="lastName" class="form-control" placeholder="Last Name" required>
+                <input type="text" name="lastName" id="lastName" class="form-control" placeholder="Last Name" required>
+              </div>
+              <div class="name-helper mt-1">
+                <small id="lastNameHelper" class="validation-item default">Only alphabetical characters allowed</small>
               </div>
             </div>
           </div>
@@ -132,21 +490,22 @@
                 <input type="email" name="email" class="form-control" placeholder="Email" required>
               </div>
             </div>
-          <div class="col">
-            <div class="mb-3 input-group">
-              <span class="input-group-text"><i class="fas fa-phone"></i></span>
-              <input type="text" id="contactNo" name="contactNo" 
-                    class="form-control" 
-                    placeholder="Contact Number (e.g., 09123456789)" 
-                    maxlength="11" required>
-            </div>
-            <div id="phoneHelper" class="small text-muted" style="display: none;">
-              <p id="startsWith09" class="mb-1">Must start with 09</p>
-              <p id="length11" class="mb-1">Must be exactly 11 digits</p>
-              <p id="onlyDigits" class="mb-1">Must contain only numbers</p>
+            <div class="col">
+              <div class="mb-3 input-group">
+                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                <input type="text" id="contactNo" name="contactNo" 
+                      class="form-control" 
+                      placeholder="Contact Number (e.g., 09123456789)" 
+                      maxlength="11" required>
+              </div>
+              <div id="phoneHelper" class="helper-container small text-muted">
+                <p id="startsWith09" class="mb-1 validation-item default">Must start with 09</p>
+                <p id="length11" class="mb-1 validation-item default">Must be exactly 11 digits</p>
+                <p id="onlyDigits" class="mb-1 validation-item default">Must contain only numbers</p>
+              </div>
             </div>
           </div>
-          </div>
+          
           <div class="mb-3 input-group">
             <span class="input-group-text"><i class="fas fa-home"></i></span>
             <input type="text" name="address" class="form-control" placeholder="Address" required>
@@ -162,12 +521,12 @@
                 </span>
               </div>
 
-              <div id="passwordHelper" class="small text-muted" style="display: none;">
-                <p id="length" class="mb-1">At least 8 characters</p>
-                <p id="uppercase" class="mb-1">At least one uppercase letter</p>
-                <p id="lowercase" class="mb-1">At least one lowercase letter</p>
-                <p id="number" class="mb-1">At least one number</p>
-                <p id="special" class="mb-1">At least one special character</p>
+              <div id="passwordHelper" class="helper-container small text-muted">
+                <p id="length" class="mb-1 validation-item default">At least 8 characters</p>
+                <p id="uppercase" class="mb-1 validation-item default">At least one uppercase letter</p>
+                <p id="lowercase" class="mb-1 validation-item default">At least one lowercase letter</p>
+                <p id="number" class="mb-1 validation-item default">At least one number</p>
+                <p id="special" class="mb-1 validation-item default">At least one special character</p>
               </div>
             </div>
 
@@ -179,6 +538,8 @@
                   <i id="togglePasswordIcon2" class="fas fa-eye"></i>
                 </span>
               </div>
+              <!-- Password match validation feedback -->
+              <div id="passwordMatchFeedback" class="password-match-feedback hidden"></div>
             </div>
           </div>
 
@@ -186,7 +547,7 @@
             <input class="form-check-input" type="checkbox" id="termsCheckbox" required>
             <label class="form-check-label ms-2" for="termsCheckbox">
               I agree to the 
-              <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" style="text-decoration: none;">Terms and Privacy Policy</a>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="terms-link">Terms and Privacy Policy</a>
             </label>
           </div>
 
@@ -229,7 +590,7 @@
       </div>                
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-gradient" data-bs-dismiss="modal" id="agreeButton">Agree</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="agreeButton">Agree</button>
       </div>
     </div>
   </div>
@@ -237,33 +598,41 @@
 
 <% if (showOTP) { %>
 <script>
+  // Your existing OTP script remains the same
   Swal.fire({
-    title: `
-      <img src="/images/napslogo.png" alt="Logo" class="otp-logo"/>
-    `,
+    title: '<i class="fas fa-shield-alt text-primary"></i> Verify OTP',
+    imageUrl: '/images/napslogo.png',
+    imageWidth: 80,
+    imageAlt: "Nap's Logo",
     html: `
-     <div class="otp-heading fs-3 mb-3">Verify Your Email</div>
-      <p class="otp-subtext mb-3">
-        We’ve sent a 6-digit verification code to your registered email.  
-        Please enter it below to complete your registration.
+      <input type="hidden" id="otpEmail" value="<%= email %>"/>
+      <div id="otpInputs" style="display: flex; justify-content: center; gap: 10px; margin: 10px 0;">
+        ${Array(6).fill(0).map((_, i) => `
+          <input type="text" maxlength="1" class="otp-digit" id="otpDigit${i}" 
+            style="width: 42px; height: 42px; text-align: center; font-size: 18px; 
+                   border-radius: 8px; border: 2px solid #0d6efd; color: #0d6efd; 
+                   font-weight: bold;">
+        `).join('')}
+      </div>
+      <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
+        Enter the 6-digit OTP sent to your email.
       </p>
-      <form id="otpForm" class="text-start">
-        <input type="hidden" id="otpEmail" value="<%= email %>"/>
-        <input type="text" id="otpInput" 
-          class="form-control mb-3 otp-input" 
-          placeholder="000000" maxlength="6" required/>
-        <div class="d-grid gap-2 mt-2">
-          <button type="submit" class="btn btn-primary-theme btn-lg">Verify OTP</button>
-          <button type="button" id="resendOtp" class="btn btn-outline-primary btn-lg" disabled>
-            Resend OTP (<span id="timer">05:00</span>)
-          </button>
-        </div>
-      </form>
+      <div class="d-grid gap-2 mt-2">
+        <button type="button" id="verifyOtpBtn" class="btn btn-primary-theme btn-lg">
+          <i class="fas fa-check"></i> Verify OTP
+        </button>
+        <button type="button" id="resendOtp" class="btn btn-outline-primary btn-lg" disabled>
+          Resend OTP (<span id="timer">05:00</span>)
+        </button>
+      </div>
     `,
     showConfirmButton: false,
     allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCloseButton: false,
+
     didOpen: () => {
-      const otpForm = document.getElementById('otpForm');
+      const verifyBtn = document.getElementById('verifyOtpBtn');
       const resendBtn = document.getElementById('resendOtp');
       const timerSpan = document.getElementById('timer');
 
@@ -281,10 +650,35 @@
         }
       }, 1000);
 
-      otpForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+      // Auto-focus first OTP input
+      const inputs = document.querySelectorAll('.otp-digit');
+      inputs[0].focus();
+
+      // OTP input navigation
+      inputs.forEach((input, idx) => {
+        input.addEventListener('input', () => {
+          if (input.value.length === 1 && idx < inputs.length - 1) {
+            inputs[idx + 1].focus();
+          }
+        });
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === "Backspace" && !input.value && idx > 0) {
+            inputs[idx - 1].focus();
+          }
+        });
+      });
+
+      // Verify OTP button handler
+      verifyBtn.addEventListener('click', async () => {
         const email = document.getElementById('otpEmail').value;
-        const otp = document.getElementById('otpInput').value;
+        const otp = Array.from(document.querySelectorAll('.otp-digit'))
+                         .map(input => input.value).join('');
+
+        if (otp.length !== 6) {
+          Swal.showValidationMessage('Please enter the complete 6-digit OTP.');
+          return;
+        }
 
         try {
           const res = await fetch('/verify-otp', {
@@ -294,16 +688,33 @@
           });
           const result = await res.json();
           if (result.success) {
-            Swal.fire('Verified!', 'Your email has been verified.', 'success')
-              .then(() => window.location.href = '/login');
+            Swal.fire({
+              icon: 'success',
+              title: 'Verified!',
+              imageUrl: '/images/napslogo.png',
+              imageWidth: 80,
+              imageAlt: "Nap's Logo",
+              html: `
+                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                  <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                  <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+                <p class="mt-3">Your email has been verified.</p>
+              `,
+              confirmButtonText: '<i class="fas fa-sign-in-alt"></i> Go to Login',
+              confirmButtonColor: '#0d6efd'
+            }).then(() => {
+              window.location.href = '/login';
+            });
           } else {
-            Swal.fire('Invalid OTP', result.message || 'The OTP is incorrect or expired.', 'error');
+            Swal.showValidationMessage(result.message || 'The OTP is incorrect or expired.');
           }
         } catch (err) {
-          Swal.fire('Error', 'Something went wrong while verifying OTP.', 'error');
+          Swal.showValidationMessage('Something went wrong while verifying OTP.');
         }
       });
 
+      // Resend OTP button handler
       resendBtn.addEventListener('click', async () => {
         resendBtn.disabled = true;
         countdown = 300;
@@ -347,11 +758,50 @@
   document.getElementById("agreeButton")?.addEventListener("click", function () {
     document.getElementById("termsCheckbox").checked = true;
   });
-</script>
 
-<script>
+  // Name validation functions
+  function validateName(name) {
+    // Allow only alphabetical characters, spaces, hyphens, and apostrophes
+    return /^[A-Za-z\s\-']+$/.test(name);
+  }
+
+  function updateNameValidation(inputId, helperId) {
+    const input = document.getElementById(inputId);
+    const helper = document.getElementById(helperId);
+    
+    if (input.value.length > 0) {
+      if (validateName(input.value)) {
+        input.classList.remove('is-invalid');
+        input.classList.add('is-valid');
+        helper.classList.remove('default', 'invalid');
+        helper.classList.add('valid');
+      } else {
+        input.classList.remove('is-valid');
+        input.classList.add('is-invalid');
+        helper.classList.remove('default', 'valid');
+        helper.classList.add('invalid');
+      }
+    } else {
+      input.classList.remove('is-valid', 'is-invalid');
+      helper.classList.remove('valid', 'invalid');
+      helper.classList.add('default');
+    }
+  }
+
+  // Add event listeners for name validation
+  document.getElementById('firstName').addEventListener('input', function() {
+    updateNameValidation('firstName', 'firstNameHelper');
+  });
+
+  document.getElementById('lastName').addEventListener('input', function() {
+    updateNameValidation('lastName', 'lastNameHelper');
+  });
+
+  // Password validation
   const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
   const passwordHelper = document.getElementById("passwordHelper");
+  const passwordMatchFeedback = document.getElementById("passwordMatchFeedback");
 
   const lengthReq = document.getElementById("length");
   const upperReq = document.getElementById("uppercase");
@@ -359,17 +809,61 @@
   const numberReq = document.getElementById("number");
   const specialReq = document.getElementById("special");
 
+  // Function to check if passwords match
+  function checkPasswordMatch() {
+    const password = passwordInput.value;
+    const confirmPassword = confirmPasswordInput.value;
+    
+    if (confirmPassword.length === 0) {
+      passwordMatchFeedback.classList.add('hidden');
+      confirmPasswordInput.classList.remove('is-invalid', 'is-valid');
+      return false;
+    }
+    
+    if (password === confirmPassword) {
+      passwordMatchFeedback.textContent = "Passwords match";
+      passwordMatchFeedback.classList.remove('hidden', 'invalid');
+      passwordMatchFeedback.classList.add('valid');
+      confirmPasswordInput.classList.remove('is-invalid');
+      confirmPasswordInput.classList.add('is-valid');
+      return true;
+    } else {
+      passwordMatchFeedback.textContent = "Passwords do not match";
+      passwordMatchFeedback.classList.remove('hidden', 'valid');
+      passwordMatchFeedback.classList.add('invalid');
+      confirmPasswordInput.classList.remove('is-valid');
+      confirmPasswordInput.classList.add('is-invalid');
+      return false;
+    }
+  }
+
+  // Add event listeners for password matching
+  passwordInput.addEventListener("input", checkPasswordMatch);
+  confirmPasswordInput.addEventListener("input", checkPasswordMatch);
+
   passwordInput.addEventListener("input", () => {
     const value = passwordInput.value;
-    passwordHelper.style.display = value.length > 0 ? "block" : "none";
-    lengthReq.style.color = value.length >= 8 ? "green" : "red";
-    upperReq.style.color = /[A-Z]/.test(value) ? "green" : "red";
-    lowerReq.style.color = /[a-z]/.test(value) ? "green" : "red";
-    numberReq.style.color = /\d/.test(value) ? "green" : "red";
-    specialReq.style.color = /[!@#$%^&*(),.?":{}|<>_]/.test(value) ? "green" : "red";
+    
+    // Show/hide helper with animation
+    if (value.length > 0 && !passwordHelper.classList.contains('show')) {
+      passwordHelper.classList.add('show');
+    } else if (value.length === 0 && passwordHelper.classList.contains('show')) {
+      passwordHelper.classList.remove('show');
+    }
+    
+    // Update requirement states
+    updateValidationItem(lengthReq, value.length >= 8);
+    updateValidationItem(upperReq, /[A-Z]/.test(value));
+    updateValidationItem(lowerReq, /[a-z]/.test(value));
+    updateValidationItem(numberReq, /\d/.test(value));
+    updateValidationItem(specialReq, /[!@#$%^&*(),.?":{}|<>_]/.test(value));
+    
+    // Check password match again when password changes
+    checkPasswordMatch();
   });
 
-  const form = document.querySelector("form");
+  // Phone validation
+  const form = document.getElementById("registrationForm");
   const contactInput = document.getElementById("contactNo");
   const phoneHelper = document.getElementById("phoneHelper");
 
@@ -379,13 +873,43 @@
 
   contactInput.addEventListener("input", () => {
     const value = contactInput.value;
-    phoneHelper.style.display = value.length > 0 ? "block" : "none";
-    startsWith09.style.color = value.startsWith("09") ? "green" : "red";
-    length11.style.color = value.length === 11 ? "green" : "red";
-    onlyDigits.style.color = /^\d*$/.test(value) ? "green" : "red";
+    
+    // Show/hide helper with animation
+    if (value.length > 0 && !phoneHelper.classList.contains('show')) {
+      phoneHelper.classList.add('show');
+    } else if (value.length === 0 && phoneHelper.classList.contains('show')) {
+      phoneHelper.classList.remove('show');
+    }
+    
+    // Update requirement states
+    updateValidationItem(startsWith09, value.startsWith("09"));
+    updateValidationItem(length11, value.length === 11);
+    updateValidationItem(onlyDigits, /^\d*$/.test(value));
   });
 
+  // Function to update validation item state
+  function updateValidationItem(element, isValid) {
+    if (isValid) {
+      element.classList.remove('default', 'invalid');
+      element.classList.add('valid');
+    } else {
+      element.classList.remove('default', 'valid');
+      element.classList.add('invalid');
+    }
+  }
+
   form.addEventListener("submit", (e) => {
+    // Validate names
+    const firstName = document.getElementById('firstName').value;
+    const lastName = document.getElementById('lastName').value;
+    
+    if (!validateName(firstName) || !validateName(lastName)) {
+      e.preventDefault();
+      Swal.fire("Invalid Name", "Please enter valid first and last names using only alphabetical characters.", "warning");
+      return;
+    }
+
+    // Validate password
     const value = passwordInput.value;
     const validPassword =
       value.length >= 8 &&
@@ -400,6 +924,15 @@
       return;
     }
 
+    // Validate password match
+    if (!checkPasswordMatch()) {
+      e.preventDefault();
+      // Focus on confirm password field
+      confirmPasswordInput.focus();
+      return;
+    }
+
+    // Validate phone
     const phoneValue = contactInput.value;
     const validPhone = /^09\d{9}$/.test(phoneValue);
 

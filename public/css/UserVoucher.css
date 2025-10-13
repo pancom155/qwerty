@@ -12,54 +12,45 @@
     color: white;
   }
 
-        body {
-        background-color: #e6e6f0;
+    body {
+        background-color: #ffffff;
         font-family: 'Poppins', sans-serif;
-      }
-
-      html {
-        scroll-behavior: smooth;
-      }
-
-          h3 span {
-      background-image: linear-gradient(to right, #03C4E7, #0047FF);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      font-weight: bold;
     }
 
-      .sidebar {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .sidebar {
         position: fixed;
         top: 0;
         left: 0;
         width: 250px;
         height: 100vh;
-        background-color: #f8f9fa;
+        background-color: #eeeef5;
         padding: 10px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
         display: flex;
         flex-direction: column;
         align-items: center;
         z-index: 1000;
-      }
+    }
 
-      .sidebar img {
+    .sidebar img {
         width: 100px;
         height: 100px;
         border-radius: 50%;
         object-fit: cover;
         margin: 20px 0;
-      }
+    }
 
-      .sidebar nav {
+    .sidebar nav {
         display: flex;
         flex-direction: column;
         width: 100%;
         align-items: center;
-      }
+    }
 
-      .sidebar nav a {
+    .sidebar nav a {
         padding: 10px 20px;
         color: #000;
         text-decoration: none;
@@ -70,125 +61,204 @@
         display: flex;
         align-items: center;
         gap: 10px;
-      }
+    }
 
-      .sidebar nav a:hover,
-      .sidebar nav a.active {
-        background: linear-gradient(90deg, #03C4E7, #0047FF);
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+        background: #5e5e5e;
         color: #fff;
-      }
+    }
 
-      .main-content {
+    .main-content {
         margin-left: 250px;
         padding: 20px;
-      }
+    }
 
-      .navbar-custom-wrapper {
+    .navbar-custom-wrapper {
         margin-left: 250px;
         padding: 3px 40px;
         position: sticky;
-        top: 0;
+        top: 20px;
         z-index: 999;
-      }
+    }
 
-      .navbar-custom {
-        background-color: #ffffff;
-        border-bottom-left-radius: 20px;
-        border-bottom-right-radius: 20px;
+    .btn-primary {
+        background: #ff6600;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: #d75600;
+    }  
+    
+    .navbar-custom {
+        background-color: #eeeef5;
+        border-radius: 40px;
         width: 95%;
         max-width: 1200px;
         padding: 0.5rem 1.5rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         display: flex;
         align-items: center;
         justify-content: space-between;
     }
+    
+    h3 span {
+        background-image: linear-gradient(to right, #ff8c00, #ff7700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 1200px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            justify-content: center;
+        }
+        .product-name {
+            font-size: 1rem;
+        }
+        .product-price {
+            font-size: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .product-card img {
+            height: 150px;
+        }
+    }
+    
+    .filter-container {
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .custom-input {
+        position: relative;
+    }
+    
+    .custom-input i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+    
+    .custom-input input,
+    .custom-input select {
+        padding-left: 40px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .custom-input input:focus,
+    .custom-input select:focus {
+        border-color: #03C4E7;
+        box-shadow: 0 0 0 0.25rem rgba(3, 196, 231, 0.25);
+    }
+    
+    #orderMessage {
+        font-size: 1.1rem;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(to right, #03C4E7, #0047FF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text; 
+    }
 
-    /* 📱 Mobile (max-width: 768px) */
-@media (max-width: 768px) {
-  /* Sidebar hidden by default */
-  .sidebar {
-    position: fixed;
-    top: 0;
-    left: -250px; /* offscreen */
-    width: 250px;
-    height: 100vh;
-    background-color: #f8f9fa;
-    padding: 10px;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1000;
-    transition: left 0.3s ease;
-  }
 
-  /* When active (opened) */
-  .sidebar.active {
-    left: 0;
-  }
+    /* Mobile Responsive (max-width: 768px) */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px; /* hidden by default */
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px 10px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 1100;
+        }
 
-  /* Overlay */
-  .sidebar-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.3);
-    display: none;
-    z-index: 900;
-  }
-  .sidebar-overlay.active {
-    display: block;
-  }
+        /* Sidebar when active */
+        .sidebar.active {
+            left: 0;
+        }
 
-  /* Hamburger button */
-  .hamburger {
-    position: fixed;
-    top: 15px;
-    left: 15px;
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-size: 1.3rem;
-    cursor: pointer;
-    z-index: 1201;
-    display: block;
-  }
+        /* Overlay when sidebar is open */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+        }
 
-  /* Content adjustments when sidebar is hidden */
-  .main-content {
-    margin: 70px 0 0 0;
-    padding: 15px;
-  }
+        .sidebar-overlay.active {
+            display: block;
+        }
 
-  .navbar-custom-wrapper {
-    margin: 0;
-    padding: 10px 20px;
-  }
-}
+        /* Add a hamburger button */
+        .hamburger {
+            position: fixed;
+            top: 28px;
+            left: 5px;
+            background:  linear-gradient(to right, #ff8c00, #ff7700);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1200;
+        }
 
-/* 💻 Desktop (min-width: 769px) */
-@media (min-width: 769px) {
-  .sidebar {
-    left: 0;
-    transition: none;
-  }
-  .hamburger {
-    display: none;
-  }
-  .sidebar-overlay {
-    display: none !important;
-  }
-  .main-content {
-    margin-left: 250px;
-    padding: 20px;
-  }
-  .navbar-custom-wrapper {
-    margin-left: 250px;
-    padding: 3px 40px;
-  }
-}
+        /* Adjust main content */
+        .main-content {
+            margin-left: 0;
+            padding: 20px;
+        }
+
+        .navbar-custom-wrapper {
+            margin-left: 0;
+        }
+      }
+
+    .chat-button {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: #0d6efd;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 2000;
+      transition: background 0.3s;
+    }
+    .chat-button:hover {
+      background-color: #0b5ed7;
+    }
+

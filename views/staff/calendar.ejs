@@ -15,130 +15,316 @@
 </head>
 <style>
   /* Notification container */
-.notification-container {
-    position: relative;
-    margin-right: 15px;
-}
+  .notification-container {
+      position: relative;
+      margin-right: 15px;
+  }
 
-/* Notification badge */
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #dc3545;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-    transition: transform 0.3s ease;
-}
+  /* Notification badge */
+  .notification-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background-color: #dc3545;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      transition: transform 0.3s ease;
+  }
 
-/* Badge pulse animation when updated */
-.notification-badge.updated {
-    transform: scale(1.3);
-    animation: pulse 0.5s ease;
-}
+  /* Badge pulse animation when updated */
+  .notification-badge.updated {
+      transform: scale(1.3);
+      animation: pulse 0.5s ease;
+  }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
-}
+  @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+  }
 
-/* Dropdown styling */
-.notification-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 350px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    z-index: 1050;
-    padding: 15px;
-    display: none;
-    max-height: 400px;
-    overflow-y: auto;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
+  /* Dropdown styling */
+  .notification-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      width: 350px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      z-index: 1050;
+      padding: 15px;
+      display: none;
+      max-height: 400px;
+      overflow-y: auto;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+  }
 
-/* Notification items */
-.notification-item {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(-10px);
-    animation: slideIn 0.5s forwards;
-}
+  /* Notification items */
+  .notification-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(-10px);
+      animation: slideIn 0.5s forwards;
+  }
 
-.notification-item:last-child {
-    border-bottom: none;
-}
+  .notification-item:last-child {
+      border-bottom: none;
+  }
 
-.notification-item:hover {
+  .notification-item:hover {
+      background-color: #f8f9fa;
+  }
+
+  /* Slide-in effect for new notifications */
+  @keyframes slideIn {
+      to {
+          opacity: 1;
+          transform: translateY(0);
+      }
+  }
+
+  /* Notification text */
+  .notification-title {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #343a40;
+  }
+
+  .notification-message {
+      font-size: 14px;
+      color: #495057;
+      margin-bottom: 5px;
+  }
+
+  .notification-time {
+      font-size: 12px;
+      color: #6c757d;
+  }
+
+  /* "No Notifications" message */
+  .notification-empty {
+      padding: 15px;
+      text-align: center;
+      color: #6c757d;
+      font-style: italic;
+  }
+
+  /* View all orders button */
+  .view-orders-btn {
+      width: 100%;
+      margin-top: 10px;
+      font-weight: bold;
+  }
+
+  /* Scrollbar for dropdown */
+  .notification-dropdown::-webkit-scrollbar {
+      width: 6px;
+  }
+
+  .notification-dropdown::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0,0.2);
+      border-radius: 3px;
+  }
+
+  .notification-dropdown::-webkit-scrollbar-track {
+      background: transparent;
+  }
+
+  /* ========== MODERN CALENDAR STYLES ========== */
+  
+  /* Calendar container */
+  #calendar {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    margin-top: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Calendar header */
+  .fc .fc-toolbar {
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+  }
+  
+  /* Calendar buttons */
+  .fc .fc-button {
+    background-color: #ffffff;
+    border: 1px solid #e0e6ed;
+    color: #5a6c7d;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  }
+  
+  .fc .fc-button:hover {
     background-color: #f8f9fa;
-}
-
-/* Slide-in effect for new notifications */
-@keyframes slideIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    border-color: #d0d7de;
+    color: #2c3e50;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .fc .fc-button:focus,
+  .fc .fc-button:active {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2) !important;
+  }
+  
+  .fc .fc-button-primary:not(:disabled).fc-button-active,
+  .fc .fc-button-primary:not(:disabled):active {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+  }
+  
+  /* Today button */
+  .fc .fc-today-button {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+  }
+  
+  .fc .fc-today-button:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    color: white;
+  }
+  
+  /* Calendar header cells */
+  .fc .fc-col-header-cell {
+    background-color: #f8fafc;
+    padding: 12px 0;
+    border: none;
+  }
+  
+  .fc .fc-col-header-cell-cushion {
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 8px;
+  }
+  
+  /* Day cells */
+  .fc .fc-daygrid-day {
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+  }
+  
+  .fc .fc-daygrid-day:hover {
+    background-color: #f8fafc;
+  }
+  
+  .fc .fc-daygrid-day.fc-day-today {
+    background-color: rgba(52, 152, 219, 0.08);
+  }
+  
+  .fc .fc-daygrid-day-number {
+    color: #4a5568;
+    font-weight: 500;
+    padding: 8px;
+    text-decoration: none;
+  }
+  
+  .fc .fc-day-today .fc-daygrid-day-number {
+    color: #3498db;
+    font-weight: 700;
+  }
+  
+  /* Event styles */
+  .fc .fc-event {
+    border: none;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+  
+  .fc .fc-event:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+  
+  .fc .fc-event-main {
+    padding: 2px 4px;
+  }
+  
+  /* Event colors based on status */
+  .fc-event-pending {
+    background-color: #f39c12;
+    border-left: 4px solid #e67e22;
+  }
+  
+  .fc-event-confirmed {
+    background-color: #27ae60;
+    border-left: 4px solid #229954;
+  }
+  
+  .fc-event-cancelled {
+    background-color: #e74c3c;
+    border-left: 4px solid #c0392b;
+  }
+  
+  .fc-event-completed {
+    background-color: #3498db;
+    border-left: 4px solid #2980b9;
+  }
+  
+  /* Week and day view adjustments */
+  .fc-timeGridWeek-view .fc-timegrid-slot,
+  .fc-timeGridDay-view .fc-timegrid-slot {
+    height: 2.5em;
+  }
+  
+  .fc .fc-timegrid-axis-cushion,
+  .fc .fc-timegrid-slot-label-cushion {
+    color: #718096;
+    font-size: 0.85rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    #calendar {
+      padding: 16px;
     }
-}
-
-/* Notification text */
-.notification-title {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #343a40;
-}
-
-.notification-message {
-    font-size: 14px;
-    color: #495057;
-    margin-bottom: 5px;
-}
-
-.notification-time {
-    font-size: 12px;
-    color: #6c757d;
-}
-
-/* "No Notifications" message */
-.notification-empty {
-    padding: 15px;
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-}
-
-/* View all orders button */
-.view-orders-btn {
-    width: 100%;
-    margin-top: 10px;
-    font-weight: bold;
-}
-
-/* Scrollbar for dropdown */
-.notification-dropdown::-webkit-scrollbar {
-    width: 6px;
-}
-
-.notification-dropdown::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
-    border-radius: 3px;
-}
-
-.notification-dropdown::-webkit-scrollbar-track {
-    background: transparent;
-}
+    
+    .fc .fc-toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .fc .fc-toolbar-chunk {
+      margin-bottom: 12px;
+    }
+    
+    .fc .fc-toolbar-title {
+      font-size: 1.5rem;
+    }
+  }
 </style>
 <body>
 
@@ -153,8 +339,15 @@
 <a href="/staff/reservation"><i class="bi bi-journal-bookmark"></i> Reservation</a>
 <a href="/staff/calendar" class="active"><i class="bi bi-calendar-event"></i> Calendar</a>
 <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
+</nav>
 
-  </nav>
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
+  </div>
 </div>
 
 <div class="main-content">
@@ -240,7 +433,6 @@
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
@@ -250,7 +442,7 @@
  <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
@@ -286,6 +478,13 @@
         modal.show();
       },
 
+      // Event rendering with custom classes based on status
+      eventDidMount: function(info) {
+        const status = info.event.extendedProps.status;
+        if (status) {
+          info.el.classList.add(`fc-event-${status.toLowerCase()}`);
+        }
+      },
      
     });
 
@@ -409,8 +608,30 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
   });
 });
-
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
 
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
+  });
+</script>
 </body>
 </html>

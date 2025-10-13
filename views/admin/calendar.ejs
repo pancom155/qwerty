@@ -6,15 +6,131 @@
   <title>Staff Dashboard | Calendar</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/StaffOrder.css">
-
-  <!-- ✅ FullCalendar CSS -->
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
-
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <style>
-  /* Notification container */
+
+  body {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f1f1f1;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #f8f9fa;
+    padding: 5px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden; 
+    z-index: 1000;
+}
+
+.sidebar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+
+.sidebar nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+
+.sidebar nav a {
+    padding: 10px 20px;
+    color: #000;
+    text-decoration: none;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: background 0.5s ease;
+    width: 90%;
+}
+
+.sidebar nav a.active,
+.sidebar nav a:hover {
+    background: #5e5e5e;
+    color: #fff;
+}
+
+.sidebar button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    background: #5e5e5e;
+    cursor: pointer;
+    margin-top: auto;
+}
+
+.main-content {
+    margin-left: 250px; 
+    flex-grow: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.navbar-custom-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2px;
+}
+
+.navbar-custom {
+    background-color: #ffffff;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    width: 95%;
+    max-width: 1200px;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar-custom img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid black;
+}
+
+.navbar-custom .admin-info {
+    line-height: 1.2;
+}
+
+.navbar-custom .admin-info .fw-semibold {
+    font-size: 1rem;
+    color: #343a40;
+}
+
+.navbar-custom .admin-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+}
+
+.navbar-custom .btn-danger {
+    padding: 0.4rem 0.6rem;
+}
+
+.container-fluid {
+    padding: 2rem;
+}
+
 .notification-container {
     position: relative;
     margin-right: 15px;
@@ -139,6 +255,192 @@
 .notification-dropdown::-webkit-scrollbar-track {
     background: transparent;
 }
+
+  /* ========== MODERN CALENDAR STYLES ========== */
+  
+  /* Calendar container */
+  #calendar {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    padding: 24px;
+    margin-top: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+  }
+  
+  /* Calendar header */
+  .fc .fc-toolbar {
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .fc .fc-toolbar-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+  }
+  
+  /* Calendar buttons */
+  .fc .fc-button {
+    background-color: #ffffff;
+    border: 1px solid #e0e6ed;
+    color: #5a6c7d;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+  }
+  
+  .fc .fc-button:hover {
+    background-color: #f8f9fa;
+    border-color: #d0d7de;
+    color: #2c3e50;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+  }
+  
+  .fc .fc-button:focus,
+  .fc .fc-button:active {
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2) !important;
+  }
+  
+  .fc .fc-button-primary:not(:disabled).fc-button-active,
+  .fc .fc-button-primary:not(:disabled):active {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+  }
+  
+  /* Today button */
+  .fc .fc-today-button {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: white;
+  }
+  
+  .fc .fc-today-button:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    color: white;
+  }
+  
+  /* Calendar header cells */
+  .fc .fc-col-header-cell {
+    background-color: #f8fafc;
+    padding: 12px 0;
+    border: none;
+  }
+  
+  .fc .fc-col-header-cell-cushion {
+    color: #4a5568;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    padding: 8px;
+  }
+  
+  /* Day cells */
+  .fc .fc-daygrid-day {
+    border: 1px solid #f1f5f9;
+    transition: all 0.2s ease;
+  }
+  
+  .fc .fc-daygrid-day:hover {
+    background-color: #f8fafc;
+  }
+  
+  .fc .fc-daygrid-day.fc-day-today {
+    background-color: rgba(52, 152, 219, 0.08);
+  }
+  
+  .fc .fc-daygrid-day-number {
+    color: #4a5568;
+    font-weight: 500;
+    padding: 8px;
+    text-decoration: none;
+  }
+  
+  .fc .fc-day-today .fc-daygrid-day-number {
+    color: #3498db;
+    font-weight: 700;
+  }
+  
+  /* Event styles */
+  .fc .fc-event {
+    border: none;
+    border-radius: 6px;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  }
+  
+  .fc .fc-event:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  }
+  
+  .fc .fc-event-main {
+    padding: 2px 4px;
+  }
+  
+  /* Event colors based on status */
+  .fc-event-pending {
+    background-color: #f39c12;
+    border-left: 4px solid #e67e22;
+  }
+  
+  .fc-event-confirmed {
+    background-color: #27ae60;
+    border-left: 4px solid #229954;
+  }
+  
+  .fc-event-cancelled {
+    background-color: #e74c3c;
+    border-left: 4px solid #c0392b;
+  }
+  
+  .fc-event-completed {
+    background-color: #3498db;
+    border-left: 4px solid #2980b9;
+  }
+  
+  /* Week and day view adjustments */
+  .fc-timeGridWeek-view .fc-timegrid-slot,
+  .fc-timeGridDay-view .fc-timegrid-slot {
+    height: 2.5em;
+  }
+  
+  .fc .fc-timegrid-axis-cushion,
+  .fc .fc-timegrid-slot-label-cushion {
+    color: #718096;
+    font-size: 0.85rem;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    #calendar {
+      padding: 16px;
+    }
+    
+    .fc .fc-toolbar {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .fc .fc-toolbar-chunk {
+      margin-bottom: 12px;
+    }
+    
+    .fc .fc-toolbar-title {
+      font-size: 1.5rem;
+    }
+  }
 </style>
 <body>
 
@@ -159,6 +461,14 @@
       <a href="/admin/calendar" class="active"><i class="bi bi-calendar-event"></i> Calendar</a>
       <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
     </nav>
+
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
+  </div>
 </div>
 
 <div class="main-content">
@@ -178,12 +488,13 @@
     </nav>
   </div>
 
-  <div class="container-fluid mt-4">
-    <h3 class="mb-4">Calendar</h3>
+  <div class="container-fluid mt-4"> 
+<h2 class="fw-bold mb-0" style="color: #333446;">Calendar</h2>
+
+    <!-- ✅ Calendar Container -->
     <div id="calendar"></div>
   </div>
 </div>
-
 <!-- Reservation Details Modal -->
 <div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -192,44 +503,55 @@
         <h5 class="modal-title"><i class="bi bi-calendar-event me-2"></i> Reservation Details</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
         <div class="row g-3">
+          <!-- User Info -->
           <div class="col-md-6">
             <div class="card shadow-sm border-0">
               <div class="card-body">
                 <h6 class="fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>User Information</h6>
-                <p><strong>Full Name:</strong> <span id="resFullName"></span></p>
-                <p><strong>Email:</strong> <span id="resEmail"></span></p>
-                <p><strong>Phone:</strong> <span id="resPhone"></span></p>
+                <p class="mb-1"><strong>Full Name:</strong> <span id="resFullName"></span></p>
+                <p class="mb-1"><strong>Email:</strong> <span id="resEmail"></span></p>
+                <p class="mb-0"><strong>Phone:</strong> <span id="resPhone"></span></p>
               </div>
             </div>
           </div>
+
+          <!-- Reservation Info -->
           <div class="col-md-6">
             <div class="card shadow-sm border-0">
               <div class="card-body">
                 <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Reservation Info</h6>
-                <p><strong>Table:</strong> <span id="resTable"></span></p>
-                <p><strong>Reference No.:</strong> <span id="resRef"></span></p>
-                <p><strong>Total Price:</strong> ₱<span id="resPrice"></span></p>
-                <p><strong>Reservation Fee:</strong> ₱<span id="resFee"></span></p>
-                <p><strong>Status:</strong> <span id="resStatus" class="badge bg-warning text-dark px-3 py-2 rounded-pill"></span></p>
+                <p class="mb-1"><strong>Table:</strong> <span id="resTable"></span></p>
+                <p class="mb-1"><strong>Reference No.:</strong> <span id="resRef"></span></p>
+                <p class="mb-1"><strong>Total Price:</strong> ₱<span id="resPrice"></span></p>
+                <p class="mb-1"><strong>Reservation Fee:</strong> ₱<span id="resFee"></span></p>
+                <p class="mb-0"><strong>Status:</strong> 
+                  <span id="resStatus" class="badge bg-warning text-dark px-3 py-2 rounded-pill"></span>
+                </p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
+
 <!-- ✅ Scripts -->
-<script src="/socket.io/socket.io.js"></script>
+ <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
-    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
       initialView: 'dayGridMonth',
       themeSystem: 'bootstrap5',
       height: 'auto',
@@ -238,9 +560,14 @@
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay'
       },
-      events: '/admin/calendar/events',
+
+      // ✅ Load events dynamically from backend
+      events: '/staff/calendar/events',
+
+      // ✅ Show reservation modal on click
       eventClick: function (info) {
         const props = info.event.extendedProps;
+
         document.getElementById('resFullName').innerText = props.fullName;
         document.getElementById('resEmail').innerText = props.email;
         document.getElementById('resPhone').innerText = props.phone;
@@ -249,86 +576,168 @@
         document.getElementById('resPrice').innerText = props.price;
         document.getElementById('resFee').innerText = props.fee;
         document.getElementById('resStatus').innerText = props.status;
-        new bootstrap.Modal(document.getElementById('reservationModal')).show();
-      }
+       
+
+        var modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+        modal.show();
+      },
+
+      // Event rendering with custom classes based on status
+      eventDidMount: function(info) {
+        const status = info.event.extendedProps.status;
+        if (status) {
+          info.el.classList.add(`fc-event-${status.toLowerCase()}`);
+        }
+      },
+     
     });
+
     calendar.render();
   });
+document.addEventListener('DOMContentLoaded', () => {
+  const notificationBtn = document.getElementById('notificationBtn');
+  const notificationDropdown = document.getElementById('notificationDropdown');
+  const notificationBadge = document.getElementById('notificationBadge');
+  const notificationList = document.getElementById('notificationList');
 
-  // Notifications (Admin version)
-  document.addEventListener('DOMContentLoaded', () => {
-    const notificationBtn = document.getElementById('notificationBtn');
-    const notificationDropdown = document.getElementById('notificationDropdown');
-    const notificationBadge = document.getElementById('notificationBadge');
-    const notificationList = document.getElementById('notificationList');
-    let pendingCount = 0;
+  let pendingCount = 0;
 
-    function updateBadge() {
-      notificationBadge.style.display = pendingCount > 0 ? 'flex' : 'none';
+  // Update bell badge
+  function updateBadge() {
+    if (pendingCount > 0) {
       notificationBadge.textContent = pendingCount;
+      notificationBadge.style.display = 'flex';
+    } else {
+      notificationBadge.style.display = 'none';
+    }
+  }
+
+  // Show "No Notifications" if empty
+  function checkEmpty() {
+    const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
+    if (!hasItems) {
+      const emptyMsg = document.createElement('div');
+      emptyMsg.className = 'notification-empty text-center text-muted';
+      emptyMsg.textContent = 'No Notifications';
+      notificationList.appendChild(emptyMsg);
+    } else {
+      const emptyMsg = notificationList.querySelector('.notification-empty');
+      if (emptyMsg) emptyMsg.remove();
+    }
+  }
+
+  async function loadPendingOrders() {
+  try {
+    const res = await fetch('/staff/pending-orders');
+    const data = await res.json();
+    const orders = data.pendingOrders || [];
+    const reservations = data.pendingReservations || [];
+
+    // Helper function to create notification item
+    function createNotificationItem(type, item) {
+      const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
+      const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
+      const notificationItem = document.createElement('div');
+      notificationItem.className = 'notification-item';
+      notificationItem.innerHTML = `
+        <div class="notification-title">${type}</div>
+        <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
+        <div class="notification-time">${time}</div>
+      `;
+      notificationItem.addEventListener('click', () => {
+        window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+      });
+      return notificationItem;
     }
 
-    function checkEmpty() {
-      if (!notificationList.querySelector('.notification-item')) {
-        notificationList.innerHTML = '<div class="notification-empty">No Notifications</div>';
-      }
-    }
-
-    async function loadPendingOrders() {
-      try {
-        const res = await fetch('/admin/pending-orders');
-        const data = await res.json();
-        const orders = data.pendingOrders || [];
-        const reservations = data.pendingReservations || [];
-
-        function createNotificationItem(type, item) {
-          const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
-          const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
-          const el = document.createElement('div');
-          el.className = 'notification-item';
-          el.innerHTML = `
-            <div class="notification-title">${type}</div>
-            <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
-            <div class="notification-time">${time}</div>
-          `;
-          el.addEventListener('click', () => {
-            window.location.href = type === 'New Order' ? '/admin/orders' : '/admin/reservations';
-          });
-          return el;
-        }
-
-        orders.forEach(o => notificationList.prepend(createNotificationItem('New Order', o)));
-        reservations.forEach(r => notificationList.prepend(createNotificationItem('New Reservation', r)));
-        pendingCount = orders.length + reservations.length;
-        updateBadge(); checkEmpty();
-      } catch (err) {
-        console.error('Error loading admin pending:', err);
-      }
-    }
-    loadPendingOrders();
-
-    notificationBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      notificationDropdown.style.display = notificationDropdown.style.display === 'block' ? 'none' : 'block';
+    // Add pending orders
+    orders.forEach(order => {
+      const notificationItem = createNotificationItem('New Order', order);
+      notificationList.insertBefore(notificationItem, notificationList.firstChild);
     });
-    document.addEventListener('click', e => {
-      if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
-        notificationDropdown.style.display = 'none';
-      }
+
+    // Add pending reservations
+    reservations.forEach(reservation => {
+      const notificationItem = createNotificationItem('New Reservation', reservation);
+      notificationList.insertBefore(notificationItem, notificationList.firstChild);
     });
 
-    const socket = io();
-    socket.on('newOrder', data => {
-      const el = document.createElement('div');
-      el.className = 'notification-item';
-      el.innerHTML = `<div class="notification-title">${data.title}</div>
-                      <div class="notification-message">${data.message}</div>
-                      <div class="notification-time">${data.time}</div>`;
-      el.addEventListener('click', () => window.location.href = '/admin/orders');
-      notificationList.prepend(el);
-      pendingCount++; updateBadge();
+    // Update badge count
+    pendingCount = orders.length + reservations.length;
+    updateBadge();
+    checkEmpty();
+  } catch (err) {
+    console.error('Error fetching pending orders/reservations:', err);
+  }
+}
+
+
+  loadPendingOrders(); // Load pending orders on page load
+
+  // Toggle dropdown
+  notificationBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = notificationDropdown.style.display === 'block';
+    notificationDropdown.style.display = isOpen ? 'none' : 'block';
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+      notificationDropdown.style.display = 'none';
+    }
+  });
+
+  // Socket.IO for new orders
+  const socket = io();
+  socket.on('newOrder', (data) => {
+    // Remove empty message if exists
+    const emptyMsg = notificationList.querySelector('.notification-empty');
+    if (emptyMsg) emptyMsg.remove();
+
+    const notificationItem = document.createElement('div');
+    notificationItem.className = 'notification-item new-notification';
+    notificationItem.innerHTML = `
+      <div class="notification-title">${data.title}</div>
+      <div class="notification-message">${data.message}</div>
+      <div class="notification-time">${data.time}</div>
+    `;
+    notificationItem.addEventListener('click', () => {
+      window.location.href = '/staff/order';
+    });
+    notificationList.insertBefore(notificationItem, notificationList.firstChild);
+
+    pendingCount += 1;
+    updateBadge();
+
+    setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
+  });
+});
+
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
     });
   });
-</script>
+</script> 
 </body>
 </html>

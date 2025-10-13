@@ -13,7 +13,7 @@ body {
     display: flex;
     min-height: 100vh;
     margin: 0;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
 }
 
 .container-fluid {
@@ -26,7 +26,7 @@ body {
     left: 0;
     width: 250px;
     height: 100vh;
-    background-color: #f8f9fa;
+    background-color: #eeeef5;
     padding: 5px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -61,7 +61,7 @@ body {
 
 .sidebar nav a.active,
 .sidebar nav a:hover {
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    background: #5e5e5e;
     color: #fff;
 }
 
@@ -76,13 +76,13 @@ body {
 .navbar-custom-wrapper {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-top: 20px;
+    z-index: 999;
 }
 
 .navbar-custom {
-    background-color: #ffffff;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
+    background-color: #eeeef5;
+    border-radius: 40px;
     width: 95%;
     max-width: 1200px;
     padding: 0.5rem 1.5rem;
@@ -118,24 +118,82 @@ body {
     padding: 0.4rem 0.6rem;
 }
 
+/* IMPROVED DASHBOARD STYLES */
+.dashboard-header {
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+}
+
+.dashboard-header h1 {
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-header p {
+    color: #64748b;
+    font-size: 1.1rem;
+    max-width: 600px;
+}
+
+.stats-section {
+    margin-bottom: 2.5rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 1.5rem;
+    padding-left: 1rem;
+    position: relative;
+}
+
+.section-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 70%;
+    width: 4px;
+    background: linear-gradient(to right, #ff6600, #e98630);
+    border-radius: 4px;
+}
+
 .stat-box {
     background: #fff;
-    padding: 20px;
-    border-radius: 20px;
+    padding: 1.5rem;
+    border-radius: 16px;
     text-align: center;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
     transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid #f1f5f9;
 }
 
 .stat-box:hover {
     transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .stat-box p {
     margin-top: 12px;
     font-weight: 600;
-    color: #333;
+    color: #475569;
     font-size: 1rem;
+    margin-bottom: 0;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 1rem 0;
+    color: #1e293b;
 }
 
 .circle {
@@ -200,6 +258,10 @@ body {
 
 .stat-box.total-res .circle {
     background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+}
+
+.stat-box.ready-pickup .circle {
+    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
 }
 
 .product-card:hover {
@@ -342,6 +404,36 @@ body {
     background: transparent;
 }
 
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .stat-value {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
+    
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .dashboard-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    .section-title {
+        font-size: 1.25rem;
+    }
+}
+
 </style>
 <body>
 <div class="sidebar" id="sidebar">
@@ -355,8 +447,15 @@ body {
 <a href="/staff/reservation"><i class="bi bi-journal-bookmark"></i> Reservation</a>
 <a href="/staff/calendar" ><i class="bi bi-calendar-event"></i> Calendar</a>
 <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
+</nav>
 
-  </nav>
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
+  </div>
 </div>
 
 <div class="main-content">
@@ -396,129 +495,127 @@ body {
   </div>
 
   <div class="container-fluid">
-    <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Dashboard</h1>
+    <div class="dashboard-header">
+      <h2>Dashboard</h2>
+      <p>Welcome back, <%= user.fullName %>! Here's what's happening with your orders and reservations today.</p>
+    </div>
 
-    <div class="row g-3">
-
-      <% const ordersTotal = pendingOrders + processingOrders + completedOrders; %>
-      <% const reservationsTotal = pendingReservations + confirmedReservations; %>
-
-      <div class="col-md-3">
-        <div class="stat-box pending">
-          <div class="circle position-relative">
-            <canvas id="pendingChart"></canvas>
-            
-            <i class="bi bi-hourglass-split position-absolute top-50 start-50 translate-middle"></i>
+    <div class="stats-section">
+      <h2 class="section-title">Order Statistics</h2>
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="stat-box pending">
+            <div class="circle position-relative">
+              <canvas id="pendingChart"></canvas>
+              <i class="bi bi-hourglass-split position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= pendingOrders %></div>
+            <p>Pending Orders</p>
           </div>
-          
-            <h3 class="fw-bold text-primary mb-1">  <span><%= pendingOrders %></span></h3>
-          
-          <p>Pending Orders</p>
+        </div>
+
+        <div class="col-md-3">
+          <div class="stat-box processing">
+            <div class="circle position-relative">
+              <canvas id="processingChart"></canvas>
+              <i class="bi bi-gear-fill position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= processingOrders %></div>
+            <p>Processing Orders</p>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="stat-box completed">
+            <div class="circle position-relative">
+              <canvas id="completedChart"></canvas>
+              <i class="bi bi-check-circle-fill position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= completedOrders %></div>
+            <p>Completed Orders</p>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="stat-box ready-pickup">
+            <div class="circle position-relative">
+              <canvas id="readypick"></canvas>
+              <i class="bi bi-truck position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= readyToPickupOrders %></div>
+            <p>Ready To Pickup</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="col-md-3">
-        <div class="stat-box processing">
-          <div class="circle position-relative">
-            <canvas id="processingChart"></canvas>
-           
-            <i class="bi bi-gear-fill position-absolute top-50 start-50 translate-middle"></i>
+    <div class="stats-section">
+      <h2 class="section-title">Reservation Statistics</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="stat-box pending-res">
+            <div class="circle position-relative">
+              <canvas id="pendingResChart"></canvas>
+              <i class="bi bi-calendar2-week position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= pendingReservations %></div>
+            <p>Pending Reservations</p>
           </div>
-             <h3 class="fw-bold text-primary mb-1">   <span><%= processingOrders %></span></h3>
-          <p>Processing Orders</p>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-box confirmed-res">
+            <div class="circle position-relative">
+              <canvas id="confirmedResChart"></canvas>
+              <i class="bi bi-calendar-check-fill position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= confirmedReservations %></div>
+            <p>Confirmed Reservations</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="stat-box total-res">
+            <div class="circle position-relative">
+              <canvas id="totalResChart"></canvas>
+              <i class="bi bi-calendar-event-fill position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= totalReservations %></div>
+            <p>Total Reservations</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="col-md-3">
-        <div class="stat-box completed">
-          <div class="circle position-relative">
-            <canvas id="completedChart"></canvas>
-           
-            <i class="bi bi-check-circle-fill position-absolute top-50 start-50 translate-middle"></i>
+    <div class="stats-section">
+      <h2 class="section-title">Overall Summary</h2>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="stat-box total-orders">
+            <div class="circle position-relative">
+              <canvas id="totalOrdersChart"></canvas>
+              <i class="bi bi-cart-check position-absolute top-50 start-50 translate-middle"></i>
+            </div>
+            <div class="stat-value"><%= totalOrders %></div>
+            <p>Total Orders</p>
           </div>
-          
-              <h3 class="fw-bold text-primary mb-1">  <span><%= completedOrders %></span></h3>
-          <p>Completed Orders</p>
         </div>
       </div>
-
-      <div class="col-md-3">
-        <div class="stat-box total-orders">
-          <div class="circle position-relative">
-            <canvas id="totalOrdersChart"></canvas>
-            
-            <i class="bi bi-cart-check position-absolute top-50 start-50 translate-middle"></i>
-          </div>
-          
-            <h3 class="fw-bold text-primary mb-1"> <span><%= totalOrders %></span></h3>
-          <p>Total Orders</p>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="stat-box pending-res">
-          <div class="circle position-relative">
-            <canvas id="pendingResChart"></canvas>
-           
-            <i class="bi bi-calendar2-week position-absolute top-50 start-50 translate-middle"></i>
-          </div>
-         
-               <h3 class="fw-bold text-primary mb-1">  <span><%= pendingReservations %></span></h3>
-          <p>Pending Reservations</p>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="stat-box confirmed-res">
-          <div class="circle position-relative">
-            <canvas id="confirmedResChart"></canvas>
-           
-            <i class="bi bi-calendar-check-fill position-absolute top-50 start-50 translate-middle"></i>
-          </div>
-            <h3 class="fw-bold text-primary mb-1"><%= confirmedReservations %></h3>
-          <p>Confirmed Reservations</p>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="stat-box total-res">
-          <div class="circle position-relative">
-            <canvas id="totalResChart"></canvas>
-            
-            <i class="bi bi-calendar-event-fill position-absolute top-50 start-50 translate-middle"></i>
-          </div>
-        
-             <h3 class="fw-bold text-primary mb-1"><%= totalReservations %></h3>
-          <p>Total Reservations</p>
-        </div>
-      </div>
-
-       <div class="col-md-3">
-        <div class="stat-box total-res">
-          <div class="circle position-relative">
-            <canvas id="readypick"></canvas>
-           <i class="bi bi-truck position-absolute top-50 start-50 translate-middle"></i>
-
-          </div>
-      <h3 class="fw-bold text-primary mb-1"><%= readyToPickupOrders %></h3>
-          <p>Ready To Pickup</p>
-        </div>
-      </div>
-
     </div>
   </div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   // Function to create circle charts
   function createCircleChart(id, value, total, color) {
-    const percentage = total > 0 ? (value / total) * 0 : 0;
+    const percentage = total > 0 ? (value / total) * 100 : 0;
     new Chart(document.getElementById(id), {
       type: 'doughnut',
       data: {
         datasets: [{
-          data: [percentage, 10 - percentage],
+          data: [percentage, 100 - percentage],
           backgroundColor: [color, '#e9ecef'],
           borderWidth: 0
         }]
@@ -530,15 +627,20 @@ body {
     });
   }
 
-  createCircleChart("pendingChart", <%= pendingOrders %>, <%= ordersTotal %>, "#FFC107");
-  createCircleChart("processingChart", <%= processingOrders %>, <%= ordersTotal %>, "#17A2B8");
-  createCircleChart("completedChart", <%= completedOrders %>, <%= ordersTotal %>, "#28A745");
+  // Calculate totals for the charts
+  const ordersTotal = <%= pendingOrders %> + <%= processingOrders %> + <%= completedOrders %>;
+  const reservationsTotal = <%= pendingReservations %> + <%= confirmedReservations %>;
+
+  // Create charts with proper values
+  createCircleChart("pendingChart", <%= pendingOrders %>, ordersTotal, "#FFC107");
+  createCircleChart("processingChart", <%= processingOrders %>, ordersTotal, "#17A2B8");
+  createCircleChart("completedChart", <%= completedOrders %>, ordersTotal, "#28A745");
   createCircleChart("totalOrdersChart", <%= totalOrders %>, <%= totalOrders %>, "#6C757D");
   
-  createCircleChart("pendingResChart", <%= pendingReservations %>, <%= reservationsTotal %>, "#FF5722");
-  createCircleChart("confirmedResChart", <%= confirmedReservations %>, <%= reservationsTotal %>, "#4CAF50");
+  createCircleChart("pendingResChart", <%= pendingReservations %>, reservationsTotal, "#FF5722");
+  createCircleChart("confirmedResChart", <%= confirmedReservations %>, reservationsTotal, "#4CAF50");
   createCircleChart("totalResChart", <%= totalReservations %>, <%= totalReservations %>, "#9C27B0");
-   createCircleChart("readypick", <%= readyToPickupOrders %>, <%= readyToPickupOrders %>, "#28a745");
+  createCircleChart("readypick", <%= readyToPickupOrders %>, <%= readyToPickupOrders %>, "#8B5CF6");
 
 document.addEventListener('DOMContentLoaded', () => {
   const notificationBtn = document.getElementById('notificationBtn');
@@ -658,10 +760,31 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
   });
 });
-
-
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
 
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
+  });
+</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

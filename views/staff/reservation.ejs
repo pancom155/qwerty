@@ -8,239 +8,407 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <style>
-  body {
-    display: flex;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #f1f1f1;
+/* ===== GLOBAL STYLES ===== */
+body {
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f1f1f1;
 }
 
 .container-fluid {
-    padding: 2rem;
+  padding: 2rem;
 }
 
+/* ===== SIDEBAR ===== */
 .sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background-color: #f8f9fa;
-    padding: 5px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #f8f9fa;
+  padding: 5px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  z-index: 1000;
 }
 
 .sidebar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
 }
 
 .sidebar nav {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
 }
 
 .sidebar nav a {
-    width: 90%;
-    padding: 10px 20px;
-    margin-bottom: 10px;
-    color: #000;
-    text-decoration: none;
-    border-radius: 10px;
-    transition: background 0.5s ease;
+  width: 90%;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  color: #000;
+  text-decoration: none;
+  border-radius: 10px;
+  transition: background 0.5s ease;
 }
 
 .sidebar nav a.active,
 .sidebar nav a:hover {
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
-    color: #fff;
+  background: #5e5e5e;
+  color: #fff;
 }
 
+/* ===== MAIN CONTENT ===== */
 .main-content {
-    margin-left: 250px;
-    flex-grow: 1;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
+  margin-left: 250px;
+  flex-grow: 1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ===== NAVBAR ===== */
 .navbar-custom-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
 
 .navbar-custom {
-    background-color: #ffffff;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    width: 95%;
-    max-width: 1200px;
-    padding: 0.5rem 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  background-color: #ffffff;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  width: 95%;
+  max-width: 1200px;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .navbar-custom img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border: 1px solid black;
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border: 1px solid black;
 }
 
 .navbar-custom .admin-info {
-    line-height: 1.2;
+  line-height: 1.2;
 }
 
 .navbar-custom .admin-info .fw-semibold {
-    font-size: 1rem;
-    color: #343a40;
+  font-size: 1rem;
+  color: #343a40;
 }
 
 .navbar-custom .admin-info p {
-    margin: 0;
-    font-size: 0.875rem;
-    color: #6c757d;
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
 }
 
 .navbar-custom .btn-danger {
-    padding: 0.4rem 0.6rem;
+  padding: 0.4rem 0.6rem;
 }
 
-/* Notification container */
+/* ===== TABLE STYLES - CLEAN DESIGN ===== */
+.table-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+}
+
+.table tbody td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #424242;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fbff;
+  transition: background-color 0.2s ease;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-pending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.status-confirmed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+/* Action buttons */
+.btn-action {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-approve {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-approve:hover {
+  background-color: #218838;
+  color: white;
+}
+
+.btn-reject {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-reject:hover {
+  background-color: #c82333;
+  color: white;
+}
+
+.btn-view {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-view:hover {
+  background-color: #138496;
+  color: white;
+}
+
+/* Customer info */
+.customer-info {
+  line-height: 1.4;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: #212529;
+}
+
+.customer-email {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Search and filter */
+.search-filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.filter-select {
+  width: 180px;
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.page-link {
+  border: none;
+  color: #495057;
+  padding: 0.5rem 0.75rem;
+}
+
+.page-item.active .page-link {
+  background-color: #17a2b8;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .table {
+    min-width: 1000px;
+  }
+}
+
+/* ===== NOTIFICATION SYSTEM ===== */
 .notification-container {
-    position: relative;
-    margin-right: 15px;
+  position: relative;
+  margin-right: 15px;
 }
 
-/* Notification badge */
 .notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: #dc3545;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-    transition: transform 0.3s ease;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
 }
 
-/* Badge pulse animation when updated */
 .notification-badge.updated {
-    transform: scale(1.3);
-    animation: pulse 0.5s ease;
+  transform: scale(1.3);
+  animation: pulse 0.5s ease;
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3); }
-    100% { transform: scale(1); }
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
 }
 
-/* Dropdown styling */
 .notification-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    width: 350px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-    z-index: 1050;
-    padding: 15px;
-    display: none;
-    max-height: 400px;
-    overflow-y: auto;
-    transition: opacity 0.3s ease, transform 0.3s ease;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 350px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  padding: 15px;
+  display: none;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-/* Notification items */
 .notification-item {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(-10px);
-    animation: slideIn 0.5s forwards;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: slideIn 0.5s forwards;
 }
 
 .notification-item:last-child {
-    border-bottom: none;
+  border-bottom: none;
 }
 
 .notification-item:hover {
-    background-color: #f8f9fa;
+  background-color: #f8f9fa;
 }
 
-/* Slide-in effect for new notifications */
 @keyframes slideIn {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Notification text */
 .notification-title {
-    font-weight: bold;
-    margin-bottom: 5px;
-    color: #343a40;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #343a40;
 }
 
 .notification-message {
-    font-size: 14px;
-    color: #495057;
-    margin-bottom: 5px;
+  font-size: 14px;
+  color: #495057;
+  margin-bottom: 5px;
 }
 
 .notification-time {
-    font-size: 12px;
-    color: #6c757d;
+  font-size: 12px;
+  color: #6c757d;
 }
 
-/* "No Notifications" message */
 .notification-empty {
-    padding: 15px;
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
+  padding: 15px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
 }
 
-/* View all orders button */
 .view-orders-btn {
-    width: 100%;
-    margin-top: 10px;
-    font-weight: bold;
+  width: 100%;
+  margin-top: 10px;
+  font-weight: bold;
 }
 
-/* Scrollbar for dropdown */
 .notification-dropdown::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 .notification-dropdown::-webkit-scrollbar-thumb {
-    background-color: rgba(0,0,0,0.2);
-    border-radius: 3px;
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
 }
 
 .notification-dropdown::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 </style>
@@ -251,86 +419,86 @@
     <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
     </div>
     <nav>
-  <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
-<a href="/staff/order"><i class="bi bi-cart-check"></i> Orders</a>
-<a href="/staff/order_done"><i class="bi bi-receipt"></i> Order Receipt</a>
-<a href="/staff/reservation" class="active"><i class="bi bi-journal-bookmark"></i> Reservation</a>
-<a href="/staff/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
-<a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
-
+      <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+      <a href="/staff/order"><i class="bi bi-cart-check"></i> Orders</a>
+      <a href="/staff/order_done"><i class="bi bi-receipt"></i> Order Receipt</a>
+      <a href="/staff/reservation" class="active"><i class="bi bi-journal-bookmark"></i> Reservation</a>
+      <a href="/staff/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+      <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
     </nav>
+
+    <div class="mt-4 p-3 border-top">
+      <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="restaurantToggle">
+        <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+      </div>
+    </div>
   </div>
 
   <div class="main-content">
     <div class="navbar-custom-wrapper">
-    <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center">
-        <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
-        <div class="admin-info">
-          <div class="fw-semibold mb-1"><%= user.fullName %></div>
-          <p><%= user.email %></p>
-        </div>
-      </div>
-
-      <div class="d-flex align-items-center">
-        <!-- Notification Container -->
-        <div class="notification-container me-3">
-          <button class="btn btn-outline-secondary position-relative" id="notificationBtn">
-            <i class="bi bi-bell"></i>
-            <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
-          </button>
-          
-          <!-- Notification Dropdown -->
-          <div class="notification-dropdown" id="notificationDropdown">
-            <h6 class="mb-3">Recent Notifications</h6>
-            <div id="notificationList">
-              <!-- Notifications will be added here dynamically -->
-            </div>
-          
+      <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
+          <div class="admin-info">
+            <div class="fw-semibold mb-1"><%= user.fullName %></div>
+            <p><%= user.email %></p>
           </div>
         </div>
-        
-        <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
-          <i class="bi bi-box-arrow-right"></i> Logout
-        </a>
-      </div>
-    </nav>
-  </div>
+
+        <div class="d-flex align-items-center">
+          <!-- Notification Container -->
+          <div class="notification-container me-3">
+            <button class="btn btn-outline-secondary position-relative" id="notificationBtn">
+              <i class="bi bi-bell"></i>
+              <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+            </button>
+            
+            <!-- Notification Dropdown -->
+            <div class="notification-dropdown" id="notificationDropdown">
+              <h6 class="mb-3">Recent Notifications</h6>
+              <div id="notificationList">
+                <!-- Notifications will be added here dynamically -->
+              </div>
+            </div>
+          </div>
+          
+          <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+            <i class="bi bi-box-arrow-right"></i> Logout
+          </a>
+        </div>
+      </nav>
+    </div>
 
     <div class="container-fluid">
-      <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Reservations</h1>
-              <div class="table-responsive">
+      <h1 class="mb-4 fw-bold" style="color: #333446;">Reservations</h1>
+      
+      <div class="search-filter-container">
+        <input 
+          type="text" 
+          id="searchInput" 
+          class="form-control search-box" 
+          placeholder="Search Reservations...">
+        
+        <select id="statusFilter" class="form-select filter-select">
+          <option value="">All Statuses</option>
+          <option value="pending">Pending</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
 
-
-                   <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 px-2">
-  <input 
-    type="text" 
-    id="searchInput" 
-    class="form-control mb-2 mb-md-0 me-md-2" 
-    style="width: 400px; " 
-    placeholder="Search Reservations...">
-  
-<select id="statusFilter" class="form-select form-select-sm w-100 w-md-25 mb-2 mb-md-0 me-md-2 d-none">
-  <option value="">All Statuses</option>
-  <option value="pending">Pending</option>
-  <option value="processing">Processing</option>
-  <option value="ready_to_pickup">Ready to Pickup</option>
-</select>
-
-
-</div>
-
-        <table class="table table-bordered table-hover">
-          <thead class="table-dark">
+      <div class="table-container">
+        <table class="table align-middle">
+          <thead>
             <tr>
               <th>#</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Phone</th>
+              <th>Customer</th>
+              <th>Contact</th>
               <th>Table</th>
-              <th>Reservation_fee</th>
-              <th>Date</th>
-              <th>Time</th>
+              <th>Fee</th>
+              <th>Date & Time</th>
               <th>GCash Ref</th>
               <th>Proof</th>
               <th>Status</th>
@@ -338,83 +506,107 @@
               <th>Actions</th>
             </tr>
           </thead>
-           <tbody id="reservationTableBody">
-  <% let hasPending = false; %>
-  <% reservations.forEach((r, i) => {
-       if (r.status === 'pending') {
-         hasPending = true;
-  %>
-    <tr>
-      <td><%= i + 1 %></td>
-      <td><%= r.userId?.firstName %> <%= r.userId?.lastName %></td>
-      <td><%= r.userId?.email %></td>
-      <td><%= r.phone %></td>
-      <td><%= r.tableId?.name %></td>
-     <td>
-  <% if (r.reservation_fee != null) { %>
-    ₱<%= r.reservation_fee.toFixed(2) %>
-  <% } else { %>
-    N/A
-  <% } %>
-</td>
+          <tbody id="reservationTableBody">
+            <% let hasPending = false; %>
+            <% reservations.forEach((r, i) => {
+                 if (r.status === 'pending') {
+                   hasPending = true;
+            %>
+              <tr>
+                <td><%= i + 1 %></td>
+                <td>
+                  <div class="customer-info">
+                    <div class="customer-name">
+                      <%= r.userId?.firstName %> <%= r.userId?.lastName %>
+                    </div>
+                    <div class="customer-email">
+                      <%= r.userId?.email %>
+                    </div>
+                  </div>
+                </td>
+                <td><%= r.phone %></td>
+                <td><%= r.tableId?.name %></td>
+                <td>
+                  <% if (r.reservation_fee != null) { %>
+                    ₱<%= r.reservation_fee.toFixed(2) %>
+                  <% } else { %>
+                    <span class="text-muted">N/A</span>
+                  <% } %>
+                </td>
+                <td>
+                  <div class="text-nowrap">
+                    <div><%= r.dineInDateTime.split(' ')[0] %></div>
+                    <div class="text-muted small"><%= r.dineInDateTime.split(' ')[1] %></div>
+                  </div>
+                </td>
+                <td><%= r.referenceNumber %></td>
+                <td>
+                  <% if (r.proofOfPayment) { %>
+                    <button class="btn btn-sm btn-view btn-action" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">
+                      <i class="bi bi-eye"></i> View
+                    </button>
+                  <% } else { %>
+                    <span class="text-muted">N/A</span>
+                  <% } %>
+                </td>
+                <td>
+                  <span class="status-badge status-pending">Pending</span>
+                </td>
+                <td>
+                  <div class="text-nowrap">
+                    <%= new Date(r.createdAt).toLocaleDateString() %>
+                    <div class="text-muted small"><%= new Date(r.createdAt).toLocaleTimeString() %></div>
+                  </div>
+                </td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <button class="btn btn-sm btn-approve btn-action" onclick="confirmAction('<%= r._id %>', 'approve')">
+                      <i class="bi bi-check-circle"></i>
+                    </button>
+                    <button class="btn btn-sm btn-reject btn-action" onclick="confirmAction('<%= r._id %>', 'reject')">
+                      <i class="bi bi-x-circle"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
 
-      <td><%= r.dineInDateTime.split(' ')[0] %></td>
-      <td><%= r.dineInDateTime.split(' ')[1] %></td>
-      <td><%= r.referenceNumber %></td>
-      <td>
-        <% if (r.proofOfPayment) { %>
-          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
-        <% } else { %>
-          N/A
-        <% } %>
-      </td>
-      <td><span class="badge bg-warning text-dark">Pending</span></td>
-      <td><%= new Date(r.createdAt).toLocaleString() %></td>
-      <td>
-        <button class="btn btn-sm btn-success mb-1" onclick="confirmAction('<%= r._id %>', 'approve')">
-          <i class="bi bi-check-circle-fill"></i>
-        </button>
-        <button class="btn btn-sm btn-danger" onclick="confirmAction('<%= r._id %>', 'reject')">
-          <i class="bi bi-x-circle-fill"></i>
-        </button>
-      </td>
-    </tr>
+              <% if (r.proofOfPayment) { %>
+                <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-labelledby="proofModalLabel<%= r._id %>" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header" style="background: rgb(218, 218, 218); color: rgb(0, 0, 0);">
+                        <h5 class="modal-title" id="proofModalLabel<%= r._id %>">Proof of Payment</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body text-center">
+                        <img src="/uploads/<%= r.proofOfPayment %>" class="img-fluid rounded shadow" alt="Proof of Payment" style="max-height: 500px;">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% } %>
 
-    <% if (r.proofOfPayment) { %>
-      <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-labelledby="proofModalLabel<%= r._id %>" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-          <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-              <h5 class="modal-title" id="proofModalLabel<%= r._id %>">Proof of Payment</h5>
-              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-center">
-              <img src="/uploads/<%= r.proofOfPayment %>" class="img-fluid rounded shadow" alt="Proof of Payment" style="max-height: 500px;">
-            </div>
-          </div>
-        </div>
-      </div>
-    <% } %>
+            <% } }); %>
 
-  <% } }); %>
-
-  <% if (!hasPending) { %>
-    <tr>
-      <td colspan="12" class="text-center text-muted">No pending reservations found.</td>
-    </tr>
-  <% } %>
-</tbody>
-
+            <% if (!hasPending) { %>
+              <tr>
+                <td colspan="11" class="text-center text-muted py-4">No pending reservations found.</td>
+              </tr>
+            <% } %>
+          </tbody>
         </table>
-         <div class="d-flex justify-content-center mt-3">
-  <ul class="pagination pagination-sm" id="pagination"></ul>
-</div>
+      </div>
+      
+      <div class="pagination-container">
+        <ul class="pagination pagination-sm" id="pagination"></ul>
       </div>
     </div>
   </div>
-<script src="/socket.io/socket.io.js"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   <script>
     function confirmAction(id, action) {
       const text = action === 'approve' ? 'approve this reservation' : 'reject this reservation';
@@ -448,190 +640,214 @@
         }
       });
     }
-       const rowsPerPage = 10;
-  let currentPage = 1;
 
-  const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
-  const searchInput = document.getElementById("searchInput");
-  const statusFilter = document.getElementById("statusFilter");
-  const pagination = document.getElementById("pagination");
+    const rowsPerPage = 10;
+    let currentPage = 1;
 
-  function filterRows() {
-    const searchValue = searchInput.value.toLowerCase();
-    const statusValue = statusFilter.value.toLowerCase();
+    const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const pagination = document.getElementById("pagination");
 
-    return rows.filter(row => {
-      const text = row.innerText.toLowerCase();
-      const matchesSearch = text.includes(searchValue);
+    function filterRows() {
+      const searchValue = searchInput.value.toLowerCase();
+      const statusValue = statusFilter.value.toLowerCase();
 
-      const statusText = row.querySelector("td:nth-child(10)")?.innerText.trim().toLowerCase();
-      const matchesStatus = !statusValue || statusText === statusValue;
+      return rows.filter(row => {
+        const text = row.innerText.toLowerCase();
+        const matchesSearch = text.includes(searchValue);
 
-      return matchesSearch && matchesStatus;
-    });
-  }
+        const statusText = row.querySelector("td:nth-child(9)")?.innerText.trim().toLowerCase();
+        const matchesStatus = !statusValue || statusText === statusValue;
 
-  function renderTable() {
-    const filteredRows = filterRows();
-    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    rows.forEach(row => row.style.display = "none");
-    filteredRows.slice(start, end).forEach(row => row.style.display = "");
-
-    renderPagination(totalPages);
-  }
-
-  function renderPagination(totalPages) {
-    pagination.innerHTML = "";
-
-    for (let i = 1; i <= totalPages; i++) {
-      const li = document.createElement("li");
-      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-      li.addEventListener("click", e => {
-        e.preventDefault();
-        currentPage = i;
-        renderTable();
+        return matchesSearch && matchesStatus;
       });
-      pagination.appendChild(li);
     }
-  }
 
-  // Events
-  searchInput.addEventListener("input", () => {
-    currentPage = 1;
+    function renderTable() {
+      const filteredRows = filterRows();
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+
+      rows.forEach(row => row.style.display = "none");
+      filteredRows.slice(start, end).forEach(row => row.style.display = "");
+
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      pagination.innerHTML = "";
+
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener("click", e => {
+          e.preventDefault();
+          currentPage = i;
+          renderTable();
+        });
+        pagination.appendChild(li);
+      }
+    }
+
+    // Events
+    searchInput.addEventListener("input", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    statusFilter.addEventListener("change", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    // Initial
     renderTable();
-  });
 
-  statusFilter.addEventListener("change", () => {
-    currentPage = 1;
-    renderTable();
-  });
+    document.addEventListener('DOMContentLoaded', () => {
+      const notificationBtn = document.getElementById('notificationBtn');
+      const notificationDropdown = document.getElementById('notificationDropdown');
+      const notificationBadge = document.getElementById('notificationBadge');
+      const notificationList = document.getElementById('notificationList');
 
-  // Initial
-  renderTable();
+      let pendingCount = 0;
 
-  document.addEventListener('DOMContentLoaded', () => {
-  const notificationBtn = document.getElementById('notificationBtn');
-  const notificationDropdown = document.getElementById('notificationDropdown');
-  const notificationBadge = document.getElementById('notificationBadge');
-  const notificationList = document.getElementById('notificationList');
+      // Update bell badge
+      function updateBadge() {
+        if (pendingCount > 0) {
+          notificationBadge.textContent = pendingCount;
+          notificationBadge.style.display = 'flex';
+        } else {
+          notificationBadge.style.display = 'none';
+        }
+      }
 
-  let pendingCount = 0;
+      // Show "No Notifications" if empty
+      function checkEmpty() {
+        const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
+        if (!hasItems) {
+          const emptyMsg = document.createElement('div');
+          emptyMsg.className = 'notification-empty text-center text-muted';
+          emptyMsg.textContent = 'No Notifications';
+          notificationList.appendChild(emptyMsg);
+        } else {
+          const emptyMsg = notificationList.querySelector('.notification-empty');
+          if (emptyMsg) emptyMsg.remove();
+        }
+      }
 
-  // Update bell badge
-  function updateBadge() {
-    if (pendingCount > 0) {
-      notificationBadge.textContent = pendingCount;
-      notificationBadge.style.display = 'flex';
-    } else {
-      notificationBadge.style.display = 'none';
-    }
-  }
+      async function loadPendingOrders() {
+        try {
+          const res = await fetch('/staff/pending-orders');
+          const data = await res.json();
+          const orders = data.pendingOrders || [];
+          const reservations = data.pendingReservations || [];
 
-  // Show "No Notifications" if empty
-  function checkEmpty() {
-    const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
-    if (!hasItems) {
-      const emptyMsg = document.createElement('div');
-      emptyMsg.className = 'notification-empty text-center text-muted';
-      emptyMsg.textContent = 'No Notifications';
-      notificationList.appendChild(emptyMsg);
-    } else {
-      const emptyMsg = notificationList.querySelector('.notification-empty');
-      if (emptyMsg) emptyMsg.remove();
-    }
-  }
+          // Helper function to create notification item
+          function createNotificationItem(type, item) {
+            const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
+            const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
+            const notificationItem = document.createElement('div');
+            notificationItem.className = 'notification-item';
+            notificationItem.innerHTML = `
+              <div class="notification-title">${type}</div>
+              <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
+              <div class="notification-time">${time}</div>
+            `;
+            notificationItem.addEventListener('click', () => {
+              window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+            });
+            return notificationItem;
+          }
 
-  async function loadPendingOrders() {
-  try {
-    const res = await fetch('/staff/pending-orders');
-    const data = await res.json();
-    const orders = data.pendingOrders || [];
-    const reservations = data.pendingReservations || [];
+          // Add pending orders
+          orders.forEach(order => {
+            const notificationItem = createNotificationItem('New Order', order);
+            notificationList.insertBefore(notificationItem, notificationList.firstChild);
+          });
 
-    // Helper function to create notification item
-    function createNotificationItem(type, item) {
-      const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
-      const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
-      const notificationItem = document.createElement('div');
-      notificationItem.className = 'notification-item';
-      notificationItem.innerHTML = `
-        <div class="notification-title">${type}</div>
-        <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
-        <div class="notification-time">${time}</div>
-      `;
-      notificationItem.addEventListener('click', () => {
-        window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+          // Add pending reservations
+          reservations.forEach(reservation => {
+            const notificationItem = createNotificationItem('New Reservation', reservation);
+            notificationList.insertBefore(notificationItem, notificationList.firstChild);
+          });
+
+          // Update badge count
+          pendingCount = orders.length + reservations.length;
+          updateBadge();
+          checkEmpty();
+        } catch (err) {
+          console.error('Error fetching pending orders/reservations:', err);
+        }
+      }
+
+      loadPendingOrders(); // Load pending orders on page load
+
+      // Toggle dropdown
+      notificationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = notificationDropdown.style.display === 'block';
+        notificationDropdown.style.display = isOpen ? 'none' : 'block';
       });
-      return notificationItem;
-    }
 
-    // Add pending orders
-    orders.forEach(order => {
-      const notificationItem = createNotificationItem('New Order', order);
-      notificationList.insertBefore(notificationItem, notificationList.firstChild);
+      document.addEventListener('click', (e) => {
+        if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+          notificationDropdown.style.display = 'none';
+        }
+      });
+
+      // Socket.IO for new orders
+      const socket = io();
+      socket.on('newOrder', (data) => {
+        // Remove empty message if exists
+        const emptyMsg = notificationList.querySelector('.notification-empty');
+        if (emptyMsg) emptyMsg.remove();
+
+        const notificationItem = document.createElement('div');
+        notificationItem.className = 'notification-item new-notification';
+        notificationItem.innerHTML = `
+          <div class="notification-title">${data.title}</div>
+          <div class="notification-message">${data.message}</div>
+          <div class="notification-time">${data.time}</div>
+        `;
+        notificationItem.addEventListener('click', () => {
+          window.location.href = '/staff/order';
+        });
+        notificationList.insertBefore(notificationItem, notificationList.firstChild);
+
+        pendingCount += 1;
+        updateBadge();
+
+        setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
+      });
     });
+  </script>
 
-    // Add pending reservations
-    reservations.forEach(reservation => {
-      const notificationItem = createNotificationItem('New Reservation', reservation);
-      notificationList.insertBefore(notificationItem, notificationList.firstChild);
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("restaurantToggle");
+      const label = document.getElementById("restaurantLabel");
+
+      const isClosed = localStorage.getItem("restaurantClosed") === "true";
+      toggle.checked = !isClosed;
+      label.textContent = isClosed ? "Closed" : "Open";
+
+      toggle.addEventListener("change", () => {
+        const newStatusClosed = !toggle.checked;
+        localStorage.setItem("restaurantClosed", newStatusClosed);
+        label.textContent = newStatusClosed ? "Closed" : "Open";
+
+        Swal.fire({
+          title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+          text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+          icon: newStatusClosed ? "error" : "success",
+          confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+          confirmButtonText: "OK"
+        });
+      });
     });
-
-    // Update badge count
-    pendingCount = orders.length + reservations.length;
-    updateBadge();
-    checkEmpty();
-  } catch (err) {
-    console.error('Error fetching pending orders/reservations:', err);
-  }
-}
-
-
-  loadPendingOrders(); // Load pending orders on page load
-
-  // Toggle dropdown
-  notificationBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = notificationDropdown.style.display === 'block';
-    notificationDropdown.style.display = isOpen ? 'none' : 'block';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
-      notificationDropdown.style.display = 'none';
-    }
-  });
-
-  // Socket.IO for new orders
-  const socket = io();
-  socket.on('newOrder', (data) => {
-    // Remove empty message if exists
-    const emptyMsg = notificationList.querySelector('.notification-empty');
-    if (emptyMsg) emptyMsg.remove();
-
-    const notificationItem = document.createElement('div');
-    notificationItem.className = 'notification-item new-notification';
-    notificationItem.innerHTML = `
-      <div class="notification-title">${data.title}</div>
-      <div class="notification-message">${data.message}</div>
-      <div class="notification-time">${data.time}</div>
-    `;
-    notificationItem.addEventListener('click', () => {
-      window.location.href = '/staff/order';
-    });
-    notificationList.insertBefore(notificationItem, notificationList.firstChild);
-
-    pendingCount += 1;
-    updateBadge();
-
-    setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
-  });
-});
-
   </script>
 </body>
 </html>

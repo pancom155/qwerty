@@ -1,416 +1,713 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nap's | Login</title>
-  <link rel="icon" type="image/png" href="/images/napslogo.png">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-  <style>
-    .image-section {
-      background: url('/images/naps.png') no-repeat center center;
-      background-size: cover;
+<!DOCTYPE html> 
+<html lang="en"> 
+<head>   
+  <meta charset="UTF-8" />   
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>   
+  <title>Nap's | Login</title>   
+  <link rel="icon" type="image/png" href="/images/napslogo.png">   
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">   
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">   
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>   
+  <script src="https://www.google.com/recaptcha/api.js" async defer></script>   
+  <style>     
+.image-section {
+  background: url('/images/naps.png') no-repeat center center;
+  background-size: cover;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Floating animation for background */
+.image-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255,102,0,0.1) 0%, rgba(255,102,0,0) 50%);
+  animation: floatBackground 15s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes floatBackground {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.02); }
+}
+   
+    .btn-gradient {       
+      background: #ff6600;       
+      color: white;       
+      width: 50%; 
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }     
+    
+    .btn-gradient:hover {       
+      background: #d75600;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(255, 102, 0, 0.4);
     }
-    .btn-gradient {
-      background: linear-gradient(to right, #03C4E7, #0047FF);
-      color: white;
-      width: 50%;
+    
+    .btn-gradient:active {
+      transform: translateY(0);
     }
-    .btn-gradient:hover {
-      background: #0056b3;
+    
+    /* Ripple effect for button */
+    .btn-gradient::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.5);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
     }
-    .fullscreen-overlay {
+    
+    .btn-gradient:focus:not(:active)::after {
+      animation: ripple 1s ease-out;
+    }
+    
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
+      }
+    }
+    
+    .back-arrow {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 1.1rem;
+      color: #515152;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+    }
+    .back-arrow:hover {
+      color: #3f3f3f;
+      transform: scale(1.1) rotate(-5deg);
+    }
+    
+    .fullscreen-overlay {       
+      position: fixed;       
+      top: 0; left: 0;       
+      width: 100%; height: 100%;       
+      background-color: rgba(0,0,0,0.6);       
+      z-index: 1050;       
+      display: flex;       
+      justify-content: center;       
+      align-items: center;  
+      animation: fadeIn 0.3s ease-out;   
+    }     
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .cooldown-box {       
+      background: white;       
+      padding: 30px;       
+      border-radius: 10px;       
+      text-align: center;       
+      box-shadow: 0 0 15px rgba(0,0,0,0.2); 
+      animation: slideUp 0.4s ease-out;  
+    }    
+    
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .alert-danger {     
+      background-color: white !important;     
+      color: #dc3545 !important;     
+      border: 1px solid #ffffff; 
+      animation: shake 0.5s ease-in-out;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+
+    /* Loader Overlay */
+    #loadingOverlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
-      background-color: rgba(0,0,0,0.6);
-      z-index: 1050;
-      display: flex;
+      background: rgba(255, 255, 255, 0.9);
+      display: none;
       justify-content: center;
       align-items: center;
+      z-index: 2000;
+      animation: fadeIn 0.3s ease-out;
     }
-    .cooldown-box {
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    
+    #loadingOverlay img {
+      width: 200px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
     }
 
-    .alert-danger {
-    background-color: white !important;
-    color: #dc3545 !important;
-    border: 1px solid #ffffff;
+    .forgot-link {
+      color: rgb(98, 98, 98);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .forgot-link:hover {
+      text-decoration: underline;
+      color: #ff6600;
+      transform: translateX(3px);
+    }
+    
+    /* Form animations */
+    .form-container {
+      animation: slideInRight 0.6s ease-out;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .input-group {
+      transition: all 0.3s ease;
+    }
+    
+    .input-group:focus-within {
+      transform: translateY(-2px);
+    }
+    
+    .input-group:focus-within .input-group-text {
+      background-color: #ff6600;
+      color: white;
+    }
+    
+    .password-toggle {
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .password-toggle:hover {
+      background-color: #f8f9fa;
+    }
+    
+    /* Logo animation */
+    .logo {
+      animation: bounceIn 0.8s ease-out;
+    }
+    
+    @keyframes bounceIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      50% {
+        opacity: 1;
+        transform: scale(1.05);
+      }
+      70% {
+        transform: scale(0.9);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    /* Floating elements */
+    .floating {
+      animation: floating 3s ease-in-out infinite;
+    }
+    
+    @keyframes floating {
+      0% { transform: translate(0, 0px); }
+      50% { transform: translate(0, -8px); }
+      100% { transform: translate(0, 0px); }
+    }
+    
+    /* Success checkmark animation */
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 2;
+      stroke: #4bb71b;
+      stroke-miterlimit: 10;
+      margin: 0 auto;
+      box-shadow: inset 0px 0px 0px #4bb71b;
+      animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    }
+    
+    .checkmark-circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 2;
+      stroke-miterlimit: 10;
+      stroke: #4bb71b;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    
+    .checkmark-check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    }
+    
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+    
+    @keyframes scale {
+      0%, 100% {
+        transform: none;
+      }
+      50% {
+        transform: scale3d(1.1, 1.1, 1);
+      }
+    }
+    
+    @keyframes fill {
+      100% {
+        box-shadow: inset 0px 0px 0px 30px #4bb71b;
+      }
+    }
+  </style> 
+</head> 
+
+<body class="bg-light">  
+
+  <% if (typeof cooldownSeconds !== 'undefined' && cooldownSeconds !== null) { %>   
+  <div class="fullscreen-overlay" id="cooldownOverlay">     
+    <div class="cooldown-box">       
+      <h4 class="fw-bold">Too many login attempts</h4>       
+      <p>Please wait before trying again.</p>       
+      <div class="cooldown-timer">         
+        <span id="minutes">00</span>:<span id="seconds"><%= cooldownSeconds %></span>       
+      </div>     
+    </div>   
+  </div> 
+  <% } %>  
+
+  <!-- Loading Effect Overlay -->
+  <div id="loadingOverlay">
+    <img src="/images/loading.gif" alt="Loading...">
+  </div>
+
+
+  <div class="container-fluid vh-100 d-flex">
+   <div class="row flex-grow-1 w-100">  
+      <div class="col-md-6 d-none d-md-block image-section"></div>
+      <div class="col-md-6 d-flex align-items-center justify-content-center bg-white shadow-sm p-4 position-relative">       
+        <!-- Back Arrow -->
+        <a href="/" class="back-arrow">
+          <i class="fas fa-arrow-left"></i>
+        </a>
+        
+        <div class="w-100 form-container" style="max-width: 400px;">         
+          <div class="text-center mb-3">           
+            <img src="/images/napslogo.png" alt="Logo" class="img-fluid logo" style="width: 150px;">           
+            <h2 class="mt-2 fw-bold">Login</h2>           
+            <p class="text-muted">Enter your credentials below.</p>         
+          </div>          
+
+          <% if (typeof error !== 'undefined') { %>           
+          <div class="alert alert-danger text-center" role="alert">             
+            <%= error %>           
+          </div>         
+          <% } %>          
+
+          <form method="POST" action="/login" id="loginForm">           
+            <div class="mb-3 input-group">             
+              <span class="input-group-text"><i class="fas fa-envelope"></i></span>             
+              <input type="email" class="form-control" name="email" placeholder="Email" required>           
+            </div>            
+
+            <div class="mb-3 input-group">             
+              <span class="input-group-text"><i class="fas fa-lock"></i></span>             
+              <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>             
+              <span class="input-group-text password-toggle" onclick="togglePassword('password', 'togglePasswordIcon1')">               
+                <i id="togglePasswordIcon1" class="fas fa-eye"></i>             
+              </span>           
+            </div>            
+
+            <div class="mb-3 text-center">             
+              <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot password?</a>
+            </div>            
+
+            <div class="mb-3 d-flex justify-content-center">             
+              <div class="g-recaptcha" data-sitekey="6LfJYLcqAAAAADB7y3kG7pDFRRbddu06DYHM_ZoF"></div>           
+            </div>            
+
+            <div class="d-flex justify-content-center">             
+              <button type="submit" class="btn btn-gradient">Log In</button>           
+            </div>         
+          </form>          
+
+          <div class="text-center mt-3">           
+            <p class="mb-0">Don't have an account? <a href="/register" class="text-primary text-decoration-none">Sign up</a></p>         
+          </div>       
+        </div>     
+      </div>   
+    </div> 
+  </div>  
+
+  <script>
+  function togglePassword(passwordId, iconId) {
+    const passwordField = document.getElementById(passwordId);
+    const icon = document.getElementById(iconId);
+    if (passwordField.type === "password") {
+      passwordField.type = "text";
+      icon.classList.replace("fa-eye", "fa-eye-slash");
+    } else {
+      passwordField.type = "password";
+      icon.classList.replace("fa-eye-slash", "fa-eye");
+    }
   }
-  </style>
-</head>
-<body class="bg-light">
+  </script>  
 
-<% if (typeof cooldownSeconds !== 'undefined' && cooldownSeconds !== null) { %>
-  <div class="fullscreen-overlay" id="cooldownOverlay">
-    <div class="cooldown-box">
-      <h4 class="fw-bold">Too many login attempts</h4>
-      <p>Please wait before trying again.</p>
-      <div class="cooldown-timer">
-        <span id="minutes">00</span>:<span id="seconds"><%= cooldownSeconds %></span>
-      </div>
-    </div>
-  </div>
-<% } %>
+  <script>   
+  const secondsDisplay = document.getElementById('seconds');   
+  const minutesDisplay = document.getElementById('minutes');   
+  const overlay = document.getElementById('cooldownOverlay');    
 
-<div class="container-fluid vh-100 d-flex">
-  <div class="row w-100">
-    <div class="col-md-6 d-none d-md-block image-section"></div>
-    <div class="col-md-6 d-flex align-items-center justify-content-center bg-white shadow-sm p-4">
-      <div class="w-100" style="max-width: 400px;">
-        <div class="text-center mb-3">
-          <img src="/images/napslogo.png" alt="Logo" class="img-fluid" style="width: 150px;">
-          <h2 class="mt-2 fw-bold">Login</h2>
-          <p class="text-muted">Enter your credentials below.</p>
+  if (secondsDisplay && minutesDisplay && overlay) {     
+    let totalSeconds = parseInt(secondsDisplay.textContent);      
+    if (!isNaN(totalSeconds)) {       
+      function updateTimer() {         
+        const mins = Math.floor(totalSeconds / 60);         
+        const secs = totalSeconds % 60;          
+        minutesDisplay.textContent = String(mins).padStart(2, '0');         
+        secondsDisplay.textContent = String(secs).padStart(2, '0');          
+        if (totalSeconds <= 0) {           
+          clearInterval(timer);           
+          overlay.style.animation = 'fadeOut 0.5s ease-out forwards';
+          setTimeout(() => overlay.remove(), 500);
+        }          
+        totalSeconds--;       
+      }        
+      updateTimer();       
+      const timer = setInterval(updateTimer, 1000);     
+    }   
+  } 
+  </script>  
+
+  <script> 
+  // Add CSS for fadeOut animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // Always hide loader when page is shown (fresh load or back button)
+  window.addEventListener("pageshow", function () {
+    const overlay = document.getElementById("loadingOverlay");
+    if (overlay) overlay.style.display = "none";
+  });
+
+  document.querySelector('form').addEventListener('submit', function(e) {     
+    const recaptchaResponse = grecaptcha.getResponse();     
+    if (!recaptchaResponse) {         
+      e.preventDefault();         
+      Swal.fire({             
+        icon: 'error',             
+        title: 'reCAPTCHA Required',             
+        text: 'Please complete the reCAPTCHA verification',         
+      });     
+    } else {         
+      // Show loading effect while waiting for server response         
+      document.getElementById("loadingOverlay").style.display = "flex";     
+    } 
+  });  
+
+  document.getElementById('forgotPasswordLink').addEventListener('click', () => {
+    Swal.fire({
+      title: '<i class="fas fa-key"></i> Forgot Password',
+      imageUrl: '/images/napslogo.png',
+      imageWidth: 100,
+      imageAlt: "Nap's Logo",
+      html: `
+        <div class="input-group" style="margin: 6px 0;">
+          <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+          <input type="email" id="otpEmail" class="form-control" placeholder="Enter your email" required>
         </div>
+        <p class="text-muted mb-0" style="font-size: 13px; margin-top: 4px;">
+          We'll send an OTP to your email for password reset.
+        </p>
+      `,
+      confirmButtonText: '<i class="fas fa-paper-plane"></i> Send OTP',
+      confirmButtonColor: '#ff6600',
+      customClass: {
+        title: 'swal2-title-sm',
+        htmlContainer: 'swal2-text-sm'
+      },
+      preConfirm: async () => {
+        const email = document.getElementById('otpEmail').value;
+        const res = await fetch('/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
 
-        <% if (typeof error !== 'undefined') { %>
-          <div class="alert alert-danger text-center" role="alert">
-            <%= error %>
-          </div>
-        <% } %>
+        const data = await res.json();
+        if (!data.success) {
+          Swal.showValidationMessage(data.message || 'Failed to send OTP.');
+        } else {
+          return email;
+        }
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        showOtpModal(result.value);
+      }
+    });
+  });
 
-        <form method="POST" action="/login">
-          <div class="mb-3 input-group">
-            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-            <input type="email" class="form-control" name="email" placeholder="Email" required>
-          </div>
-
-          <div class="mb-3 input-group">
-            <span class="input-group-text"><i class="fas fa-lock"></i></span>
-            <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
-            <span class="input-group-text password-toggle" onclick="togglePassword('password', 'togglePasswordIcon1')">
-              <i id="togglePasswordIcon1" class="fas fa-eye"></i>
-            </span>
-          </div>
-
-          <div class="mb-3 text-center">
-            <a href="#" class="text-primary text-decoration-none" id="forgotPasswordLink">Forgot password?</a>
-          </div>
-
-           <div class="mb-3 text-center">
-    <div class="g-recaptcha d-inline-block" data-sitekey="6LfJYLcqAAAAADB7y3kG7pDFRRbddu06DYHM_ZoF"></div>
-  </div>
-
-          <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-gradient">Log In</button>
-          </div>
-        </form>
-
-        <div class="text-center mt-3">
-          <p class="mb-0">Don't have an account? <a href="/register" class="text-primary text-decoration-none">Sign up</a></p>
+  function showOtpModal(email) {
+    Swal.fire({
+      title: '<i class="fas fa-shield-alt text-primary"></i> Verify OTP',
+      imageUrl: '/images/napslogo.png',
+      imageWidth: 80,
+      imageAlt: "Nap\'s Logo",
+      html: `
+        <input type="hidden" id="otpEmailHidden" value="${email}">
+        <div id="otpInputs" style="display: flex; justify-content: center; gap: 10px; margin: 10px 0;">
+          ${Array(6).fill(0).map((_, i) => `
+            <input type="text" maxlength="1" class="otp-digit" id="otpDigit${i}" 
+              style="width: 42px; height: 42px; text-align: center; font-size: 18px; 
+                     border-radius: 8px; border: 2px solid #0d6efd; color: #0d6efd; 
+                     font-weight: bold;">
+          `).join('')}
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+        <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
+          Enter the 6-digit OTP sent to your email.
+        </p>
+      `,
+      confirmButtonText: '<i class="fas fa-check"></i> Verify OTP',
+      confirmButtonColor: '#ff6600',
 
-<script>
-function togglePassword(passwordId, iconId) {
-  const passwordField = document.getElementById(passwordId);
-  const icon = document.getElementById(iconId);
-  if (passwordField.type === "password") {
-    passwordField.type = "text";
-    icon.classList.replace("fa-eye", "fa-eye-slash");
-  } else {
-    passwordField.type = "password";
-    icon.classList.replace("fa-eye-slash", "fa-eye");
-  }
-}
-</script>
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCloseButton: false,
 
-<script>
-  const secondsDisplay = document.getElementById('seconds');
-  const minutesDisplay = document.getElementById('minutes');
-  const overlay = document.getElementById('cooldownOverlay');
+      didOpen: () => {
+        const inputs = document.querySelectorAll('.otp-digit');
+        inputs[0].focus();
 
-  if (secondsDisplay && minutesDisplay && overlay) {
-    let totalSeconds = parseInt(secondsDisplay.textContent);
+        inputs.forEach((input, idx) => {
+          input.addEventListener('input', () => {
+            if (input.value.length === 1 && idx < inputs.length - 1) {
+              inputs[idx + 1].focus();
+            }
+          });
 
-    if (!isNaN(totalSeconds)) {
-      function updateTimer() {
-        const mins = Math.floor(totalSeconds / 60);
-        const secs = totalSeconds % 60;
+          input.addEventListener('keydown', (e) => {
+            if (e.key === "Backspace" && !input.value && idx > 0) {
+              inputs[idx - 1].focus();
+            }
+          });
+        });
+      },
 
-        minutesDisplay.textContent = String(mins).padStart(2, '0');
-        secondsDisplay.textContent = String(secs).padStart(2, '0');
+      preConfirm: async () => {
+        const otp = Array.from(document.querySelectorAll('.otp-digit'))
+                         .map(input => input.value).join('');
+        const email = document.getElementById('otpEmailHidden').value;
 
-        if (totalSeconds <= 0) {
-          clearInterval(timer);
-          overlay.remove();
+        if (otp.length !== 6) {
+          Swal.showValidationMessage('Please enter the complete 6-digit OTP.');
+          return;
         }
 
-        totalSeconds--;
-      }
+        const res = await fetch('/verify-forgot-otp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, otp })
+        });
 
-      updateTimer();
-      const timer = setInterval(updateTimer, 1000);
-    }
+        const data = await res.json();
+        if (!data.success) {
+          Swal.showValidationMessage(data.message || 'Invalid or expired OTP.');
+        } else {
+          showResetModal(email);
+        }
+      }
+    });
   }
-</script>
 
-<script>
-document.querySelector('form').addEventListener('submit', function(e) {
-    const recaptchaResponse = grecaptcha.getResponse();
-    if (!recaptchaResponse) {
-        e.preventDefault();
-        Swal.fire({
-            icon: 'error',
-            title: 'reCAPTCHA Required',
-            text: 'Please complete the reCAPTCHA verification',
-        });
-    }
-});
+  function showResetModal(email) {
+    Swal.fire({
+      title: '<i class="fas fa-lock text-warning"></i> Reset Password',
+      imageUrl: '/images/napslogo.png',
+      imageWidth: 80,
+      imageAlt: "Nap\'s Logo",
+      html: `
+        <!-- New Password -->
+        <div class="input-group my-2">
+          <span class="input-group-text"><i class="fas fa-lock"></i></span>
+          <input type="password" id="newPass" class="form-control" placeholder="New Password">
+          <span class="input-group-text password-toggle" onclick="togglePassword('newPass','eyeNew')">
+            <i id="eyeNew" class="fas fa-eye"></i>
+          </span>
+        </div>
 
-document.getElementById('forgotPasswordLink').addEventListener('click', () => {
-  Swal.fire({
-    title: '<i class="fas fa-key text-primary"></i> Forgot Password',
-    imageUrl: '/images/napslogo.png',
-    imageWidth: 100,
-    imageAlt: "Nap's Logo",
-    html: `
-      <div class="input-group" style="margin: 6px 0;">
-        <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-        <input type="email" id="otpEmail" class="form-control" placeholder="Enter your email" required>
-      </div>
-      <p class="text-muted mb-0" style="font-size: 13px; margin-top: 4px;">
-        We'll send an OTP to your email for password reset.
-      </p>
-    `,
-    confirmButtonText: '<i class="fas fa-paper-plane"></i> Send OTP',
-    confirmButtonColor: '#0d6efd',
-    customClass: {
-      title: 'swal2-title-sm',
-      htmlContainer: 'swal2-text-sm'
-    },
-    preConfirm: async () => {
-      const email = document.getElementById('otpEmail').value;
-      const res = await fetch('/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
-      });
+        <!-- Confirm Password -->
+        <div class="input-group my-2">
+          <span class="input-group-text"><i class="fas fa-lock"></i></span>
+          <input type="password" id="confirmPass" class="form-control" placeholder="Confirm Password">
+          <span class="input-group-text password-toggle" onclick="togglePassword('confirmPass','eyeConfirm')">
+            <i id="eyeConfirm" class="fas fa-eye"></i>
+          </span>
+        </div>
 
-      const data = await res.json();
-      if (!data.success) {
-        Swal.showValidationMessage(data.message || 'Failed to send OTP.');
-      } else {
-        return email;
-      }
-    }
-  }).then((result) => {
-    if (result.isConfirmed) {
-      showOtpModal(result.value);
-    }
-  });
-});
+        <!-- Password Helper -->
+        <div id="passwordHelper" class="mt-2 text-start small" style="display:none;">
+          <p id="length" class="mb-1 text-danger">• At least 8 characters</p>
+          <p id="uppercase" class="mb-1 text-danger">• At least one uppercase letter</p>
+          <p id="lowercase" class="mb-1 text-danger">• At least one lowercase letter</p>
+          <p id="number" class="mb-1 text-danger">• At least one number</p>
+          <p id="special" class="mb-1 text-danger">• At least one special character (!@#$%^&* or _)</p>
+        </div>
+      `,
+      confirmButtonText: '<i class="fas fa-save"></i> Update Password',
+      confirmButtonColor: '#0d6efd',
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCloseButton: false,
 
-function showOtpModal(email) {
-  Swal.fire({
-    title: '<i class="fas fa-shield-alt text-primary"></i> Verify OTP',
-    imageUrl: '/images/napslogo.png',
-    imageWidth: 80,
-    imageAlt: "Nap\'s Logo",
-    html: `
-      <input type="hidden" id="otpEmailHidden" value="${email}">
-      <div id="otpInputs" style="display: flex; justify-content: center; gap: 10px; margin: 10px 0;">
-        ${Array(6).fill(0).map((_, i) => `
-          <input type="text" maxlength="1" class="otp-digit" id="otpDigit${i}" 
-            style="width: 42px; height: 42px; text-align: center; font-size: 18px; 
-                   border-radius: 8px; border: 2px solid #0d6efd; color: #0d6efd; 
-                   font-weight: bold;">
-        `).join('')}
-      </div>
-      <p class="text-muted" style="font-size: 13px; margin-top: 4px;">
-        Enter the 6-digit OTP sent to your email.
-      </p>
-    `,
-    confirmButtonText: '<i class="fas fa-check"></i> Verify OTP',
-    confirmButtonColor: '#0d6efd',
+      didOpen: () => {
+        const newPass = document.getElementById('newPass');
+        const helper = document.getElementById('passwordHelper');
 
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    showCloseButton: false,
+        const checkRules = () => {
+          helper.style.display = newPass.value ? 'block' : 'none';
 
-    didOpen: () => {
-      const inputs = document.querySelectorAll('.otp-digit');
-      inputs[0].focus();
+          const rules = {
+            length: newPass.value.length >= 8,
+            uppercase: /[A-Z]/.test(newPass.value),
+            lowercase: /[a-z]/.test(newPass.value),
+            number: /\d/.test(newPass.value),
+            special: /[!@#$%^&*_]/.test(newPass.value)
+          };
 
-      inputs.forEach((input, idx) => {
-        input.addEventListener('input', () => {
-          if (input.value.length === 1 && idx < inputs.length - 1) {
-            inputs[idx + 1].focus();
+          for (const [id, valid] of Object.entries(rules)) {
+            document.getElementById(id).className =
+              valid ? "mb-1 text-success" : "mb-1 text-danger";
           }
-        });
 
-        input.addEventListener('keydown', (e) => {
-          if (e.key === "Backspace" && !input.value && idx > 0) {
-            inputs[idx - 1].focus();
-          }
-        });
-      });
-    },
-
-    preConfirm: async () => {
-      const otp = Array.from(document.querySelectorAll('.otp-digit'))
-                       .map(input => input.value).join('');
-      const email = document.getElementById('otpEmailHidden').value;
-
-      if (otp.length !== 6) {
-        Swal.showValidationMessage('Please enter the complete 6-digit OTP.');
-        return;
-      }
-
-      const res = await fetch('/verify-forgot-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, otp })
-      });
-
-      const data = await res.json();
-      if (!data.success) {
-        Swal.showValidationMessage(data.message || 'Invalid or expired OTP.');
-      } else {
-        showResetModal(email);
-      }
-    }
-  });
-}
-
-function showResetModal(email) {
-  Swal.fire({
-    title: '<i class="fas fa-lock text-warning"></i> Reset Password',
-    imageUrl: '/images/napslogo.png',
-    imageWidth: 80,
-    imageAlt: "Nap\'s Logo",
-    html: `
-      <!-- New Password -->
-      <div class="input-group my-2">
-        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-        <input type="password" id="newPass" class="form-control" placeholder="New Password">
-        <span class="input-group-text password-toggle" onclick="togglePassword('newPass','eyeNew')">
-          <i id="eyeNew" class="fas fa-eye"></i>
-        </span>
-      </div>
-
-      <!-- Confirm Password -->
-      <div class="input-group my-2">
-        <span class="input-group-text"><i class="fas fa-lock"></i></span>
-        <input type="password" id="confirmPass" class="form-control" placeholder="Confirm Password">
-        <span class="input-group-text password-toggle" onclick="togglePassword('confirmPass','eyeConfirm')">
-          <i id="eyeConfirm" class="fas fa-eye"></i>
-        </span>
-      </div>
-
-      <!-- Password Helper -->
-      <div id="passwordHelper" class="mt-2 text-start small" style="display:none;">
-        <p id="length" class="mb-1 text-danger">• At least 8 characters</p>
-        <p id="uppercase" class="mb-1 text-danger">• At least one uppercase letter</p>
-        <p id="lowercase" class="mb-1 text-danger">• At least one lowercase letter</p>
-        <p id="number" class="mb-1 text-danger">• At least one number</p>
-        <p id="special" class="mb-1 text-danger">• At least one special character (!@#$%^&* or _)</p>
-      </div>
-    `,
-    confirmButtonText: '<i class="fas fa-save"></i> Update Password',
-    confirmButtonColor: '#0d6efd',
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    showCloseButton: false,
-
-    didOpen: () => {
-      const newPass = document.getElementById('newPass');
-      const helper = document.getElementById('passwordHelper');
-
-      const checkRules = () => {
-        helper.style.display = newPass.value ? 'block' : 'none';
-
-        const rules = {
-          length: newPass.value.length >= 8,
-          uppercase: /[A-Z]/.test(newPass.value),
-          lowercase: /[a-z]/.test(newPass.value),
-          number: /\d/.test(newPass.value),
-          special: /[!@#$%^&*_]/.test(newPass.value)
+          return Object.values(rules).every(Boolean);
         };
 
-        for (const [id, valid] of Object.entries(rules)) {
-          document.getElementById(id).className =
-            valid ? "mb-1 text-success" : "mb-1 text-danger";
+        newPass.addEventListener('input', checkRules);
+
+        Swal.checkPasswordRules = checkRules;
+      },
+
+      preConfirm: async () => {
+        const password = document.getElementById('newPass').value;
+        const confirm = document.getElementById('confirmPass').value;
+
+        if (!Swal.checkPasswordRules()) {
+          Swal.showValidationMessage("Please follow all password requirements.");
+          return;
         }
 
-        return Object.values(rules).every(Boolean);
-      };
+        if (password !== confirm) {
+          Swal.showValidationMessage("Passwords do not match.");
+          return;
+        }
 
-      newPass.addEventListener('input', checkRules);
-
-      Swal.checkPasswordRules = checkRules;
-    },
-
-    preConfirm: async () => {
-      const password = document.getElementById('newPass').value;
-      const confirm = document.getElementById('confirmPass').value;
-
-      if (!Swal.checkPasswordRules()) {
-        Swal.showValidationMessage("Please follow all password requirements.");
-        return;
-      }
-
-      if (password !== confirm) {
-        Swal.showValidationMessage("Passwords do not match.");
-        return;
-      }
-
-      const res = await fetch('/reset-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, newPassword: password })
-      });
-
-      const data = await res.json();
-
-      if (!data.success) {
-        Swal.showValidationMessage(data.message || 'Failed to reset.');
-      } else {
-        Swal.fire({
-          icon: 'success',
-          title: 'Password Updated!',
-          imageUrl: '/images/napslogo.png',
-          imageWidth: 80,
-          imageAlt: "Nap\'s Logo",
-          text: 'Your password has been changed successfully.',
-          confirmButtonText: '<i class="fas fa-sign-in-alt"></i> Go to Login',
-          confirmButtonColor: '#0d6efd'
-        }).then(() => {
-          location.href = '/login';
+        const res = await fetch('/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, newPassword: password })
         });
+
+        const data = await res.json();
+
+        if (!data.success) {
+          Swal.showValidationMessage(data.message || 'Failed to reset.');
+        } else {
+          Swal.fire({
+            icon: 'success',
+            title: 'Password Updated!',
+            imageUrl: '/images/napslogo.png',
+            imageWidth: 80,
+            imageAlt: "Nap\'s Logo",
+            html: `
+              <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+              </svg>
+              <p class="mt-3">Your password has been changed successfully.</p>
+            `,
+            confirmButtonText: '<i class="fas fa-sign-in-alt"></i> Go to Login',
+            confirmButtonColor: '#0d6efd'
+          }).then(() => {
+            location.href = '/login';
+          });
+        }
       }
-    }
-  });
-}
-
-function togglePassword(fieldId, eyeId) {
-  const field = document.getElementById(fieldId);
-  const eye = document.getElementById(eyeId);
-
-  if (field.type === "password") {
-    field.type = "text";
-    eye.classList.remove("fa-eye");
-    eye.classList.add("fa-eye-slash");
-  } else {
-    field.type = "password";
-    eye.classList.remove("fa-eye-slash");
-    eye.classList.add("fa-eye");
+    });
   }
-}
-</script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+  function togglePassword(fieldId, eyeId) {
+    const field = document.getElementById(fieldId);
+    const eye = document.getElementById(eyeId);
+
+    if (field.type === "password") {
+      field.type = "text";
+      eye.classList.remove("fa-eye");
+      eye.classList.add("fa-eye-slash");
+    } else {
+      field.type = "password";
+      eye.classList.remove("fa-eye-slash");
+      eye.classList.add("fa-eye");
+    }
+  }
+  </script>  
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script> 
+</body> 
 </html>

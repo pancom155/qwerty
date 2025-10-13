@@ -6,9 +6,473 @@
   <title>Staff Dashboard | Orders</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/StaffOrder.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+  /* Table Styles - Clean Design */
+  .table-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .table {
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  .table thead th {
+    background-color: #f8f9fa;
+    color: #000000;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+  }
+
+  .table tbody td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #f1f3f4;
+    vertical-align: middle;
+    font-size: 0.9rem;
+    color: #424242;
+  }
+
+  .table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .table tbody tr:hover {
+    background-color: #f8fbff;
+    transition: background-color 0.2s ease;
+  }
+
+  /* Status badges */
+  .status-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-pending {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .status-processing {
+    background-color: #cce7ff;
+    color: #004085;
+  }
+
+  .status-ready {
+    background-color: #d1ecf1;
+    color: #0c5460;
+  }
+
+  .status-completed {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .status-rejected {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  /* Action buttons */
+  .btn-action {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-view-items {
+    background-color: #f8f9fa;
+    color: #495057;
+    border: 1px solid #dee2e6;
+  }
+
+  .btn-view-items:hover {
+    background-color: #e9ecef;
+    color: #212529;
+  }
+
+  .btn-process {
+    background-color: #28a745;
+    color: white;
+  }
+
+  .btn-process:hover {
+    background-color: #218838;
+    color: white;
+  }
+
+  .btn-ready {
+    background-color: #ffc107;
+    color: #212529;
+  }
+
+  .btn-ready:hover {
+    background-color: #e0a800;
+    color: #212529;
+  }
+
+  .btn-complete {
+    background-color: #17a2b8;
+    color: white;
+  }
+
+  .btn-complete:hover {
+    background-color: #138496;
+    color: white;
+  }
+
+  .btn-reject {
+    background-color: #dc3545;
+    color: white;
+  }
+
+  .btn-reject:hover {
+    background-color: #c82333;
+    color: white;
+  }
+
+  /* Customer info */
+  .customer-info {
+    line-height: 1.4;
+  }
+
+  .customer-name {
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .customer-email {
+    font-size: 0.8rem;
+    color: #6c757d;
+  }
+
+  /* Search and filter */
+  .search-filter-container {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .search-box {
+    flex: 1;
+    min-width: 300px;
+    max-width: 400px;
+  }
+
+  .filter-select {
+    width: 180px;
+  }
+
+  /* Pagination */
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  .page-link {
+    border: none;
+    color: #495057;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .page-item.active .page-link {
+    background-color: #17a2b8;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 992px) {
+    .table-container {
+      overflow-x: auto;
+    }
+    
+    .table {
+      min-width: 900px;
+    }
+  }
+
+  /* Rest of your existing styles remain unchanged */
+  body {
+    display: flex;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #ffffff;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #eeeef5;
+    padding: 5px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    z-index: 1000;
+  }
+
+  .sidebar img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+  }
+
+  .sidebar nav {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+  }
+
+  .sidebar nav a {
+    padding: 10px 20px;
+    color: #000;
+    text-decoration: none;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    transition: background 0.5s ease;
+    width: 90%;
+  }
+
+  .sidebar nav a.active,
+  .sidebar nav a:hover {
+    background: #5e5e5e;
+    color: #fff;
+  }
+
+  .sidebar button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    background: #ff6600;
+    cursor: pointer;
+    margin-top: auto;
+  }
+
+  .main-content {
+    margin-left: 250px;
+    flex-grow: 1;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .navbar-custom-wrapper {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    z-index: 999;
+  }
+
+  .navbar-custom {
+    background-color: #eeeef5;
+    border-radius: 40px;
+    width: 95%;
+    max-width: 1200px;
+    padding: 0.5rem 1.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .navbar-custom img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid black;
+  }
+
+  .navbar-custom .admin-info {
+    line-height: 1.2;
+  }
+
+  .navbar-custom .admin-info .fw-semibold {
+    font-size: 1rem;
+    color: #343a40;
+  }
+
+  .navbar-custom .admin-info p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #6c757d;
+  }
+
+  .navbar-custom .btn-danger {
+    padding: 0.4rem 0.6rem;
+  }
+
+  .container-fluid {
+    padding: 2rem;
+  }
+
+  .modal-content {
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .modal-header, .modal-footer {
+    background: rgb(218, 218, 218);
+    color: #000000;
+    border-bottom: none;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+  }
+
+  .modal-footer {
+    border-top: none;
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+  }
+
+  .modal-body {
+    background-color: #f9f9f9;
+  }
+
+  /* Notification styles remain unchanged */
+  .notification-container {
+    position: relative;
+    margin-right: 15px;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+  }
+
+  .notification-badge.updated {
+    transform: scale(1.3);
+    animation: pulse 0.5s ease;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+
+  .notification-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 350px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    padding: 15px;
+    display: none;
+    max-height: 400px;
+    overflow-y: auto;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: slideIn 0.5s forwards;
+  }
+
+  .notification-item:last-child {
+    border-bottom: none;
+  }
+
+  .notification-item:hover {
+    background-color: #f8f9fa;
+  }
+
+  @keyframes slideIn {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .notification-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #343a40;
+  }
+
+  .notification-message {
+    font-size: 14px;
+    color: #495057;
+    margin-bottom: 5px;
+  }
+
+  .notification-time {
+    font-size: 12px;
+    color: #6c757d;
+  }
+
+  .notification-empty {
+    padding: 15px;
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+  }
+
+  .view-orders-btn {
+    width: 100%;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  .notification-dropdown::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .notification-dropdown::-webkit-scrollbar-thumb {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 3px;
+  }
+
+  .notification-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+  }
+</style>
 <body>
 
 <div class="sidebar" id="sidebar">
@@ -16,18 +480,25 @@
     <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
   </div>
   <nav>
- <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
-<a href="/staff/order"class="active"><i class="bi bi-cart-check"></i> Orders</a>
-<a href="/staff/order_done"><i class="bi bi-receipt"></i> Order Receipt</a>
-<a href="/staff/reservation"><i class="bi bi-journal-bookmark"></i> Reservation</a>
-<a href="/staff/calendar" ><i class="bi bi-calendar-event"></i> Calendar</a>
-<a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
-
+    <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/staff/order" class="active"><i class="bi bi-cart-check"></i> Orders</a>
+    <a href="/staff/order_done"><i class="bi bi-receipt"></i> Order Receipt</a>
+    <a href="/staff/reservation"><i class="bi bi-journal-bookmark"></i> Reservation</a>
+    <a href="/staff/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+    <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
   </nav>
+
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
+  </div>
 </div>
 
 <div class="main-content">
-    <div class="navbar-custom-wrapper">
+  <div class="navbar-custom-wrapper">
     <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
         <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
@@ -51,7 +522,6 @@
             <div id="notificationList">
               <!-- Notifications will be added here dynamically -->
             </div>
-          
           </div>
         </div>
         
@@ -65,236 +535,242 @@
   <div class="container-fluid mt-4">
     <h3 class="mb-4">Orders</h3>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 px-2">
-  <input 
-    type="text" 
-    id="searchInput" 
-    class="form-control mb-2 mb-md-0 me-md-2" 
-    style="width: 400px; " 
-    placeholder="Search Orders...">
-  
-<select id="statusFilter" class="form-select form-select-sm w-100 w-md-25 mb-2 mb-md-0 me-md-2 d-none">
-  <option value="">All Statuses</option>
-  <option value="pending">Pending</option>
-  <option value="processing">Processing</option>
-  <option value="ready_to_pickup">Ready to Pickup</option>
-</select>
-
-
-</div>
-
-   <table class="table table-bordered table-hover align-middle text-center">
-  <thead class="table-dark">
-    <tr>
-      <th>Order ID</th>
-      <th>Table Number</th>
-      <th>Customer</th>
-      <th>Items</th>
-      <th>Reference No.</th>
-      <th>Proof of Payment</th>
-      <th>Note</th> <!-- ✅ New column added -->
-      <th>Status</th>
-      <th>Created At</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody id="reservationTableBody">
-    <% if (orders && orders.length > 0) { %>
-      <% orders.forEach(order => { %>
-        <tr>
-          <td><%= order._id %></td>
-          <td><%= order.tableNumber ? order.tableNumber : 'N/A' %></td>
-          <td>
-            <% if (order.userId) { %>
-              <strong><%= order.userId.firstName %> <%= order.userId.lastName %></strong><br>
-              <small><%= order.userId.email %></small>
-            <% } else { %>
-              <strong><%= order.fullName || 'Guest' %></strong><br>
-              <small class="text-muted">No Email</small>
-            <% } %>
-          </td>
-
-          <td>
-            <button class="btn btn-sm btn-view" data-bs-toggle="modal" data-bs-target="#viewItemsModal<%= order._id %>">
-              <i class="bi bi-list-ul"></i> Items
-            </button>
-            <!-- Existing items modal -->
-<div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header justify-content-center text-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF); color: white;">
-        <h5 class="modal-title w-100"><i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %></h5>
-        <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body bg-light">
-
-        <% order.items.forEach(item => { %>
-          <div class="card mb-2 shadow-sm border-0" id="itemCard-<%= item._id %>">
-            <div class="card-body d-flex align-items-center gap-3">
-              <img src="/uploads/<%= item.productId?.image || 'default.png' %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-              <div class="flex-grow-1">
-                <div class="fw-semibold fs-6"><%= item.name %></div>
-
-                <!-- Normal view -->
-                <div class="quantity-view">
-                  <small class="text-muted">₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
-                </div>
-
-                <!-- Edit mode -->
-                <div class="quantity-edit d-none">
-                  <input type="number" class="form-control form-control-sm w-50" value="<%= item.quantity %>" min="1">
-                  <div class="mt-1">
-                    <button class="btn btn-success btn-sm save-qty" data-id="<%= item._id %>">Save</button>
-                    <button class="btn btn-secondary btn-sm cancel-qty">Cancel</button>
-                  </div>
-                </div>
-              </div>
-              <div class="text-success fw-bold fs-6 subtotal">₱<%= item.subtotal.toFixed(2) %></div>
-
-          <button type="button" class="btn btn-outline-primary btn-sm edit-qty">
-  <i class="bi bi-pencil-square"></i>
-</button>
-
-
-            </div>
-          </div>
-        <% }) %>
-
-        <!-- Order Summary -->
-        <div class="p-3 mt-3 rounded bg-white shadow-sm">
-          <h6 class="fw-bold text-primary"><i class="bi bi-calculator-fill me-2"></i>Order Summary</h6>
-          <div class="d-flex justify-content-between border-bottom py-1">
-            <span><i class="bi bi-cash-coin me-1"></i>Gross Total:</span>
-            <span class="fw-semibold">₱<%= order.grossTotal.toFixed(2) %></span>
-          </div>
-          <% if (order.discountTotal > 0) { %>
-            <div class="d-flex justify-content-between border-bottom py-1 text-success">
-              <span><i class="bi bi-patch-check-fill me-1"></i>Discount:</span>
-              <span class="fw-semibold">- ₱<%= order.discountTotal.toFixed(2) %></span>
-            </div>
-          <% } %>
-          <div class="d-flex justify-content-between pt-2 fw-bold fs-5 text-success">
-            <span><i class="bi bi-wallet2 me-1"></i>Net Total:</span>
-            <span>₱<%= order.netTotal.toFixed(2) %></span>
-          </div>
-        </div>
-      </div>
+    <div class="search-filter-container">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="form-control search-box" 
+        placeholder="Search Orders...">
+      
+      <select id="statusFilter" class="form-select filter-select">
+        <option value="">All Statuses</option>
+        <option value="pending">Pending</option>
+        <option value="processing">Processing</option>
+        <option value="ready_to_pickup">Ready to Pickup</option>
+      </select>
     </div>
-  </div>
-</div>
 
-          </td>
-
-          <td><%= order.payment?.referenceNumber || 'N/A' %></td>
-          <td>
-            <% if (order.payment?.proofOfPayment) { %>
-              <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
-                <i class="bi bi-eye-fill"></i> View
-              </button>
-              <div class="modal fade" id="proofModal<%= order._id %>" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title">Proof of Payment</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    <div class="table-container">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Table</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Reference No.</th>
+            <th>Payment Proof</th>
+            <th>Note</th>
+            <th>Status</th>
+            <th>Created At</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="reservationTableBody">
+          <% if (orders && orders.length > 0) { %>
+            <% orders.forEach(order => { %>
+              <tr>
+                <td><%= order._id %></td>
+                <td><%= order.tableNumber ? order.tableNumber : 'N/A' %></td>
+                <td>
+                  <div class="customer-info">
+                    <div class="customer-name">
+                      <% if (order.userId) { %>
+                        <%= order.userId.firstName %> <%= order.userId.lastName %>
+                      <% } else { %>
+                        <%= order.fullName || 'Guest' %>
+                      <% } %>
                     </div>
-                    <div class="modal-body text-center">
-                      <img src="/uploads/<%= order.payment.proofOfPayment %>" class="img-fluid rounded" alt="Proof">
+                    <div class="customer-email">
+                      <% if (order.userId) { %>
+                        <%= order.userId.email %>
+                      <% } else { %>
+                        <span class="text-muted">No Email</span>
+                      <% } %>
                     </div>
                   </div>
-                </div>
-              </div>
-            <% } else { %>
-              <span class="text-muted">No Proof</span>
-            <% } %>
-          </td>
+                </td>
 
-          <!-- ✅ NEW NOTE BUTTON AND MODAL -->
-          <td>
-            <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#noteModal<%= order._id %>">
-              <i class="bi bi-sticky"></i> Note
-            </button>
+                <td>
+                  <button class="btn btn-sm btn-view-items" data-bs-toggle="modal" data-bs-target="#viewItemsModal<%= order._id %>">
+                    <i class="bi bi-list-ul"></i> View Items
+                  </button> 
+                  
+                  <!-- Items Modal -->
+                  <div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header justify-content-center text-center">
+                          <h5 class="modal-title w-100">
+                            <i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %>
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body bg-light">
+                          <% order.items.forEach(item => { %>
+                            <div class="card mb-2 shadow-sm border-0" id="itemCard-<%= item._id %>">
+                              <div class="card-body d-flex align-items-center gap-3">
+                                <img src="/uploads/<%= item.productId?.image || 'default.png' %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                <div class="flex-grow-1">
+                                  <div class="fw-semibold fs-6"><%= item.name %></div>
 
-            <!-- Note Modal -->
-            <div class="modal fade" id="noteModal<%= order._id %>" tabindex="-1" aria-hidden="true">
-              <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                  <div class="modal-header" style="background: linear-gradient(90deg, #6f42c1, #4b0082); color: white;">
-                    <h5 class="modal-title"><i class="bi bi-sticky me-2"></i>Order Note</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                  <!-- Normal view -->
+                                  <div class="quantity-view">
+                                    <small class="text-muted">₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
+                                  </div>
+
+                                  <!-- Edit mode -->
+                                  <div class="quantity-edit d-none">
+                                    <input type="number" class="form-control form-control-sm w-50" value="<%= item.quantity %>" min="1">
+                                    <div class="mt-1">
+                                      <button class="btn btn-success btn-sm save-qty" data-id="<%= item._id %>">Save</button>
+                                      <button class="btn btn-secondary btn-sm cancel-qty">Cancel</button>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="text-success fw-bold fs-6 subtotal">₱<%= item.subtotal.toFixed(2) %></div>
+
+                                <button type="button" class="btn btn-outline-primary btn-sm edit-qty">
+                                  <i class="bi bi-pencil-square"></i>
+                                </button>
+                              </div>
+                            </div>
+                          <% }) %>
+
+                          <!-- Order Summary -->
+                          <div class="p-3 mt-3 rounded bg-white shadow-sm">
+                            <h6 class="fw-bold text-primary"><i class="bi bi-calculator-fill me-2"></i>Order Summary</h6>
+                            <div class="d-flex justify-content-between border-bottom py-1">
+                              <span><i class="bi bi-cash-coin me-1"></i>Gross Total:</span>
+                              <span class="fw-semibold">₱<%= order.grossTotal.toFixed(2) %></span>
+                            </div>
+                            <% if (order.discountTotal > 0) { %>
+                              <div class="d-flex justify-content-between border-bottom py-1 text-success">
+                                <span><i class="bi bi-patch-check-fill me-1"></i>Discount:</span>
+                                <span class="fw-semibold">- ₱<%= order.discountTotal.toFixed(2) %></span>
+                              </div>
+                            <% } %>
+                            <div class="d-flex justify-content-between pt-2 fw-bold fs-5 text-success">
+                              <span><i class="bi bi-wallet2 me-1"></i>Net Total:</span>
+                              <span>₱<%= order.netTotal.toFixed(2) %></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="modal-body">
-                    <p><strong>Note:</strong></p>
-                    <p class="border rounded p-2 bg-light"><%= order.note || 'No note provided.' %></p>
-                    <hr>
-                    <p><strong>Contact Number:</strong></p>
-                    <p><%= order.userId?.contactNo || 'No contact number' %></p>
+                </td>
+
+                <td><%= order.payment?.referenceNumber || 'N/A' %></td>
+                <td>
+                  <% if (order.payment?.proofOfPayment) { %>
+                <button class="btn btn-sm" 
+                     style="background-color: #17a2b8; color: white;" 
+                     data-bs-toggle="modal" 
+                     data-bs-target="#proofModal<%= order._id %>">
+                    <i class="bi bi-eye-fill"></i> View
+                 </button>
+                    <div class="modal fade" id="proofModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; overflow: hidden;">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Proof of Payment</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body text-center">
+                            <img src="/uploads/<%= order.payment.proofOfPayment %>" class="img-fluid rounded" alt="Proof">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% } else { %>
+                    <span class="text-muted">No Proof</span>
+                  <% } %>
+                </td>
+
+                <td>
+                  <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#noteModal<%= order._id %>">
+                    Note
+                  </button>
+                  <!-- Note Modal -->
+                  <div class="modal fade" id="noteModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content" style="border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; overflow: hidden;">
+                        <div class="modal-header" style="background: rgb(218, 218, 218); color: rgb(0, 0, 0);">
+                          <h5 class="modal-title">
+                            <i class="bi bi-sticky me-2"></i>Order Note
+                          </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <p><strong>Note:</strong></p>
+                          <p class="border rounded p-2 bg-light"><%= order.note || 'No note provided.' %></p>
+                          <hr>
+                          <p><strong>Contact Number:</strong></p>
+                          <p><%= order.userId?.contactNo || 'No contact number' %></p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </td>
-       
+                </td>
+             
+                <td>
+                  <span class="status-badge status-<%= order.status.replace('_', '-') %>"><%= order.status %></span>
+                </td>
 
-          <td>
-            <span class="badge bg-secondary text-uppercase"><%= order.status %></span>
-          </td>
+                <td><%= new Date(order.createdAt).toLocaleString() %></td>
 
-          <td><%= new Date(order.createdAt).toLocaleString() %></td>
+                <td>
+                  <div class="d-flex flex-column gap-1">
+                    <% if (order.status === 'pending') { %>
+                      <button class="btn btn-sm btn-process btn-action" onclick="processOrder('<%= order._id %>')">
+                        <i class="bi bi-check-circle"></i> Process
+                      </button>
+                      <form id="rejectForm-<%= order._id %>" action="/staff/orders/reject/<%= order._id %>" method="POST" style="display:none;"></form>
+                      <button class="btn btn-sm btn-reject btn-action" onclick="confirmReject('<%= order._id %>')">
+                        <i class="bi bi-x-circle"></i> Reject
+                      </button>
+                    <% } else if (order.status === 'processing') { %>
+                      <form id="readyForm-<%= order._id %>" action="/staff/orders/ready/<%= order._id %>" method="POST" style="display: none;"></form>
+                      <button class="btn btn-sm btn-ready btn-action" onclick="confirmReadyToPickup('<%= order._id %>')">
+                        <i class="bi bi-box-seam"></i> Ready
+                      </button>
+                    <% } else if (order.status === 'ready_to_pickup') { %>
+                      <form id="completeForm-<%= order._id %>" action="/staff/orders/complete/<%= order._id %>" method="POST" style="display: none;"></form>
+                      <button class="btn btn-sm btn-complete btn-action" onclick="confirmComplete('<%= order._id %>')">
+                        <i class="bi bi-check2-circle"></i> Complete
+                      </button>
+                    <% } else if (order.status === 'completed') { %>
+                      <span class="text-success fw-bold">Completed</span>
+                    <% } else if (order.status === 'rejected') { %>
+                      <span class="text-muted">Rejected</span>
+                    <% } else { %>
+                      <span class="text-muted">—</span>
+                    <% } %>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="10" class="text-muted text-center py-4">No orders found.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
 
-          <td>
-            <% if (order.status === 'pending') { %>
-              <div class="d-flex flex-column gap-1">
-                <button class="btn btn-success btn-sm" onclick="processOrder('<%= order._id %>')">
-                  <i class="bi bi-check-circle"></i> Process
-                </button>
-                <form id="rejectForm-<%= order._id %>" action="/staff/orders/reject/<%= order._id %>" method="POST" style="display:none;"></form>
-                <button class="btn btn-danger btn-sm" onclick="confirmReject('<%= order._id %>')">
-                  <i class="bi bi-x-circle"></i> Reject
-                </button>
-              </div>
-            <% } else if (order.status === 'processing') { %>
-              <div class="d-flex flex-column gap-1">
-                <form id="readyForm-<%= order._id %>" action="/staff/orders/ready/<%= order._id %>" method="POST" style="display: none;"></form>
-                <button class="btn btn-warning btn-sm" onclick="confirmReadyToPickup('<%= order._id %>')">
-                  <i class="bi bi-box-seam"></i> Ready to Pickup
-                </button>
-              </div>
-            <% } else if (order.status === 'ready_to_pickup') { %>
-              <div class="d-flex flex-column gap-1">
-                <form id="completeForm-<%= order._id %>" action="/staff/orders/complete/<%= order._id %>" method="POST" style="display: none;"></form>
-                <button class="btn btn-primary btn-sm" onclick="confirmComplete('<%= order._id %>')">
-                  <i class="bi bi-check2-circle"></i> Complete
-                </button>
-              </div>
-            <% } else if (order.status === 'completed') { %>
-              <span class="text-success fw-bold">Completed</span>
-            <% } else if (order.status === 'rejected') { %>
-              <span class="text-muted">Rejected</span>
-            <% } else { %>
-              <span class="text-muted">—</span>
-            <% } %>
-          </td>
-        </tr>
-      <% }); %>
-    <% } else { %>
-      <tr>
-        <td colspan="10" class="text-muted text-center">No orders found.</td>
-      </tr>
-    <% } %>
-  </tbody>
-</table>
-
-    <div class="d-flex justify-content-center mt-3">
-  <ul class="pagination pagination-sm" id="pagination"></ul>
-</div>
-
+    <div class="pagination-container">
+      <ul class="pagination pagination-sm" id="pagination"></ul>
+    </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+  // Your existing JavaScript code remains the same
   function processOrder(orderId) {
     Swal.fire({
       title: 'Are you sure?',
@@ -332,7 +808,7 @@
     });
   }
 
-    function confirmComplete(orderId) {
+  function confirmComplete(orderId) {
     Swal.fire({
       title: 'Mark as Completed?',
       text: "This order will be marked as completed.",
@@ -346,21 +822,23 @@
       }
     });
   }
+
   function confirmReadyToPickup(orderId) {
-  Swal.fire({
-    title: 'Ready for Pickup?',
-    text: "This order will be marked as 'Ready to Pickup'.",
-    icon: 'info',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, mark it!',
-    cancelButtonText: 'Cancel'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      document.getElementById(`readyForm-${orderId}`).submit();
-    }
-  });
-}
-    const rowsPerPage = 10;
+    Swal.fire({
+      title: 'Ready for Pickup?',
+      text: "This order will be marked as 'Ready to Pickup'.",
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, mark it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById(`readyForm-${orderId}`).submit();
+      }
+    });
+  }
+
+  const rowsPerPage = 10;
   let currentPage = 1;
 
   const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
@@ -376,7 +854,7 @@
       const text = row.innerText.toLowerCase();
       const matchesSearch = text.includes(searchValue);
 
-      const statusText = row.querySelector("td:nth-child(10)")?.innerText.trim().toLowerCase();
+      const statusText = row.querySelector("td:nth-child(8)")?.innerText.trim().toLowerCase();
       const matchesStatus = !statusValue || statusText === statusValue;
 
       return matchesSearch && matchesStatus;
@@ -426,181 +904,204 @@
   renderTable();
 
   document.addEventListener('DOMContentLoaded', () => {
-  const notificationBtn = document.getElementById('notificationBtn');
-  const notificationDropdown = document.getElementById('notificationDropdown');
-  const notificationBadge = document.getElementById('notificationBadge');
-  const notificationList = document.getElementById('notificationList');
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const notificationBadge = document.getElementById('notificationBadge');
+    const notificationList = document.getElementById('notificationList');
 
-  let pendingCount = 0;
+    let pendingCount = 0;
 
-  // Update bell badge
-  function updateBadge() {
-    if (pendingCount > 0) {
-      notificationBadge.textContent = pendingCount;
-      notificationBadge.style.display = 'flex';
-    } else {
-      notificationBadge.style.display = 'none';
-    }
-  }
-
-  // Show "No Notifications" if empty
-  function checkEmpty() {
-    const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
-    if (!hasItems) {
-      const emptyMsg = document.createElement('div');
-      emptyMsg.className = 'notification-empty text-center text-muted';
-      emptyMsg.textContent = 'No Notifications';
-      notificationList.appendChild(emptyMsg);
-    } else {
-      const emptyMsg = notificationList.querySelector('.notification-empty');
-      if (emptyMsg) emptyMsg.remove();
-    }
-  }
-
-  async function loadPendingOrders() {
-  try {
-    const res = await fetch('/staff/pending-orders');
-    const data = await res.json();
-    const orders = data.pendingOrders || [];
-    const reservations = data.pendingReservations || [];
-
-    // Helper function to create notification item
-    function createNotificationItem(type, item) {
-      const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
-      const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
-      const notificationItem = document.createElement('div');
-      notificationItem.className = 'notification-item';
-      notificationItem.innerHTML = `
-        <div class="notification-title">${type}</div>
-        <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
-        <div class="notification-time">${time}</div>
-      `;
-      notificationItem.addEventListener('click', () => {
-        window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
-      });
-      return notificationItem;
+    // Update bell badge
+    function updateBadge() {
+      if (pendingCount > 0) {
+        notificationBadge.textContent = pendingCount;
+        notificationBadge.style.display = 'flex';
+      } else {
+        notificationBadge.style.display = 'none';
+      }
     }
 
-    // Add pending orders
-    orders.forEach(order => {
-      const notificationItem = createNotificationItem('New Order', order);
-      notificationList.insertBefore(notificationItem, notificationList.firstChild);
-    });
-
-    // Add pending reservations
-    reservations.forEach(reservation => {
-      const notificationItem = createNotificationItem('New Reservation', reservation);
-      notificationList.insertBefore(notificationItem, notificationList.firstChild);
-    });
-
-    // Update badge count
-    pendingCount = orders.length + reservations.length;
-    updateBadge();
-    checkEmpty();
-  } catch (err) {
-    console.error('Error fetching pending orders/reservations:', err);
-  }
-}
-
-
-  loadPendingOrders(); // Load pending orders on page load
-
-  // Toggle dropdown
-  notificationBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = notificationDropdown.style.display === 'block';
-    notificationDropdown.style.display = isOpen ? 'none' : 'block';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
-      notificationDropdown.style.display = 'none';
+    // Show "No Notifications" if empty
+    function checkEmpty() {
+      const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
+      if (!hasItems) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'notification-empty text-center text-muted';
+        emptyMsg.textContent = 'No Notifications';
+        notificationList.appendChild(emptyMsg);
+      } else {
+        const emptyMsg = notificationList.querySelector('.notification-empty');
+        if (emptyMsg) emptyMsg.remove();
+      }
     }
-  });
 
-  // Socket.IO for new orders
-  const socket = io();
-  socket.on('newOrder', (data) => {
-    // Remove empty message if exists
-    const emptyMsg = notificationList.querySelector('.notification-empty');
-    if (emptyMsg) emptyMsg.remove();
-
-    const notificationItem = document.createElement('div');
-    notificationItem.className = 'notification-item new-notification';
-    notificationItem.innerHTML = `
-      <div class="notification-title">${data.title}</div>
-      <div class="notification-message">${data.message}</div>
-      <div class="notification-time">${data.time}</div>
-    `;
-    notificationItem.addEventListener('click', () => {
-      window.location.href = '/staff/order';
-    });
-    notificationList.insertBefore(notificationItem, notificationList.firstChild);
-
-    pendingCount += 1;
-    updateBadge();
-
-    setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
-  });
-});
-document.addEventListener("DOMContentLoaded", () => {
-  // When user clicks edit
-  document.querySelectorAll('.edit-qty').forEach((editBtn) => {
-    editBtn.addEventListener('click', (e) => {
-      const card = e.target.closest('.card-body');
-      card.querySelector('.quantity-view').classList.add('d-none');
-      card.querySelector('.quantity-edit').classList.remove('d-none');
-    });
-  });
-
-  // When user clicks cancel
-  document.querySelectorAll('.cancel-qty').forEach((cancelBtn) => {
-    cancelBtn.addEventListener('click', (e) => {
-      const card = e.target.closest('.card-body');
-      card.querySelector('.quantity-view').classList.remove('d-none');
-      card.querySelector('.quantity-edit').classList.add('d-none');
-    });
-  });
-
-  // When user clicks save
-  document.querySelectorAll('.save-qty').forEach((saveBtn) => {
-    saveBtn.addEventListener('click', async (e) => {
-      const btn = e.target;
-      const card = btn.closest('.card-body');
-      const newQty = card.querySelector('input[type="number"]').value;
-      const itemId = btn.dataset.id;
-
+    async function loadPendingOrders() {
       try {
-        const res = await fetch(`/staff/update-item/${itemId}`, {
-  method: 'PUT',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ quantity: newQty }),
-});
-
-
+        const res = await fetch('/staff/pending-orders');
         const data = await res.json();
+        const orders = data.pendingOrders || [];
+        const reservations = data.pendingReservations || [];
 
-        if (res.ok) {
-          Swal.fire({
-            icon: 'success',
-            title: 'Quantity Updated',
-            text: data.message,
-            timer: 1200,
-            showConfirmButton: false,
-          }).then(() => window.location.reload());
-        } else {
-          Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+        // Helper function to create notification item
+        function createNotificationItem(type, item) {
+          const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
+          const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
+          const notificationItem = document.createElement('div');
+          notificationItem.className = 'notification-item';
+          notificationItem.innerHTML = `
+            <div class="notification-title">${type}</div>
+            <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
+            <div class="notification-time">${time}</div>
+          `;
+          notificationItem.addEventListener('click', () => {
+            window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+          });
+          return notificationItem;
         }
-      } catch (err) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Server Error',
-          text: 'Failed to update item quantity.',
+
+        // Add pending orders
+        orders.forEach(order => {
+          const notificationItem = createNotificationItem('New Order', order);
+          notificationList.insertBefore(notificationItem, notificationList.firstChild);
         });
+
+        // Add pending reservations
+        reservations.forEach(reservation => {
+          const notificationItem = createNotificationItem('New Reservation', reservation);
+          notificationList.insertBefore(notificationItem, notificationList.firstChild);
+        });
+
+        // Update badge count
+        pendingCount = orders.length + reservations.length;
+        updateBadge();
+        checkEmpty();
+      } catch (err) {
+        console.error('Error fetching pending orders/reservations:', err);
+      }
+    }
+
+    loadPendingOrders(); // Load pending orders on page load
+
+    // Toggle dropdown
+    notificationBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = notificationDropdown.style.display === 'block';
+      notificationDropdown.style.display = isOpen ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+        notificationDropdown.style.display = 'none';
       }
     });
+
+    // Socket.IO for new orders
+    const socket = io();
+    socket.on('newOrder', (data) => {
+      // Remove empty message if exists
+      const emptyMsg = notificationList.querySelector('.notification-empty');
+      if (emptyMsg) emptyMsg.remove();
+
+      const notificationItem = document.createElement('div');
+      notificationItem.className = 'notification-item new-notification';
+      notificationItem.innerHTML = `
+        <div class="notification-title">${data.title}</div>
+        <div class="notification-message">${data.message}</div>
+        <div class="notification-time">${data.time}</div>
+      `;
+      notificationItem.addEventListener('click', () => {
+        window.location.href = '/staff/order';
+      });
+      notificationList.insertBefore(notificationItem, notificationList.firstChild);
+
+      pendingCount += 1;
+      updateBadge();
+
+      setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
+    });
   });
-});
+
+  document.addEventListener("DOMContentLoaded", () => {
+    // When user clicks edit
+    document.querySelectorAll('.edit-qty').forEach((editBtn) => {
+      editBtn.addEventListener('click', (e) => {
+        const card = e.target.closest('.card-body');
+        card.querySelector('.quantity-view').classList.add('d-none');
+        card.querySelector('.quantity-edit').classList.remove('d-none');
+      });
+    });
+
+    // When user clicks cancel
+    document.querySelectorAll('.cancel-qty').forEach((cancelBtn) => {
+      cancelBtn.addEventListener('click', (e) => {
+        const card = e.target.closest('.card-body');
+        card.querySelector('.quantity-view').classList.remove('d-none');
+        card.querySelector('.quantity-edit').classList.add('d-none');
+      });
+    });
+
+    // When user clicks save
+    document.querySelectorAll('.save-qty').forEach((saveBtn) => {
+      saveBtn.addEventListener('click', async (e) => {
+        const btn = e.target;
+        const card = btn.closest('.card-body');
+        const newQty = card.querySelector('input[type="number"]').value;
+        const itemId = btn.dataset.id;
+
+        try {
+          const res = await fetch(`/staff/update-item/${itemId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ quantity: newQty }),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Quantity Updated',
+              text: data.message,
+              timer: 1200,
+              showConfirmButton: false,
+            }).then(() => window.location.reload());
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+          }
+        } catch (err) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Server Error',
+            text: 'Failed to update item quantity.',
+          });
+        }
+      });
+    });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
+  });
 </script>
 </body>
 </html>

@@ -10,48 +10,160 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: #ffffff;
+      background: rgb(255, 255, 255);
       color: #333;
       font-family: 'Poppins', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
+
     .success-container {
+      background: #ffffff;
+      max-width: 650px;
+      width: 100%;
+      border-radius: 25px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
       text-align: center;
-      padding-top: 30px;
-      animation: fadeInUp 0.8s ease forwards;
+      padding: 40px 25px;
+      animation: fadeInUp 0.9s ease forwards;
+      position: relative;
     }
+
     .success-icon {
-      font-size: 80px;
+      font-size: 110px;
       color: #28a745;
-      animation: bounce 1.5s infinite;
+      margin-bottom: 20px;
+      animation: float 2.5s ease-in-out infinite;
+      text-shadow: 0 0 25px rgba(40, 167, 69, 0.6);
     }
+
+    .header-text {
+      font-weight: 800;
+      color: #222;
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    p.lead {
+      color: #555;
+      margin-bottom: 25px;
+      font-size: 1rem;
+    }
+
+    .order-summary {
+      max-height: 250px;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: #2d2d2d #f1f1f1;
+      margin-bottom: 20px;
+      padding-right: 5px;
+    }
+
+    .order-summary::-webkit-scrollbar {
+      width: 6px;
+    }
+    .order-summary::-webkit-scrollbar-thumb {
+      background-color: #000000;
+      border-radius: 3px;
+    }
+
+    .product-card {
+      background: #f8f9fa;
+      border: 1px solid #e1e1e1;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 12px;
+      padding: 12px;
+      color: #333;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    }
+
+    .product-card img {
+      width: 65px;
+      height: 65px;
+      object-fit: cover;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }
+
+    .product-card .fw-semibold {
+      color: #222;
+      font-size: 0.95rem;
+    }
+
+    .product-card small {
+      color: #666;
+      font-size: 0.85rem;
+    }
+
+    .total-line {
+      background: #f1f1f1;
+      padding: 15px;
+      border-radius: 15px;
+      font-size: 1.2rem;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      border: 1px solid #e0e0e0;
+    }
+
+    .btn-dark {
+      background: black;
+      border: none;
+      padding: 12px 22px;
+      font-weight: 600;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      color: #fff;
+    }
+    .btn-dark:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-outline-secondary {
+      border-color: #424242;
+      color: #303030;
+      font-weight: 600;
+      padding: 12px 22px;
+      transition: all 0.3s ease;
+    }
+    .btn-outline-secondary:hover {
+      transform: translateY(-2px);
+    }
+
+    .text-center.mt-4 a {
+      min-width: 180px;
+    }
+
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    @keyframes bounce {
+
+    @keyframes float {
       0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-15px); }
+      50% { transform: translateY(-12px); }
     }
-    .order-summary {
-      max-width: 800px;
-      margin: 20px auto;
-    }
-    .product-card {
-      background: #f8f9fa;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 15px;
-      padding: 10px;
-      color: #333;
-    }
-    .product-card img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
+
+    @media (max-width: 480px) {
+      .success-container {
+        padding: 30px 15px;
+      }
+      .success-icon {
+        font-size: 80px;
+      }
+      .header-text {
+        font-size: 1.5rem;
+      }
     }
   </style>
 </head>
@@ -60,16 +172,14 @@
     <div class="success-icon">
       <i class="bi bi-check-circle-fill"></i>
     </div>
-    <h1 class="fw-bold mt-3">Order Placed Successfully!</h1>
+    <h1 class="header-text">Order Placed Successfully!</h1>
     <p class="lead">Thank you for your purchase. You can now pick up your order.</p>
 
     <div class="order-summary">
-      <h4 class="text-center mb-4">Your Order</h4>
-
       <% order.items.forEach(item => { %>
         <div class="product-card shadow-sm">
           <img src="/uploads/<%= item.image || (item.productId?.image || 'default.png') %>" alt="<%= item.name %>">
-          <div class="flex-grow-1">
+          <div class="flex-grow-1 text-start">
             <div class="fw-semibold"><%= item.name %></div>
             <small>₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
           </div>
@@ -78,18 +188,20 @@
           </div>
         </div>
       <% }) %>
+    </div>
 
-      <div class="d-flex justify-content-between mt-4 fw-bold fs-5">
-        <span>Net Total:</span>
-        <span>
-          ₱<%= (order.items.reduce((sum, i) => sum + i.subtotal, 0) - (order.discounts?.reduce((sum, d) => sum + d.amount, 0) || 0)).toFixed(2) %>
-        </span>
-      </div>
+    <div class="total-line">
+      <span>Net Total:</span>
+      <span>₱<%= (order.items.reduce((sum, i) => sum + i.subtotal, 0) - (order.discounts?.reduce((sum, d) => sum + d.amount, 0) || 0)).toFixed(2) %></span>
+    </div>
 
-      <div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
-        <a href="/user/orders" class="btn btn-dark">View My Orders</a>
-        <a href="/user/menu" class="btn btn-outline-secondary">Go to Home</a>
-      </div>
+    <div class="text-center mt-4 d-flex justify-content-center gap-2 flex-wrap">
+      <a href="/user/orders" class="btn btn-dark rounded-pill">
+        <i class="bi bi-receipt"></i> View My Orders
+      </a>
+      <a href="/user/menu" class="btn btn-outline-secondary rounded-pill">
+        <i class="bi bi-house-door"></i> Go to Home
+      </a>
     </div>
   </div>
 </body>

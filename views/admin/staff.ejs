@@ -3,133 +3,579 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
+  <title>Admin Dashboard - Account Management</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/admindashboard.css">
-  
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f1f1f1;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100vh;
+      background-color: #f8f9fa;
+      padding: 5px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden; 
+      z-index: 1000;
+    }
+
+    .sidebar img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      align-items: center;
+    }
+
+    .sidebar nav a {
+      padding: 10px 20px;
+      color: #000;
+      text-decoration: none;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      transition: background 0.5s ease;
+      width: 90%;
+    }
+
+    .sidebar nav a.active,
+    .sidebar nav a:hover {
+      background: #5e5e5e;
+      color: #fff;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      background: #5e5e5e;
+      cursor: button;
+      margin-top: auto;
+    }
+
+    .main-content {
+      margin-left: 250px; 
+      flex-grow: 1;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar-custom-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .navbar-custom {
+      background-color: #ffffff;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      width: 95%;
+      max-width: 1200px;
+      padding: 0.5rem 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar-custom img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border: 1px solid black;
+    }
+
+    .navbar-custom .admin-info {
+      line-height: 1.2;
+    }
+
+    .navbar-custom .admin-info .fw-semibold {
+      font-size: 1rem;
+      color: #343a40;
+    }
+
+    .navbar-custom .admin-info p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+
+    .navbar-custom .btn-danger {
+      padding: 0.4rem 0.6rem;
+    }
+
+    /* Improved UI styles */
+    .container-fluid {
+      padding: 2rem;
+      background-color: #f1f1f1;
+    }
+
+    .page-title {
+      color: #333446;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid #e9ecef;
+    }
+
+    /* ===== Table Styling ===== */
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+      padding: 1rem 0.75rem;
+      vertical-align: middle;
+    }
+
+    /* Table Body */
+    .table tbody tr {
+      transition: all 0.2s ease-in-out;
+    }
+
+    .table tbody td {
+      padding: 14px 16px;
+      vertical-align: middle;
+      border: none !important;
+      border-bottom: 1px solid #eee !important;
+      font-size: 15px;
+      color: #333;
+    }
+
+    /* Row Hover */
+    .table tbody tr:hover {
+      background-color: #f7faff;
+    }
+
+    /* Center alignment */
+    .table td, 
+    .table th {
+      text-align: center;
+    }
+
+    /* ===== Status Badges ===== */
+    .badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge.bg-success {
+      background-color: #d4edda !important;
+      color: #155724 !important;
+    }
+
+    .badge.bg-danger {
+      background-color: #f8d7da !important;
+      color: #721c24 !important;
+    }
+
+    .badge.bg-secondary {
+      background-color: #e2e3e5 !important;
+      color: #383d41 !important;
+    }
+
+    .badge.bg-warning {
+      background-color: #fff3cd !important;
+      color: #856404 !important;
+    }
+
+    .badge.bg-primary {
+      background-color: #cce7ff !important;
+      color: #004085 !important;
+    }
+
+    .badge.bg-info {
+      background-color: #d1ecf1 !important;
+      color: #0c5460 !important;
+    }
+
+    /* Role badges */
+    .role-badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .role-staff {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .role-waiter {
+      background-color: #d1ecf1;
+      color: #0c5460;
+    }
+
+    .role-kitchen {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+
+    /* User info */
+    .user-info {
+      line-height: 1.4;
+    }
+
+    .user-name {
+      font-weight: 600;
+      color: #212529;
+    }
+
+    .user-email {
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+
+    /* Action buttons */
+    .account-actions {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .btn-action {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      border: none;
+    }
+
+    .btn-edit {
+      background-color: #3b82f6;
+      color: white;
+    }
+
+    .btn-edit:hover {
+      background-color: #0954ce;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    .btn-delete {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-delete:hover {
+      background-color: #c82333;
+      color: white;
+      transform: scale(1.05);
+    }
+
+    /* ===== Buttons in Table ===== */
+    .table .btn-sm {
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+
+    /* ===== PAGINATION ===== */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .page-link {
+      border: none;
+      color: #495057;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      margin: 0 2px;
+    }
+
+    .page-item.active .page-link {
+      background-color: #17a2b8;
+      border-color: #17a2b8;
+    }
+
+    .page-link:hover {
+      background-color: #e9ecef;
+      color: #495057;
+    }
+
+    /* ===== Filter Section ===== */
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-grow: 1;
+      max-width: 600px;
+    }
+
+    .search-box {
+      position: relative;
+      flex-grow: 1;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    .search-box input {
+      padding-left: 40px;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .filter-container {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .filter-dropdown .dropdown-toggle {
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      min-width: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #ffffff;
+      border-color: rgb(221, 221, 221) !important;
+      color: gray !important;
+    }
+    
+.filter-dropdown .dropdown-toggle:hover,
+.filter-dropdown .dropdown-toggle:focus {
+  background-color: gray !important;
+  color: white !important;
+  border-color: gray !important;
+}
+    .filter-dropdown .dropdown-menu {
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border: none;
+      padding: 0.5rem;
+    }
+
+    .filter-dropdown .dropdown-item {
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .filter-dropdown .dropdown-item.active {
+      background-color: #565656;
+      color: white;
+    }
+
+    /* Table responsive */
+    .table-responsive::-webkit-scrollbar {
+      height: 0px; 
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      scrollbar-width: none; /* hides scrollbar in Firefox */
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+
+    /* Optional: prevent table from overflowing weirdly */
+    .table-responsive {
+      border-radius: 10px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: #6c757d;
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: #dee2e6;
+    }
+
+    .empty-state p {
+      margin-bottom: 0;
+    }
+
+    /* Modal styles */
+    .modal-content {
+      border-radius: 12px;
+      border: none;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid #e9ecef;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .modal-title {
+      font-weight: 600;
+      color: #343a40;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    .modal-footer {
+      border-top: 1px solid #e9ecef;
+      padding: 1.25rem 1.5rem;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #495057;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      border: 1px solid #ced4da;
+      padding: 0.75rem 1rem;
+      transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+
+    .form-control:focus {
+      border-color: #17a2b8;
+      box-shadow: 0 0 0 0.2rem rgba(23, 162, 184, 0.25);
+    }
+
+    .role-selector {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .role-option {
+      flex: 1;
+      text-align: center;
+      padding: 0.75rem;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .role-option:hover {
+      border-color: #17a2b8;
+    }
+
+    .role-option.selected {
+      border-color: #17a2b8;
+      background-color: #e7f1ff;
+    }
+
+    .role-option i {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    /* Password field with toggle */
+    .password-field {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #6c757d;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .password-toggle:hover {
+      color: #495057;
+    }
+
+    @media (max-width: 768px) {
+      .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .search-container {
+        max-width: 100%;
+        flex-direction: column;
+      }
+      
+      .filter-container {
+        justify-content: space-between;
+        width: 100%;
+      }
+      
+      .table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
 </head>
-<style>
-  body {
-    display: flex;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #f1f1f1;
-}
-
-.sidebar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 250px;
-    height: 100vh;
-    background-color: #f8f9fa;
-    padding: 5px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow: hidden; 
-    z-index: 1000;
-}
-
-.sidebar img {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-}
-
-.sidebar nav {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    align-items: center;
-}
-
-.sidebar nav a {
-    padding: 10px 20px;
-    color: #000;
-    text-decoration: none;
-    border-radius: 10px;
-    margin-bottom: 10px;
-    transition: background 0.5s ease;
-    width: 90%;
-}
-
-.sidebar nav a.active,
-.sidebar nav a:hover {
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
-    color: #fff;
-}
-
-.sidebar button {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    color: #fff;
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
-    cursor: pointer;
-    margin-top: auto;
-}
-
-.main-content {
-    margin-left: 250px; 
-    flex-grow: 1;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-}
-
-.navbar-custom-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.navbar-custom {
-    background-color: #ffffff;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    width: 95%;
-    max-width: 1200px;
-    padding: 0.5rem 1.5rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.navbar-custom img {
-    width: 40px;
-    height: 40px;
-    object-fit: cover;
-    border: 1px solid black;
-}
-
-.navbar-custom .admin-info {
-    line-height: 1.2;
-}
-
-.navbar-custom .admin-info .fw-semibold {
-    font-size: 1rem;
-    color: #343a40;
-}
-
-.navbar-custom .admin-info p {
-    margin: 0;
-    font-size: 0.875rem;
-    color: #6c757d;
-}
-
-.navbar-custom .btn-danger {
-    padding: 0.4rem 0.6rem;
-}
-
-.container-fluid {
-    padding: 2rem;
-}
-</style>
 <body>
   <div class="sidebar" id="sidebar">
     <div class="d-flex justify-content-center mb-5 mt-3">
@@ -145,9 +591,17 @@
       <a href="/admin/reviews"><i class="bi bi-chat-dots"></i> Users Reviews</a>
       <a href="/admin/products"><i class="bi bi-box-seam"></i> Inventory</a>
       <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
-        <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
- <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
+      <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+      <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
     </nav>
+    
+    <div class="mt-4 p-3 border-top">
+      <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="restaurantToggle">
+        <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+      </div>
+    </div>
   </div>
 
   <div class="main-content">
@@ -161,231 +615,375 @@
           </div>
         </div>
         <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
-          <i class="bi bi-box-arrow-right"></i>
+          <i class="bi bi-box-arrow-right me-1"></i> Logout
         </a>
       </nav>
     </div>
 
     <div class="container-fluid">
-      <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Account Creation</h1>
-      <div class="row mt-5">
-        <div class="col-md-6">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-0">Staff Accounts</h5>
-            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addStaffModal">
-            <i class="bi bi-person-plus-fill"></i> Add Staff
+      <h2 class="page-title">Account Management</h2>
+
+      <div class="table-controls">
+        <div class="search-container">
+          <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" class="form-control" id="searchInput" placeholder="Search accounts...">
+          </div>
+          
+          <div class="filter-container">
+            <div class="filter-dropdown">
+              <button class="btn btn-outline-primary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <span id="filterText">All Accounts</span>
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                <li><a class="dropdown-item active" href="#" data-filter="all">All Accounts</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="staff">Staff</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="waiter">Waiter</a></li>
+                <li><a class="dropdown-item" href="#" data-filter="kitchen">Kitchen</a></li>
+              </ul>
+            </div>
+            
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAccountModal">
+              <i class="bi bi-person-plus-fill me-1"></i> Add Account
             </button>
+          </div>
         </div>
-        <% if (staff.length > 0) { %>
-            <% staff.forEach(user => { %>
-            <div class="card p-3 mb-3 shadow-sm d-flex flex-row justify-content-between align-items-center">
-                <div>
-                <h6 class="mb-0"><%= user.fullName %></h6>
-                <small class="text-muted"><%= user.email %></small>
-                </div>
-                <div>
-                <button class="btn btn-sm btn-warning me-2" onclick="openEditModal('<%= user._id %>', '<%= user.fullName %>', '<%= user.email %>', 'staff')">
-                    <i class="bi bi-pencil-square"></i>
-                </button>
-                <form action="/admin/staff/<%= user._id %>/delete?role=staff" method="POST" class="d-inline deleteForm">
-                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash3"></i></button>
-                </form>
-                </div>
-            </div>
-            <% }) %>
-        <% } else { %>
-            <div class="alert alert-warning">No staff accounts found.</div>
-        <% } %>
-        </div>
+      </div>
 
-        <div class="col-md-6">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-             <h5 class="mb-3">Waiter Accounts</h5>
-                <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#addWaiterModal">
-                 <i class="bi bi-person-plus"></i> Add Waiter
-             </button>
-            </div>
-
-            <% if (waiters.length > 0) { %>
-            <% waiters.forEach(user => { %>
-                <div class="card p-3 mb-3 shadow-sm d-flex flex-row justify-content-between align-items-center">
-                <div>
-                    <h6 class="mb-0"><%= user.fullName %></h6>
-                    <small class="text-muted"><%= user.email %></small>
-                </div>
-                <div>
-                    <button class="btn btn-sm btn-warning me-2" onclick="openEditModal('<%= user._id %>', '<%= user.fullName %>', '<%= user.email %>', 'waiter')">
-                    <i class="bi bi-pencil-square"></i>
+      <div class="table-responsive">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>User</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="accountsTableBody">
+            <!-- Accounts will be populated from server data -->
+            <% 
+              // Combine all account types into one array
+              const allAccounts = [];
+              
+              if (staff && staff.length > 0) {
+                staff.forEach(user => {
+                  allAccounts.push({
+                    _id: user._id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    role: 'staff'
+                  });
+                });
+              }
+              
+              if (waiters && waiters.length > 0) {
+                waiters.forEach(user => {
+                  allAccounts.push({
+                    _id: user._id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    role: 'waiter'
+                  });
+                });
+              }
+              
+              if (kitchens && kitchens.length > 0) {
+                kitchens.forEach(user => {
+                  allAccounts.push({
+                    _id: user._id,
+                    fullName: user.fullName,
+                    email: user.email,
+                    role: 'kitchen'
+                  });
+                });
+              }
+              
+              // Render accounts
+              if (allAccounts.length > 0) {
+                allAccounts.forEach((user, index) => {
+                  let badgeClass = '';
+                  switch(user.role) {
+                    case 'staff': badgeClass = 'role-staff'; break;
+                    case 'waiter': badgeClass = 'role-waiter'; break;
+                    case 'kitchen': badgeClass = 'role-kitchen'; break;
+                  }
+            %>
+              <tr data-role="<%= user.role %>" data-name="<%= user.fullName %>" data-email="<%= user.email %>">
+                <td class="user-index"><%= index + 1 %></td>
+                <td>
+                  <div class="user-info">
+                    <div class="user-name"><%= user.fullName %></div>
+                  </div>
+                </td>
+                <td><%= user.email %></td>
+                <td><span class="role-badge <%= badgeClass %>"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></span></td>
+                <td>
+                  <div class="account-actions">
+                    <button class="btn btn-sm btn-action btn-edit" onclick="openEditModal('<%= user._id %>', '<%= user.fullName %>', '<%= user.email %>', '<%= user.role %>')">
+                      <i class="bi bi-pencil-square"></i> Edit
                     </button>
-                    <form action="/admin/staff/<%= user._id %>/delete?role=waiter" method="POST" class="d-inline deleteForm">
-                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash3"></i></button>
+                    <form action="/admin/staff/<%= user._id %>/delete?role=<%= user.role %>" method="POST" class="d-inline deleteForm">
+                      <button type="submit" class="btn btn-sm btn-action btn-delete">
+                        <i class="bi bi-trash3"></i> Delete
+                      </button>
                     </form>
-                </div>
-                </div>
-            <% }) %>
-            <% } else { %>
-            <div class="alert alert-warning">No waiter accounts found.</div>
-            <% } %>
-        </div>
+                  </div>
+                </td>
+              </tr>
+            <%
+                });
+              } else {
+            %>
+              <tr>
+                <td colspan="5">
+                  <div class="empty-state">
+                    <i class="bi bi-people"></i>
+                    <p>No accounts found.</p>
+                  </div>
+                </td>
+              </tr>
+            <%
+              }
+            %>
+          </tbody>
+        </table>
+      </div>
+      
+      <!-- Pagination -->
+      <div class="pagination-container">
+        <ul class="pagination pagination-sm" id="pagination"></ul>
+      </div>
+    </div>
+  </div>
 
-        <div class="col-md-6 mt-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5 class="mb-3">Kitchen Staff Accounts</h5>
-            <button class="btn btn-outline-dark" data-bs-toggle="modal" data-bs-target="#addKitchenModal">
-              <i class="bi bi-person-plus"></i> Add Kitchen Staff
-            </button>
+  <!-- Add Account Modal -->
+  <div class="modal fade" id="addAccountModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form action="/admin/staff/create" method="POST" id="accountForm">
+          <div class="modal-header">
+            <h5 class="modal-title">Create New Account</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
-
-          <% if (kitchens.length > 0) { %>
-            <% kitchens.forEach(user => { %>
-              <div class="card p-3 mb-3 shadow-sm d-flex flex-row justify-content-between align-items-center">
-                <div>
-                  <h6 class="mb-0"><%= user.fullName %></h6>
-                  <small class="text-muted"><%= user.email %></small>
-                </div>
-                <div>
-                  <button class="btn btn-sm btn-warning me-2" onclick="openEditModal('<%= user._id %>', '<%= user.fullName %>', '<%= user.email %>', 'kitchen')">
-                    <i class="bi bi-pencil-square"></i>
-                  </button>
-                  <form action="/admin/staff/<%= user._id %>/delete?role=kitchen" method="POST" class="d-inline deleteForm">
-                    <button type="submit" class="btn btn-sm btn-danger"><i class="bi bi-trash3"></i></button>
-                  </form>
-                </div>
+          <div class="modal-body">
+            <div class="role-selector">
+              <div class="role-option" data-role="staff">
+                <i class="bi bi-person-gear"></i>
+                <div>Staff</div>
               </div>
-            <% }) %>
-          <% } else { %>
-            <div class="alert alert-warning">No kitchen staff accounts found.</div>
-          <% } %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal fade" id="addStaffModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form action="/admin/staff/create" method="POST" id="staffForm">
-          <div class="modal-header">
-            <h5 class="modal-title">Create Staff Account</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <input type="hidden" name="role" value="staff">
+              <div class="role-option" data-role="waiter">
+                <i class="bi bi-cup-straw"></i>
+                <div>Waiter</div>
+              </div>
+              <div class="role-option" data-role="kitchen">
+                <i class="bi bi-egg-fried"></i>
+                <div>Kitchen</div>
+              </div>
+            </div>
+            <input type="hidden" name="role" id="selectedRole" value="staff">
+            
             <div class="mb-3">
-              <label>Full Name</label>
+              <label class="form-label">Full Name</label>
               <input type="text" name="name" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label>Email (must end in @staff.com)</label>
+              <label class="form-label" id="emailLabel">Email (must end in @staff.com)</label>
               <input type="email" name="email" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label>Password</label>
-              <input type="password" name="password" class="form-control" required>
+              <label class="form-label">Password</label>
+              <div class="password-field">
+                <input type="password" name="password" id="passwordInput" class="form-control" required>
+                <button type="button" class="password-toggle" id="passwordToggle">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-primary w-100">Create Staff</button>
+            <button type="submit" class="btn btn-primary w-100">Create Account</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-  <div class="modal fade" id="addWaiterModal" tabindex="-1" aria-hidden="true">
+  <!-- Edit Modal -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form action="/admin/staff/create" method="POST" id="waiterForm">
+        <form method="POST" id="editForm">
           <div class="modal-header">
-            <h5 class="modal-title">Create Waiter Account</h5>
+            <h5 class="modal-title">Edit Account</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            <input type="hidden" name="role" value="waiter">
+            <input type="hidden" name="_id" id="editId">
+            <input type="hidden" name="role" id="editRole"> 
             <div class="mb-3">
-              <label>Full Name</label>
-              <input type="text" name="name" class="form-control" required>
+              <label class="form-label">Full Name</label>
+              <input type="text" name="name" id="editName" class="form-control" required>
             </div>
             <div class="mb-3">
-              <label>Email (must end in @waiter.com)</label>
-              <input type="email" name="email" class="form-control" required>
-            </div>
-            <div class="mb-3">
-              <label>Password</label>
-              <input type="password" name="password" class="form-control" required>
+              <label class="form-label">Email</label>
+              <input type="email" name="email" id="editEmail" class="form-control" required>
             </div>
           </div>
           <div class="modal-footer">
-            <button type="submit" class="btn btn-success w-100">Create Waiter</button>
+            <button class="btn btn-primary" type="submit">Save Changes</button>
           </div>
         </form>
       </div>
     </div>
   </div>
-
-<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form method="POST" id="editForm">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Account</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="_id" id="editId">
-          <input type="hidden" name="role" id="editRole"> 
-          <div class="mb-3">
-            <label>Full Name</label>
-            <input type="text" name="name" id="editName" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label>Email</label>
-            <input type="email" name="email" id="editEmail" class="form-control" required>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-primary" type="submit">Save Changes</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="addKitchenModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <form action="/admin/staff/create" method="POST" id="kitchenForm">
-        <div class="modal-header">
-          <h5 class="modal-title">Create Kitchen Staff Account</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="role" value="kitchen">
-          <div class="mb-3">
-            <label>Full Name</label>
-            <input type="text" name="name" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label>Email (must end in @kitchen.com)</label>
-            <input type="email" name="email" class="form-control" required>
-          </div>
-          <div class="mb-3">
-            <label>Password</label>
-            <input type="password" name="password" class="form-control" required>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-dark w-100">Create Kitchen Staff</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
+    // DOM elements
+    const searchInput = document.getElementById('searchInput');
+    const filterDropdownItems = document.querySelectorAll('.filter-dropdown .dropdown-item');
+    const filterText = document.getElementById('filterText');
+    const roleOptions = document.querySelectorAll('.role-option');
+    const selectedRoleInput = document.getElementById('selectedRole');
+    const emailLabel = document.getElementById('emailLabel');
+    const tableRows = Array.from(document.querySelectorAll("#accountsTableBody tr"));
+    const pagination = document.getElementById("pagination");
+    const passwordInput = document.getElementById('passwordInput');
+    const passwordToggle = document.getElementById('passwordToggle');
+    
+    const rowsPerPage = 10;
+    let currentPage = 1;
+
+    // Password visibility toggle
+    passwordToggle.addEventListener('click', function() {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      
+      // Toggle eye icon
+      const icon = this.querySelector('i');
+      if (type === 'text') {
+        icon.classList.remove('bi-eye');
+        icon.classList.add('bi-eye-slash');
+      } else {
+        icon.classList.remove('bi-eye-slash');
+        icon.classList.add('bi-eye');
+      }
+    });
+
+    // Filter and search functionality
+    function filterAccounts() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const activeFilter = document.querySelector('.filter-dropdown .dropdown-item.active').getAttribute('data-filter');
+      
+      const filteredRows = tableRows.filter(row => {
+        if (row.cells.length < 5) return false; // Skip the empty state row
+        
+        const name = row.dataset.name.toLowerCase();
+        const email = row.dataset.email.toLowerCase();
+        const role = row.dataset.role;
+        
+        const matchesSearch = name.includes(searchTerm) || email.includes(searchTerm);
+        const matchesFilter = activeFilter === 'all' || role === activeFilter;
+        
+        return matchesSearch && matchesFilter;
+      });
+
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      currentPage = Math.min(currentPage, totalPages || 1);
+
+      tableRows.forEach(row => (row.style.display = "none"));
+
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+
+      filteredRows.slice(start, end).forEach((row, i) => {
+        row.style.display = "";
+        const indexCell = row.querySelector(".user-index");
+        if (indexCell) indexCell.textContent = start + i + 1;
+      });
+
+      renderPagination(totalPages);
+    }
+    
+    function renderPagination(totalPages) {
+      pagination.innerHTML = "";
+
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item ${i === currentPage ? "active" : ""}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener("click", e => {
+          e.preventDefault();
+          currentPage = i;
+          filterAccounts();
+        });
+        pagination.appendChild(li);
+      }
+    }
+
+    // Event listeners for filtering
+    filterDropdownItems.forEach(item => {
+      item.addEventListener('click', function(e) {
+        e.preventDefault();
+        filterDropdownItems.forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        filterText.textContent = this.textContent;
+        currentPage = 1;
+        filterAccounts();
+      });
+    });
+
+    // Event listener for search
+    searchInput.addEventListener('input', () => {
+      currentPage = 1;
+      filterAccounts();
+    });
+
+    // Role selection in modal
+    roleOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        roleOptions.forEach(opt => opt.classList.remove('selected'));
+        this.classList.add('selected');
+        
+        const role = this.getAttribute('data-role');
+        selectedRoleInput.value = role;
+        
+        // Update email label based on selected role
+        emailLabel.textContent = `Email (must end in @${role}.com)`;
+      });
+    });
+
+    // Initialize with staff role selected
+    document.querySelector('.role-option[data-role="staff"]').classList.add('selected');
+
+    // Form validation for account creation
+    document.getElementById('accountForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = this.email.value;
+      const role = selectedRoleInput.value;
+      
+      if (!email.endsWith(`@${role}.com`)) {
+        return Swal.fire({ 
+          icon: 'error', 
+          title: 'Invalid Email', 
+          text: `${role.charAt(0).toUpperCase() + role.slice(1)} email must end with @${role}.com` 
+        });
+      }
+      
+      Swal.fire({ 
+        title: `Confirm ${role.charAt(0).toUpperCase() + role.slice(1)} Creation`, 
+        icon: 'question', 
+        showCancelButton: true, 
+        confirmButtonText: 'Yes, Create' 
+      }).then(result => {
+        if (result.isConfirmed) this.submit();
+      });
+    });
+
+    // Edit modal function
     function openEditModal(id, name, email, role) {
       const modal = new bootstrap.Modal(document.getElementById('editModal'));
       document.getElementById('editForm').action = `/admin/staff/${id}/edit`;
@@ -396,65 +994,78 @@
       modal.show();
     }
 
-    document.getElementById('staffForm')?.addEventListener('submit', function (e) {
+    // Edit form submission
+    document.getElementById('editForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      const email = this.email.value;
-      if (!email.endsWith('@staff.com')) {
-        return Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Staff email must end with @staff.com' });
-      }
-      Swal.fire({ title: 'Confirm Staff Creation', icon: 'question', showCancelButton: true, confirmButtonText: 'Yes, Create' }).then(result => {
+      Swal.fire({ 
+        title: 'Save Changes?', 
+        icon: 'info', 
+        showCancelButton: true, 
+        confirmButtonText: 'Save' 
+      }).then(result => {
         if (result.isConfirmed) this.submit();
       });
     });
 
-    document.getElementById('waiterForm')?.addEventListener('submit', function (e) {
-      e.preventDefault();
-      const email = this.email.value;
-      if (!email.endsWith('@waiter.com')) {
-        return Swal.fire({ icon: 'error', title: 'Invalid Email', text: 'Waiter email must end with @waiter.com' });
-      }
-      Swal.fire({ title: 'Confirm Waiter Creation', icon: 'question', showCancelButton: true, confirmButtonText: 'Yes, Create' }).then(result => {
-        if (result.isConfirmed) this.submit();
-      });
-    });
-
-    document.getElementById('editForm')?.addEventListener('submit', function (e) {
-      e.preventDefault();
-      Swal.fire({ title: 'Save Changes?', icon: 'info', showCancelButton: true, confirmButtonText: 'Save' }).then(result => {
-        if (result.isConfirmed) this.submit();
-      });
-    });
-
-    document.querySelectorAll('.deleteForm').forEach(form => {
-    form.addEventListener('submit', function (e) {
+    // Delete confirmation
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.deleteForm')) {
         e.preventDefault();
+        const form = e.target.closest('.deleteForm');
+        
         Swal.fire({
-        title: 'Delete this account?',
-        text: 'This action cannot be undone.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#dc3545',
-        confirmButtonText: 'Yes, delete it!'
+          title: 'Delete this account?',
+          text: 'This action cannot be undone.',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          confirmButtonText: 'Yes, delete it!'
         }).then(result => {
-        if (result.isConfirmed) {
-            this.submit();
-        }
+          if (result.isConfirmed) {
+            form.submit();
+          }
         });
+      }
     });
+
+    // Restaurant status toggle
+    document.addEventListener("DOMContentLoaded", () => {
+      const toggle = document.getElementById("restaurantToggle");
+      const label = document.getElementById("restaurantLabel");
+
+      const isClosed = localStorage.getItem("restaurantClosed") === "true";
+      toggle.checked = !isClosed;
+      label.textContent = isClosed ? "Closed" : "Open";
+
+      toggle.addEventListener("change", () => {
+        const newStatusClosed = !toggle.checked;
+        localStorage.setItem("restaurantClosed", newStatusClosed);
+        label.textContent = newStatusClosed ? "Closed" : "Open";
+
+        Swal.fire({
+          title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+          text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+          icon: newStatusClosed ? "error" : "success",
+          confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+          confirmButtonText: "OK"
+        });
+      });
+      
+      // Initial table render
+      filterAccounts();
     });
   </script>
 
-<% if (typeof success !== 'undefined' && success) { %>
-  <script>
-    Swal.fire({
-      icon: 'success',
-      title: 'Success',
-      text: "<%= success %>",
-      timer: 2000,
-      showConfirmButton: false
-    });
-  </script>
-<% } %>
-
+  <% if (typeof success !== 'undefined' && success) { %>
+    <script>
+      Swal.fire({
+        icon: 'success',
+        title: 'Success',
+        text: "<%= success %>",
+        timer: 2000,
+        showConfirmButton: false
+      });
+    </script>
+  <% } %>
 </body>
 </html>

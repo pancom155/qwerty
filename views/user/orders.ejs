@@ -8,120 +8,729 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/UserOrder.css">
   <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <style>
- .pending-notification {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  min-width: 300px;
-  max-width: 500px;
-  background-color: #f0f8ff;
-  color: #0d6efd;
-  font-weight: 600;
-  padding: 12px 20px;
-  z-index: 1050;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-  font-size: 1rem;
+    body {
+        background-color: #ffffff;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 250px;
+        height: 100vh;
+        background-color: #eeeef5;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .sidebar img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin: 20px 0;
+    }
+
+    .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    .sidebar nav a {
+        padding: 10px 20px;
+        color: #000;
+        text-decoration: none;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        transition: background 0.3s ease, color 0.3s ease;
+        width: 90%;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .sidebar nav a:hover,
+    .sidebar nav a.active {
+        background: #5e5e5e;
+        color: #fff;
+    }
+
+    .main-content {
+        margin-left: 250px;
+        padding: 20px;
+    }
+
+    .navbar-custom-wrapper {
+        margin-left: 250px;
+        padding: 3px 40px;
+        position: sticky;
+        top: 20px;
+        z-index: 999;
+    }
+
+    .btn-primary {
+        background: #0080ff;
+        border: none;
+        border-radius: 50px;
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    } 
+    
+    .navbar-custom {
+        background-color: #eeeef5;
+        border-radius: 40px;
+        width: 95%;
+        max-width: 1200px;
+        padding: 0.5rem 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    h3 span {
+        background-image: linear-gradient(to right, #ff8c00, #ff7700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: bold;
+    }
+
+    /* ===== Table Styling ===== */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    /* Table Body */
+    .table tbody tr {
+        transition: all 0.2s ease-in-out;
+    }
+
+    .table tbody td {
+        padding: 14px 16px;
+        vertical-align: middle;
+        border: none !important;
+        border-bottom: 1px solid #eee !important;
+        font-size: 15px;
+        color: #333;
+        text-align: center;
+    }
+
+    /* ===== Status Badges ===== */
+    .status-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-badge.bg-warning {
+        background-color: #fff3cd !important;
+        color: #856404 !important;
+    }
+
+    .status-badge.bg-info {
+        background-color: #d1ecf1 !important;
+        color: #0c5460 !important;
+    }
+
+    .status-badge.bg-success {
+        background-color: #d4edda !important;
+        color: #155724 !important;
+    }
+
+    .status-badge.bg-danger {
+        background-color: #f8d7da !important;
+        color: #721c24 !important;
+    }
+
+    .status-badge.bg-secondary {
+        background-color: #e2e3e5 !important;
+        color: #383d41 !important;
+    }
+
+    /* ===== Buttons in Table ===== */
+    .table .btn-sm {
+        font-size: 13px;
+        padding: 6px 14px;
+        border-radius: 6px;
+        transition: 0.2s;
+    }
+
+    .table .btn-primary {
+        background-color: #17a2b8;
+        border: none;
+    }
+
+    .table .btn-primary:hover {
+        background-color: #0f8698;
+        color: #fff;
+        transform: scale(1.05);
+    }
+
+    /* ===== PAGINATION ===== */
+    .pagination-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+
+    .page-link {
+        border: none;
+        color: #495057;
+        padding: 0.5rem 0.75rem;
+        border-radius: 6px;
+        margin: 0 2px;
+    }
+
+    .page-item.active .page-link {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .page-link:hover {
+        background-color: #e9ecef;
+        color: #495057;
+    }
+
+    /* ===== Scrollbar Styling ===== */
+    .table-responsive::-webkit-scrollbar {
+        height: 8px; 
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 4px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #a8a8a8;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        scrollbar-width: thin;
+        scrollbar-color: #c1c1c1 #f1f1f1;
+    }
+
+    /* ===== DATE STYLING ===== */
+    .date-display {
+        font-size: 0.85rem;
+        color: #495057;
+    }
+
+    /* ===== Modal Styling ===== */
+    .modal-content {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .modal-header {
+        background: rgb(218, 218, 218);
+        color: #000000;
+        border-bottom: none;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .modal-body img {
+        border-radius: 10px;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* === Order ID Styling === */
+    .order-id {
+        font-weight: 600;
+        color: #333;
+        font-family: 'Courier New', monospace;
+    }
+
+    /* === Amount Styling === */
+    .amount {
+        font-weight: 600;
+        color: #28a745;
+        font-size: 0.95rem;
+    }
+
+    /* === Order History Scrollable Section === */
+    .order-history-section {
+        max-height: 500px;
+        overflow-y: auto;
+        border: 1px solid #e9ecef;
+        border-radius: 12px;
+        padding: 15px;
+        background: #fff;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    }
+
+    .order-history-section .table {
+        margin-bottom: 0;
+    }
+
+    .order-history-section .table thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .order-history-section .table thead th {
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 1200px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+            justify-content: center;
+        }
+        .product-name {
+            font-size: 1rem;
+        }
+        .product-price {
+            font-size: 1rem;
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .product-card img {
+            height: 150px;
+        }
+    }
+    
+    .filter-container {
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+    
+    .custom-input {
+        position: relative;
+    }
+    
+    .custom-input i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #666;
+    }
+    
+    .custom-input input,
+    .custom-input select {
+        padding-left: 40px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+    
+    .custom-input input:focus,
+    .custom-input select:focus {
+        border-color: #03C4E7;
+        box-shadow: 0 0 0 0.25rem rgba(3, 196, 231, 0.25);
+    }
+    
+    #orderMessage {
+        font-size: 1.1rem;
+        padding: 15px;
+        border-radius: 8px;
+    }
+    
+    .gradient-text {
+        background: linear-gradient(to right, #03C4E7, #0047FF);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text; 
+    }
+
+    /* Mobile Responsive (max-width: 768px) */
+    @media (max-width: 768px) {
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px; /* hidden by default */
+            width: 250px;
+            height: 100%;
+            background-color: #f8f9fa;
+            padding: 20px 10px;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 1100;
+        }
+
+        /* Sidebar when active */
+        .sidebar.active {
+            left: 0;
+        }
+
+        /* Overlay when sidebar is open */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: none;
+            z-index: 1000;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+
+        /* Add a hamburger button */
+        .hamburger {
+            position: fixed;
+            top: 28px;
+            left: 5px;
+            background: linear-gradient(to right, #ff8c00, #ff7700);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 1200;
+        }
+
+        /* Adjust main content */
+        .main-content {
+            margin-left: 0;
+            padding: 20px;
+        }
+
+        .navbar-custom-wrapper {
+            margin-left: 0;
+        }
+
+  /* 📋 Responsive Table */
+  table, thead, tbody, th, td, tr {
+    display: block;
+  }
+
+  thead {
+    display: none; /* hide header */
+  }
+
+  tr {
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+  }
+
+  td {
+    text-align: left;
+    padding: 8px 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  td::before {
+    content: attr(data-label); /* show column name */
+    font-weight: bold;
+    color: #03C4E7;
+  }
 }
 
-/* Cooking animation: pan flipping */
-.cooking .animation-icon {
-  display: inline-block;
-  animation: flip 1s infinite;
-}
-@keyframes flip {
-  0% { transform: rotate(0deg); }
-  50% { transform: rotate(20deg) translateY(-5px); }
-  100% { transform: rotate(0deg); }
-}
+    .pending-notification {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 300px;
+      max-width: 500px;
+      background-color: #f0f8ff;
+      color: #0d6efd;
+      font-weight: 600;
+      padding: 12px 20px;
+      z-index: 1050;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
 
-/* Processing animation: simmering steam */
-.processing .animation-icon {
-  display: inline-block;
-  animation: steam 1s infinite;
-}
-@keyframes steam {
-  0% { transform: translateY(0); opacity: 0.6; }
-  50% { transform: translateY(-8px); opacity: 1; }
-  100% { transform: translateY(0); opacity: 0.6; }
-}
+    .pending-notification:hover {
+      transform: translateX(-50%) scale(1.05);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    }
 
-/* Ready to pickup animation: truck moving */
-.ready .animation-icon {
-  display: inline-block;
-  animation: drive 2s linear infinite;
-}
-@keyframes drive {
-  0% { transform: translateX(-10px); }
-  50% { transform: translateX(10px); }
-  100% { transform: translateX(-10px); }
-}
+    .notification-gif {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
 
-/* Chat Button */
-.chat-button {
-  position: fixed;
-  bottom: 25px;
-  right: 25px;
-  background-color: #0d6efd;
-  color: white;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.5rem;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  z-index: 2000;
-  transition: background 0.3s;
-}
-.chat-button:hover {
-  background-color: #0b5ed7;
-}
+    .status-modal-gif {
+      width: 200px;
+      height: 200px;
+      object-fit: contain;
+      margin: 0 auto 20px;
+      display: block;
+    }
+
+    .status-modal-content {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .status-timeline {
+      display: flex;
+      justify-content: space-between;
+      margin: 30px 0;
+      position: relative;
+    }
+
+    .status-timeline::before {
+      content: '';
+      position: absolute;
+      top: 15px;
+      left: 10%;
+      right: 10%;
+      height: 3px;
+      background: #e9ecef;
+      z-index: 1;
+    }
+
+    .status-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      flex: 1;
+    }
+
+    .status-indicator {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e9ecef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+
+    .status-step.active .status-indicator {
+      background: linear-gradient(135deg, #03C4E7, #0047FF);
+      color: white;
+    }
+
+    .status-step.completed .status-indicator {
+      background: #28a745;
+      color: white;
+    }
+
+    .status-label {
+      font-size: 0.8rem;
+      text-align: center;
+      color: #6c757d;
+    }
+
+    .status-step.active .status-label {
+      color: #0047FF;
+      font-weight: 600;
+    }
+
+    .status-step.completed .status-label {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    .chat-button {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background-color: #0d6efd;
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 2000;
+      transition: background 0.3s;
+    }
+    .chat-button:hover {
+      background-color: #0b5ed7;
+    }
 </style>
 <body>
 <% 
   const pendingOrder = orders.find(o => o.status === 'pending');
   const processingOrder = orders.find(o => o.status === 'processing');
   const readyOrder = orders.find(o => o.status === 'ready_to_pickup');
+  
+  let activeOrder = null;
+  let currentStatus = '';
+  
+  if (pendingOrder) {
+    activeOrder = pendingOrder;
+    currentStatus = 'pending';
+  } else if (processingOrder) {
+    activeOrder = processingOrder;
+    currentStatus = 'processing';
+  } else if (readyOrder) {
+    activeOrder = readyOrder;
+    currentStatus = 'ready_to_pickup';
+  }
 %>
 
-<% if (pendingOrder) { %>
-  <div class="pending-notification cooking">
-    <div class="animation-icon">🍳</div>
-    <strong>Preparing your order...</strong>
-  </div>
-<% } else if (processingOrder) { %>
-  <div class="pending-notification processing">
-    <div class="animation-icon">🥘</div>
-    <strong>Your order is being processed...</strong>
-  </div>
-<% } else if (readyOrder) { %>
-  <div class="pending-notification ready">
-    <div class="animation-icon">🚚</div>
-    <strong>Your order is ready for pickup!</strong>
+<% if (activeOrder) { %>
+  <div class="pending-notification" data-bs-toggle="modal" data-bs-target="#orderStatusModal">
+    <% if (currentStatus === 'pending') { %>
+      <img src="/images/processing.gif" alt="Processing" class="notification-gif">
+      <strong>Processing your order...</strong>
+    <% } else if (currentStatus === 'processing') { %>
+      <img src="/images/cooking.gif" alt="Cooking" class="notification-gif">
+      <strong>Preparing Your order...</strong>
+    <% } else if (currentStatus === 'ready_to_pickup') { %>
+      <img src="/images/ready.gif" alt="Ready for pickup" class="notification-gif">
+      <strong>Your order is ready for pickup!</strong>
+    <% } %>
   </div>
 <% } %>
 
+  <!-- Order Status Modal -->
+  <div class="modal fade" id="orderStatusModal" tabindex="-1" aria-labelledby="orderStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold" id="orderStatusModalLabel">Order Status</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body status-modal-content">
+          <% if (activeOrder) { %>
+            <!-- Large GIF Display -->
+            <% if (currentStatus === 'pending') { %>
+              <img src="/images/processing.gif" alt="Processing" class="status-modal-gif">
+              <h4 class="fw-bold text-primary mb-3">Processing Your Order</h4>
+            <% } else if (currentStatus === 'processing') { %>
+              <img src="/images/cooking.gif" alt="Cooking" class="status-modal-gif">
+              <h4 class="fw-bold text-warning mb-3">Preparing Your Order</h4>
+            <% } else if (currentStatus === 'ready_to_pickup') { %>
+              <img src="/images/ready.gif" alt="Ready for pickup" class="status-modal-gif">
+              <h4 class="fw-bold text-success mb-3">Ready for Pickup!</h4>
+            <% } %>
 
+            <!-- Order Details -->
+            <div class="order-details mb-4">
+              <p class="mb-1"><strong>Order ID:</strong> <%= activeOrder._id %></p>
+              <p class="mb-1"><strong>Order Time:</strong> <%= moment(activeOrder.createdAt).format('MMMM D, YYYY - h:mm A') %></p>
+              <p class="mb-0"><strong>Total Amount:</strong> ₱<%= activeOrder.netTotal.toFixed(2) %></p>
+            </div>
+
+            <!-- Status Timeline -->
+            <div class="status-timeline">
+              <div class="status-step <%= currentStatus === 'pending' || currentStatus === 'processing' || currentStatus === 'ready_to_pickup' ? 'completed' : '' %> <%= currentStatus === 'pending' ? 'active' : '' %>">
+                <div class="status-indicator">
+                  <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="status-label">Order Received</div>
+              </div>
+              
+              <div class="status-step <%= currentStatus === 'processing' || currentStatus === 'ready_to_pickup' ? 'completed' : '' %> <%= currentStatus === 'processing' ? 'active' : '' %>">
+                <div class="status-indicator">
+                  <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="status-label">Preparing</div>
+              </div>
+              
+              <div class="status-step <%= currentStatus === 'ready_to_pickup' ? 'completed' : '' %> <%= currentStatus === 'ready_to_pickup' ? 'active' : '' %>">
+                <div class="status-indicator">
+                  <i class="bi bi-check-lg"></i>
+                </div>
+                <div class="status-label">Ready</div>
+              </div>
+            </div>
+
+            <!-- Status Message -->
+            <div class="status-message">
+              <% if (currentStatus === 'pending') { %>
+                <p class="text-muted">We've received your order and are getting it ready for preparation.</p>
+              <% } else if (currentStatus === 'processing') { %>
+                <p class="text-muted">Our kitchen is currently preparing your delicious meal!</p>
+              <% } else if (currentStatus === 'ready_to_pickup') { %>
+                <p class="text-success fw-bold">Your order is ready! Please proceed to the counter for pickup.</p>
+              <% } %>
+            </div>
+
+          <% } else { %>
+            <p class="text-muted">No active orders found.</p>
+          <% } %>
+        </div>
+        <div class="modal-footer border-0">
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="sidebar" id="sidebar">
     <div class="d-flex justify-content-center mb-5 mt-3">
      <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
     </div>
     <nav>
- 
       <a href="/user/menu"><i class="bi bi-list-ul"></i> Browse Menu</a>
       <a href="/user/reservation"><i class="bi bi-calendar-check"></i> Book Reservation</a>
       <a href="/user/orders" class="active"><i class="bi bi-bag"></i> Orders</a>
@@ -130,8 +739,6 @@
       <a href="/user/myreservation"><i class="bi bi-calendar-event"></i> My Reservations</a>
      <a href="/user/profile"><i class="bi bi-person-circle"></i> Profile</a>
      <a href="/user/customer_support"><i class="bi bi-headset"></i> Support</a>
-
-     
     </nav>
   </div>
 
@@ -161,165 +768,193 @@
       <% } %>
     </nav>
   </div>
-<!-- Hamburger Button -->
-<button class="hamburger" id="hamburgerBtn">☰</button>
 
-<!-- Sidebar Overlay -->
-<div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <!-- Hamburger Button -->
+  <button class="hamburger" id="hamburgerBtn">☰</button>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <div class="container py-1">
     <div class="main-content">
-  <div class="container py-4">
-   <h3 class="mb-4 text-center fw-bold">Ongoing <span>Orders</span></h3>
-<div class="card shadow-sm mb-5">
-  <div class="card-body">
-    <% const ongoingOrders = orders.filter(o => ['pending','processing','ready_to_pickup'].includes(o.status)); %>
-    <% if (ongoingOrders.length > 0) { %>
-      <table class="table table-hover align-middle">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Status</th>
-            <th>Ordered At</th>
-            <th>Net Total</th>
-            <th>Reference #</th>
-            <th>Order Items</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% ongoingOrders.forEach(order => { %>
-            <tr>
-              <td><%= order._id %></td>
-              <td><span class="badge bg-warning text-dark"><%= order.status %></span></td>
-              <td><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
-              <td>₱<%= order.netTotal.toFixed(2) %></td>
-              <td><button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">View Proof</button></td>
-              <td><button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">View Order Items</button></td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    <% } else { %>
-      <div class="text-center py-5">
-        <i class="bi bi-bag-x fs-1 text-muted"></i>
-        <p class="mt-3 text-muted fw-semibold">No ongoing orders at the moment.</p>
+      <div class="container py-4">
+        <!-- ONGOING ORDERS -->
+        <h3 class="mb-4 text-center fw-bold">Ongoing <span>Orders</span></h3>
+        <% const ongoingOrders = orders.filter(o => ['pending','processing','ready_to_pickup'].includes(o.status)); %>
+        <% if (ongoingOrders.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Status</th>
+                  <th>Ordered At</th>
+                  <th>Net Total</th>
+                  <th>Reference #</th>
+                  <th>Order Items</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% ongoingOrders.forEach(order => { %>
+                  <tr>
+                    <td class="order-id"><%= order._id %></td>
+                    <td>
+                      <% if (order.status === 'pending') { %>
+                        <span class="status-badge bg-warning">Pending</span>
+                      <% } else if (order.status === 'processing') { %>
+                        <span class="status-badge bg-info">Processing</span>
+                      <% } else if (order.status === 'ready_to_pickup') { %>
+                        <span class="status-badge bg-success">Ready to Pickup</span>
+                      <% } %>
+                    </td>
+                    <td class="date-display"><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
+                    <td class="amount">₱<%= order.netTotal.toFixed(2) %></td>
+                    <td>
+                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
+                        View Proof
+                      </button>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">
+                        View Items
+                      </button>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="text-center py-5">
+            <i class="bi bi-bag-x" style="font-size: 3rem; color: #ccc;"></i>
+            <p class="text-muted mt-3">You don't have any ongoing orders.</p>
+          </div>
+        <% } %>
+
+        <!-- ORDER HISTORY -->
+        <h3 class="mb-4 mt-5 text-center fw-bold">Order <span>History</span></h3>
+        <% const historyOrders = orders.filter(o => ['completed','rejected','cancelled'].includes(o.status)); %>
+        <% if (historyOrders.length > 0) { %>
+          <div class="order-history-section">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Status</th>
+                    <th>Ordered At</th>
+                    <th>Net Total</th>
+                    <th>Reference #</th>
+                    <th>Order Items</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% historyOrders.forEach(order => { %>
+                    <tr>
+                      <td class="order-id"><%= order._id %></td>
+                      <td>
+                        <% if (order.status === 'completed') { %>
+                          <span class="status-badge bg-success">Completed</span>
+                        <% } else if (order.status === 'rejected') { %>
+                          <span class="status-badge bg-danger">Rejected</span>
+                        <% } else if (order.status === 'cancelled') { %>
+                          <span class="status-badge bg-secondary">Cancelled</span>
+                        <% } %>
+                      </td>
+                      <td class="date-display"><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
+                      <td class="amount">₱<%= order.netTotal.toFixed(2) %></td>
+                      <td>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
+                          View Proof
+                        </button>
+                      </td>
+                      <td>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">
+                          View Items
+                        </button>
+                      </td>
+                    </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        <% } else { %>
+          <div class="text-center py-5">
+            <i class="bi bi-clock-history" style="font-size: 3rem; color: #ccc;"></i>
+            <p class="text-muted mt-3">You don't have any order history yet.</p>
+          </div>
+        <% } %>
       </div>
-    <% } %>
-  </div>
-</div>
+    </div>
 
-<h3 class="mb-4 text-center fw-bold">Order <span>History</span></h3>
-<div class="card shadow-sm">
-  <div class="card-body">
-    <% const historyOrders = orders.filter(o => ['completed','rejected','cancelled'].includes(o.status)); %>
-    <% if (historyOrders.length > 0) { %>
-      <table class="table table-striped table-bordered align-middle">
-        <thead>
-          <tr>
-            <th>Order ID</th>
-            <th>Status</th>
-            <th>Ordered At</th>
-            <th>Net Total</th>
-            <th>Reference #</th>
-            <th>Order Items</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% historyOrders.forEach(order => { %>
-            <tr>
-              <td><%= order._id %></td>
-              <td>
-                <% if (order.status === 'completed') { %>
-                  <span class="badge bg-success"><%= order.status %></span>
-                <% } else if (order.status === 'rejected') { %>
-                  <span class="badge bg-danger"><%= order.status %></span>
-                <% } else { %>
-                  <span class="badge bg-secondary"><%= order.status %></span>
-                <% } %>
-              </td>
-              <td><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
-              <td>₱<%= order.netTotal.toFixed(2) %></td>
-              <td><button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">View Proof</button></td>
-              <td><button class="btn btn-sm btn-primary me-1" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">View My Order Items</button></td>
-            </tr>
-          <% }) %>
-        </tbody>
-      </table>
-    <% } else { %>
-      <div class="text-center py-5">
-        <i class="bi bi-archive fs-1 text-muted"></i>
-        <p class="mt-3 text-muted fw-semibold">No past orders yet.</p>
-      </div>
-    <% } %>
-  </div>
-</div>
-
-
+    <!-- Modals -->
     <% orders.forEach(order => { %>
-    <div class="modal fade" id="itemsModal<%= order._id %>" tabindex="-1" aria-labelledby="itemsModalLabel<%= order._id %>" >
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title"><i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %></h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-
-        <div class="modal-body">
-            <% if (order.items && order.items.length > 0) { %>
-            <ul class="list-group mb-4">
-                <% order.items.forEach(item => { %>
-                <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center">
-                    <% if (item.productId?.image) { %>
-                        <img src="/uploads/<%= item.productId?.image || 'default.png' %>" alt="Item Image" class="me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;">
-                    <% } else { %>
-                        <div class="me-3 rounded bg-secondary" style="width: 60px; height: 60px;"></div>
-                    <% } %>
-                    <div>
-                        <div class="fw-bold"><%= item.productName || item.productId?.name || 'Unknown Item' %></div>
-                        <small class="text-muted">Price: ₱<%= item.price?.toFixed(2) || '0.00' %></small>
-                    </div>
-                    </div>
-                    <span class="badge bg-primary rounded-pill">x<%= item.quantity %></span>
-                </li>
-                <% }) %>
-            </ul>
-            <% } else { %>
-            <p class="text-muted text-center">No items found for this order.</p>
-            <% } %>
-
-            <% if (order.discounts?.length > 0) { %>
-            <div class="mt-4">
-                <h6 class="fw-bold"><i class="bi bi-tags-fill me-2"></i>Discount Details</h6>
-                <% order.discounts.forEach(discount => { %>
-                <div class="text-muted"><%= discount.description %> — ₱<%= discount.amount.toFixed(2) %></div>
-                <% }) %>
+      <!-- Items Modal -->
+      <div class="modal fade" id="itemsModal<%= order._id %>" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title"><i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %></h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <% } %>
+            <div class="modal-body">
+              <% if (order.items && order.items.length > 0) { %>
+                <ul class="list-group mb-4">
+                  <% order.items.forEach(item => { %>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                      <div class="d-flex align-items-center">
+                        <% if (item.productId?.image) { %>
+                          <img src="/uploads/<%= item.productId?.image || 'default.png' %>" alt="Item Image" class="me-3 rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                        <% } else { %>
+                          <div class="me-3 rounded bg-secondary" style="width: 60px; height: 60px;"></div>
+                        <% } %>
+                        <div>
+                          <div class="fw-bold"><%= item.productName || item.productId?.name || 'Unknown Item' %></div>
+                          <small class="text-muted">Price: ₱<%= item.price?.toFixed(2) || '0.00' %></small>
+                        </div>
+                      </div>
+                      <span class="badge bg-primary rounded-pill">x<%= item.quantity %></span>
+                    </li>
+                  <% }) %>
+                </ul>
+              <% } else { %>
+                <p class="text-muted text-center">No items found for this order.</p>
+              <% } %>
 
-            <div class="p-3 mt-4 rounded bg-light shadow-sm">
-            <h6 class="fw-bold text-primary"><i class="bi bi-calculator-fill me-2"></i>Order Summary</h6>
-            <div class="d-flex justify-content-between border-bottom py-1">
-                <span><i class="bi bi-cash-coin me-1"></i>Gross Total:</span>
-                <span class="fw-semibold">₱<%= order.grossTotal.toFixed(2) %></span>
-            </div>
-            <% if (order.discountTotal > 0) { %>
-                <div class="d-flex justify-content-between border-bottom py-1 text-success">
-                <span><i class="bi bi-patch-check-fill me-1"></i>Discount:</span>
-                <span class="fw-semibold">- ₱<%= order.discountTotal.toFixed(2) %></span>
+              <% if (order.discounts?.length > 0) { %>
+                <div class="mt-4">
+                  <h6 class="fw-bold"><i class="bi bi-tags-fill me-2"></i>Discount Details</h6>
+                  <% order.discounts.forEach(discount => { %>
+                    <div class="text-muted"><%= discount.description %> — ₱<%= discount.amount.toFixed(2) %></div>
+                  <% }) %>
                 </div>
-            <% } %>
-            <div class="d-flex justify-content-between pt-2 fw-bold fs-5 text-success">
-                <span><i class="bi bi-wallet2 me-1"></i>Net Total:</span>
-                <span>₱<%= order.netTotal.toFixed(2) %></span>
-            </div>
-            </div>
-        </div>
-        </div>
-    </div>
-    </div>
+              <% } %>
 
-      <div class="modal fade" id="proofModal<%= order._id %>" tabindex="-1" aria-labelledby="proofModalLabel<%= order._id %>" >
+              <div class="p-3 mt-4 rounded bg-light shadow-sm">
+                <h6 class="fw-bold text-primary"><i class="bi bi-calculator-fill me-2"></i>Order Summary</h6>
+                <div class="d-flex justify-content-between border-bottom py-1">
+                  <span>₱ Gross Total:</span>
+                  <span class="fw-semibold">₱<%= order.grossTotal.toFixed(2) %></span>
+                </div>
+                <% if (order.discountTotal > 0) { %>
+                  <div class="d-flex justify-content-between border-bottom py-1 text-success">
+                    <span><i class="bi bi-patch-check-fill me-1"></i>Discount:</span>
+                    <span class="fw-semibold">- ₱<%= order.discountTotal.toFixed(2) %></span>
+                  </div>
+                <% } %>
+                <div class="d-flex justify-content-between pt-2 fw-bold fs-5 text-success">
+                  <span><i class="bi bi-wallet2 me-1"></i>Net Total:</span>
+                  <span>₱<%= order.netTotal.toFixed(2) %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Proof Modal -->
+      <div class="modal fade" id="proofModal<%= order._id %>" tabindex="-1">
         <div class="modal-dialog modal-md modal-dialog-centered">
           <div class="modal-content">
             <div class="modal-header">
@@ -338,48 +973,67 @@
         </div>
       </div>
     <% }) %>
+  </div>
 
+  <!-- Customer Support Chat Button -->
+  <div id="chatButton" class="chat-button">
+    <i class="bi bi-chat-dots-fill"></i>
   </div>
-    </div>
-   <!-- Customer Support Chat Button -->
-<div id="chatButton" class="chat-button" style="cursor:pointer;">
-  <i class="bi bi-chat-dots-fill"></i>
-</div>
-  </div>
-<script src="/socket.io/socket.io.js"></script>
+
+  <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-
-      const chatButton = document.getElementById('chatButton');
-  chatButton.addEventListener('click', () => {
-    window.location.href = '/user/customer_support';
-  });
+    const chatButton = document.getElementById('chatButton');
+    chatButton.addEventListener('click', () => {
+      window.location.href = '/user/customer_support';
+    });
 
     const hamburgerBtn = document.getElementById('hamburgerBtn');
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.getElementById('sidebarOverlay');
+    const sidebar = document.querySelector('.sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
 
-  // Toggle sidebar
-  hamburgerBtn.addEventListener('click', () => {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-  });
+    // Toggle sidebar
+    hamburgerBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    });
 
-  // Close sidebar when overlay clicked
-  overlay.addEventListener('click', () => {
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-  });
-
-  // Optional: close sidebar when a nav link is clicked
-  document.querySelectorAll('.sidebar nav a').forEach(link => {
-    link.addEventListener('click', () => {
+    // Close sidebar when overlay clicked
+    overlay.addEventListener('click', () => {
       sidebar.classList.remove('active');
       overlay.classList.remove('active');
     });
-  });
-setInterval(() => {
-      location.reload();
+
+    // Optional: close sidebar when a nav link is clicked
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+      });
+    });
+
+    // Refresh status functionality
+    const refreshStatusBtn = document.getElementById('refreshStatusBtn');
+    if (refreshStatusBtn) {
+      refreshStatusBtn.addEventListener('click', function() {
+        const btn = this;
+        const spinner = btn.querySelector('.spinner-border');
+        const btnText = btn.querySelector('.btn-text');
+        
+        btn.classList.add('loading');
+        spinner.classList.remove('d-none');
+        
+        setTimeout(() => {
+          location.reload();
+        }, 500);
+      });
+    }
+
+    setInterval(() => {
+      const modal = document.getElementById('orderStatusModal');
+      if (!modal || !modal.classList.contains('show')) {
+        location.reload();
+      }
     }, 5000);
   </script>
 </body>

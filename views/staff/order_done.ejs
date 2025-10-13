@@ -6,9 +6,501 @@
   <title>Staff Dashboard | Orders</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/StaffOrder.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
+<style>
+/* ===== GLOBAL STYLES ===== */
+body {
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #ffffff;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100vh;
+  background-color: #eeeef5;
+  padding: 5px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.sidebar img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+}
+
+.sidebar nav a {
+  padding: 10px 20px;
+  color: #000;
+  text-decoration: none;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: background 0.5s ease;
+  width: 90%;
+}
+
+.sidebar nav a.active,
+.sidebar nav a:hover {
+  background: #5e5e5e;
+  color: #fff;
+}
+
+.sidebar button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  background: #ff6600;
+  cursor: pointer;
+  margin-top: auto;
+}
+
+/* ===== MAIN CONTENT ===== */
+.main-content {
+  margin-left: 250px;
+  flex-grow: 1;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== NAVBAR ===== */
+.navbar-custom-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  z-index: 999;
+}
+
+.navbar-custom {
+  background-color: #eeeef5;
+  border-radius: 40px;
+  width: 95%;
+  max-width: 1200px;
+  padding: 0.5rem 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-custom img {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border: 1px solid black;
+}
+
+.navbar-custom .admin-info {
+  line-height: 1.2;
+}
+
+.navbar-custom .admin-info .fw-semibold {
+  font-size: 1rem;
+  color: #343a40;
+}
+
+.navbar-custom .admin-info p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6c757d;
+}
+
+.navbar-custom .btn-danger {
+  padding: 0.4rem 0.6rem;
+}
+
+.container-fluid {
+  padding: 2rem;
+}
+
+/* ===== TABLE STYLES - CLEAN DESIGN ===== */
+.table-container {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+}
+
+.table {
+  margin-bottom: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  color: #000000;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  padding: 1rem 0.75rem;
+  vertical-align: middle;
+}
+
+.table tbody td {
+  padding: 1rem 0.75rem;
+  border-bottom: 1px solid #f1f3f4;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #424242;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fbff;
+  transition: background-color 0.2s ease;
+}
+
+/* Status badges */
+.status-badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-completed {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Action buttons */
+.btn-action {
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-view-items {
+  background-color: #f8f9fa;
+  color: #495057;
+  margin-right: auto;
+  border: 1px solid #dee2e6;
+}
+
+.btn-view-items:hover {
+  background-color: #e9ecef;
+  color: #212529;
+}
+
+.btn-download {
+  background-color: #17a2b8;
+  color: white;
+}
+
+.btn-download:hover {
+  background-color: #138496;
+  color: white;
+}
+
+/* Customer info */
+.customer-info {
+  line-height: 1.4;
+}
+
+.customer-name {
+  font-weight: 600;
+  color: #212529;
+}
+
+.customer-email {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Search and filter */
+.search-filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-box {
+  flex: 1;
+  min-width: 300px;
+  max-width: 400px;
+}
+
+.filter-select {
+  width: 180px;
+}
+
+/* Pagination */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.page-link {
+  border: none;
+  color: #495057;
+  padding: 0.5rem 0.75rem;
+}
+
+.page-item.active .page-link {
+  background-color: #ff6600;
+  border-color: #ff6600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+  .table-container {
+    overflow-x: auto;
+  }
+  
+  .table {
+    min-width: 800px;
+  }
+}
+
+/* ===== STAT BOXES ===== */
+.stat-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-5px);
+}
+
+.stat-box p {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #333;
+  font-size: 1rem;
+}
+
+.circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.circle span {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  position: absolute;
+  bottom: 15px;
+}
+
+.circle i {
+  font-size: 36px;
+  color: #fff;
+}
+
+.circle canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  z-index: 1;
+  border-radius: 50%;
+}
+
+.circle i {
+  z-index: 2;
+}
+
+.circle span {
+  z-index: 3;
+}
+
+/* ===== MODAL STYLES ===== */
+.modal-content {
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.modal-header, .modal-footer {
+  background: rgb(218, 218, 218);
+  color: rgb(0, 0, 0);
+  border-bottom: none;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.modal-footer {
+  border-top: none;
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+.modal-body {
+  background-color: #f9f9f9;
+}
+
+/* ===== NOTIFICATION SYSTEM ===== */
+.notification-container {
+  position: relative;
+  margin-right: 15px;
+}
+
+/* Notification badge */
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: transform 0.3s ease;
+}
+
+/* Badge pulse animation when updated */
+.notification-badge.updated {
+  transform: scale(1.3);
+  animation: pulse 0.5s ease;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+/* Dropdown styling */
+.notification-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 350px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  padding: 15px;
+  display: none;
+  max-height: 400px;
+  overflow-y: auto;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Notification items */
+.notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: slideIn 0.5s forwards;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background-color: #f8f9fa;
+}
+
+/* Slide-in effect for new notifications */
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Notification text */
+.notification-title {
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: #343a40;
+}
+
+.notification-message {
+  font-size: 14px;
+  color: #495057;
+  margin-bottom: 5px;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* "No Notifications" message */
+.notification-empty {
+  padding: 15px;
+  text-align: center;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* View all orders button */
+.view-orders-btn {
+  width: 100%;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+/* Scrollbar for dropdown */
+.notification-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.notification-dropdown::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+.notification-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+}
+</style>
 <body>
 
 <div class="sidebar" id="sidebar">
@@ -16,18 +508,25 @@
     <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
   </div>
   <nav>
- <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
-<a href="/staff/order"><i class="bi bi-cart-check"></i> Orders</a>
-<a href="/staff/order_done"class="active"><i class="bi bi-receipt"></i> Order Receipt</a>
-<a href="/staff/reservation"><i class="bi bi-journal-bookmark"></i> Reservation</a>
-<a href="/staff/calendar" ><i class="bi bi-calendar-event"></i> Calendar</a>
-<a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
-
+    <a href="/staff/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
+    <a href="/staff/order"><i class="bi bi-cart-check"></i> Orders</a>
+    <a href="/staff/order_done" class="active"><i class="bi bi-receipt"></i> Order Receipt</a>
+    <a href="/staff/reservation"><i class="bi bi-journal-bookmark"></i> Reservation</a>
+    <a href="/staff/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+    <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
   </nav>
+
+  <div class="mt-4 p-3 border-top">
+    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="restaurantToggle">
+      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+    </div>
+  </div>
 </div>
 
 <div class="main-content">
-<div class="navbar-custom-wrapper">
+  <div class="navbar-custom-wrapper">
     <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
       <div class="d-flex align-items-center">
         <img src="/images/admin-avatar.avif" alt="Admin" class="rounded-circle me-3">
@@ -51,7 +550,6 @@
             <div id="notificationList">
               <!-- Notifications will be added here dynamically -->
             </div>
-          
           </div>
         </div>
         
@@ -65,124 +563,126 @@
   <div class="container-fluid mt-4">
     <h3 class="mb-4">Orders</h3>
 
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3 px-2">
-  <input 
-    type="text" 
-    id="searchInput" 
-    class="form-control mb-2 mb-md-0 me-md-2" 
-    style="width: 400px; " 
-    placeholder="Search Orders...">
-  
-<select id="statusFilter" class="form-select form-select-sm w-100 w-md-25 mb-2 mb-md-0 me-md-2 d-none">
-  <option value="">All Statuses</option>
-  <option value="pending">Pending</option>
-  <option value="processing">Processing</option>
-  <option value="ready_to_pickup">Ready to Pickup</option>
-</select>
+    <div class="search-filter-container">
+      <input 
+        type="text" 
+        id="searchInput" 
+        class="form-control search-box" 
+        placeholder="Search Orders...">
+    </div>
 
+    <div class="table-container">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="reservationTableBody">
+          <% if (orders && orders.length > 0) { %>
+            <% orders.forEach(order => { %>
+              <tr>
+                <!-- Order ID -->
+                <td><%= order._id %></td>
 
-</div>
+                <!-- Customer -->
+                <td>
+                  <div class="customer-info">
+                    <div class="customer-name">
+                      <% if (order.userId) { %>
+                        <%= order.userId.firstName %> <%= order.userId.lastName %>
+                      <% } else { %>
+                        <%= order.fullName || 'Guest' %>
+                      <% } %>
+                    </div>
+                    <div class="customer-email">
+                      <% if (order.userId) { %>
+                        <%= order.userId.email %>
+                      <% } else { %>
+                        <span class="text-muted">No Email</span>
+                      <% } %>
+                    </div>
+                  </div>
+                </td>
 
-    <table class="table table-bordered table-hover align-middle text-center">
-  <thead class="table-dark">
-    <tr>
-      <th>Order ID</th>
-      <th>Customer</th>
-      <th>Items</th>
-      <th>Status</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody id="reservationTableBody">
-    <% if (orders && orders.length > 0) { %>
-      <% orders.forEach(order => { %>
-        <tr>
-          <!-- Order ID -->
-          <td><%= order._id %></td>
+                <!-- Items -->
+                <td>
+                  <div class="d-flex justify-content-center">
+                    <button class="btn btn-sm btn-view-items" data-bs-toggle="modal" data-bs-target="#viewItemsModal<%= order._id %>">
+                      <i class="bi bi-list-ul"></i> View Items
+                    </button>
+                  </div>
 
-          <!-- Customer -->
-          <td>
-            <% if (order.userId) { %>
-              <strong><%= order.userId.firstName %> <%= order.userId.lastName %></strong><br>
-              <small><%= order.userId.email %></small>
-            <% } else { %>
-              <strong><%= order.fullName || 'Guest' %></strong><br>
-              <small class="text-muted">No Email</small>
-            <% } %>
-          </td>
+                  <!-- Modal for viewing items -->
+                  <div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header justify-content-center text-center" style="background: rgb(218, 218, 218); color: rgb(0, 0, 0);">
+                          <h5 class="modal-title w-100">
+                            <i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %>
+                          </h5>
+                          <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body bg-light">
+                          <% order.items.forEach(item => { %>
+                            <div class="card mb-2 shadow-sm border-0">
+                              <div class="card-body d-flex align-items-center gap-3">
+                                <img src="/uploads/<%= item.productId?.image || 'default.png' %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                <div class="flex-grow-1">
+                                  <div class="fw-semibold fs-6"><%= item.name %></div>
+                                  <small class="text-muted">₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
+                                </div>
+                                <div class="text-success fw-bold fs-6">₱<%= item.subtotal.toFixed(2) %></div>
+                              </div>
+                            </div>
+                          <% }) %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
 
-         <!-- Items -->
-<td>
-  <div class="d-flex justify-content-center">
-    <button class="btn btn-sm btn-view" data-bs-toggle="modal" data-bs-target="#viewItemsModal<%= order._id %>">
-      <i class="bi bi-list-ul"></i> View Items
-    </button>
-  </div>
+                <!-- Status -->
+                <td>
+                  <span class="status-badge status-<%= order.status.replace('_', '-') %>"><%= order.status %></span>
+                </td>
 
-  <!-- Modal for viewing items -->
-  <div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-      <div class="modal-content">
-        <div class="modal-header justify-content-center text-center" style="background: linear-gradient(90deg, #03C4E7, #0047FF); color: white;">
-          <h5 class="modal-title w-100">
-            <i class="bi bi-receipt-cutoff me-2"></i>Order Items — <%= order._id %>
-          </h5>
-          <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light">
-          <% order.items.forEach(item => { %>
-            <div class="card mb-2 shadow-sm border-0">
-              <div class="card-body d-flex align-items-center gap-3">
-                <img src="/uploads/<%= item.productId?.image || 'default.png' %>" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
-                <div class="flex-grow-1">
-                  <div class="fw-semibold fs-6"><%= item.name %></div>
-                  <small class="text-muted">₱<%= item.price.toFixed(2) %> × <%= item.quantity %></small>
-                </div>
-                <div class="text-success fw-bold fs-6">₱<%= item.subtotal.toFixed(2) %></div>
-              </div>
-            </div>
-          <% }) %>
-        </div>
-      </div>
+                <!-- Actions -->
+                <td>
+                  <% if (order.status === 'completed') { %>
+                    <a href="/staff/orders/receipt/<%= order._id %>" class="btn btn-sm btn-download btn-action">
+                      <i class="bi bi-printer"></i> Download Receipt
+                    </a>
+                  <% } else { %>
+                    <span class="text-muted">—</span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          <% } else { %>
+            <tr>
+              <td colspan="5" class="text-muted text-center py-4">No orders found.</td>
+            </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-container">
+      <ul class="pagination pagination-sm" id="pagination"></ul>
     </div>
   </div>
-</td>
-
-          <!-- Status -->
-          <td>
-            <span class="badge bg-secondary text-uppercase"><%= order.status %></span>
-          </td>
-
-          <!-- Actions -->
-         <td>
-  <% if (order.status === 'completed') { %>
-    <a href="/staff/orders/receipt/<%= order._id %>" class="btn btn-sm btn-primary">
-      <i class="bi bi-printer"></i> Download Receipt
-    </a>
-  <% } else { %>
-    <span class="text-muted">—</span>
-  <% } %>
-</td>
-
-        </tr>
-      <% }); %>
-    <% } else { %>
-      <tr>
-        <td colspan="5" class="text-muted text-center">No orders found.</td>
-      </tr>
-    <% } %>
-  </tbody>
-</table>
-
-    <div class="d-flex justify-content-center mt-3">
-  <ul class="pagination pagination-sm" id="pagination"></ul>
 </div>
 
-  </div>
-</div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+  // Your existing JavaScript code remains the same
   function processOrder(orderId) {
     Swal.fire({
       title: 'Are you sure?',
@@ -220,7 +720,7 @@
     });
   }
 
-    function confirmComplete(orderId) {
+  function confirmComplete(orderId) {
     Swal.fire({
       title: 'Mark as Completed?',
       text: "This order will be marked as completed.",
@@ -234,21 +734,23 @@
       }
     });
   }
+
   function confirmReadyToPickup(orderId) {
-  Swal.fire({
-    title: 'Ready for Pickup?',
-    text: "This order will be marked as 'Ready to Pickup'.",
-    icon: 'info',
-    showCancelButton: true,
-    confirmButtonText: 'Yes, mark it!',
-    cancelButtonText: 'Cancel'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      document.getElementById(`readyForm-${orderId}`).submit();
-    }
-  });
-}
-    const rowsPerPage = 10;
+    Swal.fire({
+      title: 'Ready for Pickup?',
+      text: "This order will be marked as 'Ready to Pickup'.",
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, mark it!',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        document.getElementById(`readyForm-${orderId}`).submit();
+      }
+    });
+  }
+
+  const rowsPerPage = 10;
   let currentPage = 1;
 
   const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
@@ -264,7 +766,7 @@
       const text = row.innerText.toLowerCase();
       const matchesSearch = text.includes(searchValue);
 
-      const statusText = row.querySelector("td:nth-child(10)")?.innerText.trim().toLowerCase();
+      const statusText = row.querySelector("td:nth-child(4)")?.innerText.trim().toLowerCase();
       const matchesStatus = !statusValue || statusText === statusValue;
 
       return matchesSearch && matchesStatus;
@@ -312,130 +814,153 @@
 
   // Initial
   renderTable();
+
   function printReceipt(orderId) {
-  const printWindow = window.open(`/staff/orders/receipt/${orderId}`, '_blank');
-  printWindow.focus();
-}
-document.addEventListener('DOMContentLoaded', () => {
-  const notificationBtn = document.getElementById('notificationBtn');
-  const notificationDropdown = document.getElementById('notificationDropdown');
-  const notificationBadge = document.getElementById('notificationBadge');
-  const notificationList = document.getElementById('notificationList');
-
-  let pendingCount = 0;
-
-  // Update bell badge
-  function updateBadge() {
-    if (pendingCount > 0) {
-      notificationBadge.textContent = pendingCount;
-      notificationBadge.style.display = 'flex';
-    } else {
-      notificationBadge.style.display = 'none';
-    }
+    const printWindow = window.open(`/staff/orders/receipt/${orderId}`, '_blank');
+    printWindow.focus();
   }
 
-  // Show "No Notifications" if empty
-  function checkEmpty() {
-    const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
-    if (!hasItems) {
-      const emptyMsg = document.createElement('div');
-      emptyMsg.className = 'notification-empty text-center text-muted';
-      emptyMsg.textContent = 'No Notifications';
-      notificationList.appendChild(emptyMsg);
-    } else {
+  document.addEventListener('DOMContentLoaded', () => {
+    const notificationBtn = document.getElementById('notificationBtn');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const notificationBadge = document.getElementById('notificationBadge');
+    const notificationList = document.getElementById('notificationList');
+
+    let pendingCount = 0;
+
+    // Update bell badge
+    function updateBadge() {
+      if (pendingCount > 0) {
+        notificationBadge.textContent = pendingCount;
+        notificationBadge.style.display = 'flex';
+      } else {
+        notificationBadge.style.display = 'none';
+      }
+    }
+
+    // Show "No Notifications" if empty
+    function checkEmpty() {
+      const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
+      if (!hasItems) {
+        const emptyMsg = document.createElement('div');
+        emptyMsg.className = 'notification-empty text-center text-muted';
+        emptyMsg.textContent = 'No Notifications';
+        notificationList.appendChild(emptyMsg);
+      } else {
+        const emptyMsg = notificationList.querySelector('.notification-empty');
+        if (emptyMsg) emptyMsg.remove();
+      }
+    }
+
+    async function loadPendingOrders() {
+      try {
+        const res = await fetch('/staff/pending-orders');
+        const data = await res.json();
+        const orders = data.pendingOrders || [];
+        const reservations = data.pendingReservations || [];
+
+        // Helper function to create notification item
+        function createNotificationItem(type, item) {
+          const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
+          const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
+          const notificationItem = document.createElement('div');
+          notificationItem.className = 'notification-item';
+          notificationItem.innerHTML = `
+            <div class="notification-title">${type}</div>
+            <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
+            <div class="notification-time">${time}</div>
+          `;
+          notificationItem.addEventListener('click', () => {
+            window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+          });
+          return notificationItem;
+        }
+
+        // Add pending orders
+        orders.forEach(order => {
+          const notificationItem = createNotificationItem('New Order', order);
+          notificationList.insertBefore(notificationItem, notificationList.firstChild);
+        });
+
+        // Add pending reservations
+        reservations.forEach(reservation => {
+          const notificationItem = createNotificationItem('New Reservation', reservation);
+          notificationList.insertBefore(notificationItem, notificationList.firstChild);
+        });
+
+        // Update badge count
+        pendingCount = orders.length + reservations.length;
+        updateBadge();
+        checkEmpty();
+      } catch (err) {
+        console.error('Error fetching pending orders/reservations:', err);
+      }
+    }
+
+    loadPendingOrders(); // Load pending orders on page load
+
+    // Toggle dropdown
+    notificationBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = notificationDropdown.style.display === 'block';
+      notificationDropdown.style.display = isOpen ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
+        notificationDropdown.style.display = 'none';
+      }
+    });
+
+    // Socket.IO for new orders
+    const socket = io();
+    socket.on('newOrder', (data) => {
+      // Remove empty message if exists
       const emptyMsg = notificationList.querySelector('.notification-empty');
       if (emptyMsg) emptyMsg.remove();
-    }
-  }
 
-  async function loadPendingOrders() {
-  try {
-    const res = await fetch('/staff/pending-orders');
-    const data = await res.json();
-    const orders = data.pendingOrders || [];
-    const reservations = data.pendingReservations || [];
-
-    // Helper function to create notification item
-    function createNotificationItem(type, item) {
-      const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
-      const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
       const notificationItem = document.createElement('div');
-      notificationItem.className = 'notification-item';
+      notificationItem.className = 'notification-item new-notification';
       notificationItem.innerHTML = `
-        <div class="notification-title">${type}</div>
-        <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
-        <div class="notification-time">${time}</div>
+        <div class="notification-title">${data.title}</div>
+        <div class="notification-message">${data.message}</div>
+        <div class="notification-time">${data.time}</div>
       `;
       notificationItem.addEventListener('click', () => {
-        window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+        window.location.href = '/staff/order';
       });
-      return notificationItem;
-    }
-
-    // Add pending orders
-    orders.forEach(order => {
-      const notificationItem = createNotificationItem('New Order', order);
       notificationList.insertBefore(notificationItem, notificationList.firstChild);
+
+      pendingCount += 1;
+      updateBadge();
+
+      setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
     });
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
 
-    // Add pending reservations
-    reservations.forEach(reservation => {
-      const notificationItem = createNotificationItem('New Reservation', reservation);
-      notificationList.insertBefore(notificationItem, notificationList.firstChild);
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
     });
-
-    // Update badge count
-    pendingCount = orders.length + reservations.length;
-    updateBadge();
-    checkEmpty();
-  } catch (err) {
-    console.error('Error fetching pending orders/reservations:', err);
-  }
-}
-
-
-  loadPendingOrders(); // Load pending orders on page load
-
-  // Toggle dropdown
-  notificationBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = notificationDropdown.style.display === 'block';
-    notificationDropdown.style.display = isOpen ? 'none' : 'block';
   });
-
-  document.addEventListener('click', (e) => {
-    if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
-      notificationDropdown.style.display = 'none';
-    }
-  });
-
-  // Socket.IO for new orders
-  const socket = io();
-  socket.on('newOrder', (data) => {
-    // Remove empty message if exists
-    const emptyMsg = notificationList.querySelector('.notification-empty');
-    if (emptyMsg) emptyMsg.remove();
-
-    const notificationItem = document.createElement('div');
-    notificationItem.className = 'notification-item new-notification';
-    notificationItem.innerHTML = `
-      <div class="notification-title">${data.title}</div>
-      <div class="notification-message">${data.message}</div>
-      <div class="notification-time">${data.time}</div>
-    `;
-    notificationItem.addEventListener('click', () => {
-      window.location.href = '/staff/order';
-    });
-    notificationList.insertBefore(notificationItem, notificationList.firstChild);
-
-    pendingCount += 1;
-    updateBadge();
-
-    setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
-  });
-});
-
-
 </script>
 </body>
 </html>

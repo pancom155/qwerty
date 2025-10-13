@@ -6,58 +6,425 @@
   <title>Admin Dashboard - Reservations</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link rel="stylesheet" href="/css/AdminRsv.css">
+
+  <style>
+    /* ===== Table Styling ===== */
+    .table {
+      border-collapse: separate;
+      border-spacing: 0;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .table thead th {
+      background-color: #f8f9fa;
+      color: #495057;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: none;
+      padding: 1rem 0.75rem;
+      vertical-align: middle;
+    }
+
+    /* Table Body */
+    .table tbody tr {
+      transition: all 0.2s ease-in-out;
+    }
+
+    .table tbody td {
+      padding: 14px 16px;
+      vertical-align: middle;
+      border: none !important;
+      border-bottom: 1px solid #eee !important;
+      font-size: 15px;
+      color: #333;
+    }
+
+    /* Center alignment */
+    .table td, 
+    .table th {
+      text-align: center;
+    }
+
+    /* ===== Status Badges ===== */
+    .badge {
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge.bg-success {
+      background-color: #d4edda !important;
+      color: #155724 !important;
+    }
+
+    .badge.bg-danger {
+      background-color: #f8d7da !important;
+      color: #721c24 !important;
+    }
+
+    .badge.bg-warning {
+      background-color: #fff3cd !important;
+      color: #856404 !important;
+    }
+
+    .badge.bg-info {
+      background-color: #d1ecf1 !important;
+      color: #0c5460 !important;
+    }
+
+    /* ===== Buttons in Table ===== */
+    .table .btn-sm {
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      transition: 0.2s;
+    }
+
+    .table .btn-primary {
+      background-color: #17a2b8;
+    }
+
+    .table .btn-primary:hover {
+      background-color: #0f8698;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .table .btn-success {
+      background-color: #28a745;
+    }
+
+    .table .btn-success:hover {
+      background-color: #218838;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    .table .btn-danger {
+      background-color: #dc3545;
+    }
+
+    .table .btn-danger:hover {
+      background-color: #c82333;
+      color: #fff;
+      transform: scale(1.05);
+    }
+
+    /* ===== PAGINATION ===== */
+    .pagination-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .page-link {
+      border: none;
+      color: #495057;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      margin: 0 2px;
+    }
+
+    .page-item.active .page-link {
+      background-color: #17a2b8;
+      border-color: #17a2b8;
+    }
+
+    .page-link:hover {
+      background-color: #e9ecef;
+      color: #495057;
+    }
+
+    /* ===== Filter Section ===== */
+    #searchInput, #dateFrom, #dateTo, #clearFilters {
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    #clearFilters {
+      transition: 0.2s;
+    }
+
+    #clearFilters:hover {
+      background: #0047FF;
+      color: #fff;
+      border-color: #0047FF;
+    }
+
+    /* ===== Scrollbar Styling ===== */
+    .table-responsive::-webkit-scrollbar {
+      height: 0px; 
+    }
+
+    .table-responsive {
+      overflow-x: auto;
+      scrollbar-width: none; /* hides scrollbar in Firefox */
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+      background: transparent;
+    }
+
+    /* Optional: prevent table from overflowing weirdly */
+    .table-responsive {
+      border-radius: 10px;
+    }
+
+    /* ===== AMOUNT STYLING ===== */
+    .amount {
+      font-weight: 600;
+      color: #28a745;
+      font-size: 0.95rem;
+    }
+
+    /* ===== DATE STYLING ===== */
+    .date-display {
+      font-size: 0.85rem;
+      color: #495057;
+    }
+
+    .date-time {
+      font-size: 0.75rem;
+      color: #6c757d;
+    }
+
+    /* ===== Modal Styling ===== */
+    .modal-content {
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .modal-header {
+      background: rgb(218, 218, 218);
+      color: #000000;
+      border-bottom: none;
+    }
+
+    .modal-title {
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .modal-body img {
+      border-radius: 10px;
+      max-width: 100%;
+      height: auto;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    body {
+      display: flex;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f1f1f1;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100vh;
+      background-color: #f8f9fa;
+      padding: 5px;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden; 
+      z-index: 1000;
+    }
+
+    .sidebar img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+    }
+
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      align-items: center;
+    }
+
+    .sidebar nav a {
+      padding: 10px 20px;
+      color: #000;
+      text-decoration: none;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      transition: background 0.5s ease;
+      width: 90%;
+    }
+
+    .sidebar nav a.active,
+    .sidebar nav a:hover {
+      background: #5e5e5e;
+      color: #fff;
+    }
+
+    .sidebar button {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      background: #5e5e5e;
+      cursor: pointer;
+      margin-top: auto;
+    }
+
+    .main-content {
+      margin-left: 250px; 
+      flex-grow: 1;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .navbar-custom-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .navbar-custom {
+      background-color: #ffffff;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+      width: 95%;
+      max-width: 1200px;
+      padding: 0.5rem 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .navbar-custom img {
+      width: 40px;
+      height: 40px;
+      object-fit: cover;
+      border: 1px solid black;
+    }
+
+    .navbar-custom .admin-info {
+      line-height: 1.2;
+    }
+
+    .navbar-custom .admin-info .fw-semibold {
+      font-size: 1rem;
+      color: #343a40;
+    }
+
+    .navbar-custom .admin-info p {
+      margin: 0;
+      font-size: 0.875rem;
+      color: #6c757d;
+    }
+
+    .navbar-custom .btn-danger {
+      padding: 0.4rem 0.6rem;
+    }
+
+    .container-fluid {
+      padding: 2rem;
+    }
+    
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: white;
+      border: 1px solid #ccc;
+      z-index: 999;
+      min-width: 200px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown.show > .dropdown-menu {
+      display: block !important;
+    }
+  </style>
 </head>
+
 <body>
 
+  <!-- ===== Sidebar ===== -->
   <div class="sidebar" id="sidebar">
     <div class="d-flex justify-content-center mb-5 mt-3">
-     <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
+      <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo" width="150" />
     </div>
+
     <nav>
       <a href="/admin/index"><i class="bi bi-speedometer2"></i> Dashboard</a>
       <a href="/admin/users"><i class="bi bi-person-circle"></i> Users Profile</a>
       <a href="/admin/staff"><i class="bi bi-people-fill"></i> Account Creation</a>
       <a href="/admin/orders"><i class="bi bi-receipt"></i> Orders</a>
 
+      <div class="dropdown custom-dropdown" style="position: relative; width: 100%; margin-left: 25px;">
+        <a href="#" 
+           class="dropdown-toggle d-block py-2 text-decoration-none rounded mb-2" 
+           id="ordersDropdown" 
+           style="background: #5e5e5e; color: #fff;">
+          <i class="bi bi-journal-bookmark"></i> Reservations
+        </a>
 
-      
-
-
-  <div class="dropdown custom-dropdown" style="position: relative; width: 100%; margin-left: 25px;">
-  <a href="#" class="dropdown-toggle d-block py-2 text-dark text-decoration-none rounded mb-2" id="ordersDropdown" style="background: linear-gradient(90deg, #03C4E7, #0047FF);
-    color: #fff;">
-    <i class="bi bi-journal-bookmark"></i> Reservations
-  </a>
-   <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
-     <li>
-      <a class="dropdown-item" class="okay" href="/admin/reservations" >
-        <i class="bi bi-check-circle me-2"></i> Confirmed
-      </a>
-    </li>
-    <li>
-      <a class="dropdown-item" href="/admin/reservation_done">
-        <i class="bi bi-hourglass-split me-2"></i> Done
-      </a>
-    </li>
-    <li>
-      <a class="dropdown-item" href="/admin/reservation_cancelled">
-        <i class="bi bi-x-circle me-2"></i> Cancelled
-      </a>
-    </li>
-  </ul>
-</div>
+        <ul class="dropdown-menu" aria-labelledby="ordersDropdown">
+          <li>
+            <a class="dropdown-item" href="/admin/reservations">
+              <i class="bi bi-check-circle me-2"></i> Confirmed
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/admin/reservation_done">
+              <i class="bi bi-hourglass-split me-2"></i> Done
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/admin/reservation_cancelled">
+              <i class="bi bi-x-circle me-2"></i> Cancelled
+            </a>
+          </li>
+        </ul>
+      </div>
 
       <a href="/admin/discounts"><i class="bi bi-percent"></i> Discounts</a>
       <a href="/admin/reviews"><i class="bi bi-chat-dots"></i> Users Reviews</a>
       <a href="/admin/products"><i class="bi bi-box-seam"></i> Inventory</a>
       <a href="/admin/table"><i class="bi bi-table"></i> Table</a>
-        <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
-    <a href="/admin/settings" ><i class="bi bi-gear"></i> Settings</a>
+      <a href="/admin/calendar"><i class="bi bi-calendar-event"></i> Calendar</a>
+      <a href="/admin/settings"><i class="bi bi-gear"></i> Settings</a>
     </nav>
+    
+    <div class="mt-4 p-3 border-top">
+      <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" id="restaurantToggle">
+        <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
+      </div>
+    </div>
   </div>
 
+  <!-- ===== Main Content ===== -->
   <div class="main-content">
+    <!-- Navbar -->
     <div class="navbar-custom-wrapper">
       <nav class="navbar navbar-custom d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center">
@@ -67,33 +434,54 @@
             <p>napsgrillrestobar08@gmail.com</p>
           </div>
         </div>
-        <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
-          <i class="bi bi-box-arrow-right"></i>
-        </a>
+      <a href="/logout" class="btn btn-sm btn-danger d-flex align-items-center">
+        <i class="bi bi-box-arrow-right me-1"></i> Logout
+      </a>
       </nav>
     </div>
 
+    <!-- Content -->
     <div class="container-fluid">
-      <h1 class="mb-4 fw-bold ms-2" style="color: #333446;">Reservations</h1>
+      <h2 class="mb-4 fw-bold ms-2" style="color: #333446;">Reservations</h2>
+
       <div class="table-responsive">
-        <div class="container mb-3 d-flex flex-column flex-md-row justify-content-between align-items-center">
-  <input 
-    type="text" 
-    id="searchInput" 
-    class="form-control mb-2 mb-md-0 me-md-2" 
-    style="width: 400px; margin-left: -50px;" 
-    placeholder="Search reservations...">
-</div>
+        <!-- Filter Section -->
+        <div class="row mb-3 align-items-end g-3">
+          <!-- Search -->
+          <div class="col-md-4">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or table">
+          </div>
 
-  <select id="statusFilter" class="form-select form-select-sm w-100 w-md-25 mb-2 mb-md-0 me-md-2 d-none">
-  <option value="">All Statuses</option>
-  <option value="Done">Done</option>
-</select>
+          <!-- Date From -->
+          <div class="col-md-2">
+            <label for="dateFrom" class="form-label fw-semibold">From</label>
+            <input type="date" id="dateFrom" class="form-control">
+          </div>
 
-</div>
+          <!-- Date To -->
+          <div class="col-md-2">
+            <label for="dateTo" class="form-label fw-semibold">To</label>
+            <input type="date" id="dateTo" class="form-control">
+          </div>
+
+          <!-- Reset Button -->
+          <div class="col-md-2">
+            <button id="clearFilters" class="btn btn-outline-secondary w-100">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+            </button>
+          </div>
+
+          <!-- Status Filter (hidden) -->
+          <div class="col-md-2 d-none">
+            <select id="statusFilter" class="form-select">
+              <option value="">All Statuses</option>
+              <option value="Done">Done</option>
+            </select>
+          </div>
+        </div>
 
         <table class="table table-bordered table-hover">
-          <thead class="table-dark">
+          <thead>
             <tr>
               <th>#</th>
               <th>Name</th>
@@ -106,222 +494,298 @@
               <th>Proof</th>
               <th>Status</th>
               <th>Booked At</th>
-              <th>Actions</th>
             </tr>
           </thead>
-      <tbody id="reservationTableBody">
 
-  <% reservations.filter(r => r.status === 'done').forEach((r, i) => { %>
-    <tr>
-      <td><%= i + 1 %></td>
-      <td><%= r.userId?.firstName %> <%= r.userId?.lastName %></td>
-      <td><%= r.userId?.email %></td>
-      <td><%= r.tableId?.name %></td>
-      <td>₱<%= r.tableId?.price?.toFixed(2) %></td>
-      <td><%= r.dineInDateTime.split(' ')[0] %></td>
-      <td><%= r.dineInDateTime.split(' ')[1] %></td>
-      <td><%= r.referenceNumber %></td>
-     <td>
-  <% if (r.proofOfPayment) { %>
-    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
+          <tbody id="reservationTableBody">
+            <% reservations.filter(r => r.status === 'done').forEach((r, i) => { %>
+              <tr data-name="<%= r.userId?.firstName + ' ' + r.userId?.lastName %>" 
+                  data-email="<%= r.userId?.email || 'N/A' %>" 
+                  data-table="<%= r.tableId?.name %>" 
+                  data-status="<%= r.status %>">
+                <td><%= i + 1 %></td>
+                <td><%= r.userId?.firstName %> <%= r.userId?.lastName %></td>
+                <td><%= r.userId?.email %></td>
+                <td><%= r.tableId?.name %></td>
+                <td class="amount">₱<%= r.tableId?.price?.toFixed(2) %></td>
+                <td class="date-display"><%= r.dineInDateTime.split(' ')[0] %></td>
+                <td class="date-time"><%= r.dineInDateTime.split(' ')[1] %></td>
+                <td><%= r.referenceNumber %></td>
 
-    <!-- Modal -->
-    <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Proof of Payment</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body text-center">
-     <img src="/uploads/<%= r.proofOfPayment %>" alt="Proof" class="img-fluid rounded shadow">
+                <td>
+                  <% if (r.proofOfPayment) { %>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">View</button>
 
+                    <!-- Proof Modal -->
+                    <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Proof of Payment</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body text-center">
+                            <img src="/uploads/<%= r.proofOfPayment %>" alt="Proof" class="img-fluid rounded shadow">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% } else { %>
+                    N/A
+                  <% } %>
+                </td>
 
-
-
-          </div>
-        </div>
-      </div>
-    </div>
-  <% } else { %>
-    N/A
-  <% } %>
-</td>
-
-      <td>
-        <span class="badge bg-info text-dark">Done</span>
-      </td>
-      <td><%= new Date(r.createdAt).toLocaleString() %></td>
-      <td>
-        <span class="text-muted">N/A</span>
-      </td>
-    </tr>
-  <% }); %>
-</tbody>
-
-
-
+                <td><span class="badge bg-info">Done</span></td>
+                <td class="date-display"><%= new Date(r.createdAt).toLocaleString() %></td>
+              </tr>
+            <% }); %>
+          </tbody>
         </table>
+
         <div class="d-flex justify-content-center mt-3">
-  <ul class="pagination pagination-sm" id="pagination"></ul>
-</div>
+          <ul class="pagination" id="pagination"></ul>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- ===== Scripts ===== -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <script>
-  function confirmAction(reservationId, action) {
-    const actions = {
-      cancelled: {
-        text: 'cancel this reservation',
-        confirmText: 'Yes, Cancel',
-      },
-      done: {
-        text: 'mark this reservation as done',
-        confirmText: 'Yes, Mark as Done',
-      },
-      confirmed: {
-        text: 'confirm this reservation',
-        confirmText: 'Yes, Confirm',
-      },
-      pending: {
-        text: 'mark this reservation as pending',
-        confirmText: 'Yes, Mark as Pending',
-      }
-    };
+    // ===== Confirmation Action =====
+    function confirmAction(reservationId, action) {
+      const actions = {
+        cancelled: { text: 'cancel this reservation', confirmText: 'Yes, Cancel' },
+        done: { text: 'mark this reservation as done', confirmText: 'Yes, Mark as Done' },
+        confirmed: { text: 'confirm this reservation', confirmText: 'Yes, Confirm' },
+        pending: { text: 'mark this reservation as pending', confirmText: 'Yes, Mark as Pending' }
+      };
 
-    const selectedAction = actions[action];
-    if (!selectedAction) {
-      alert("Invalid action.");
-      return;
+      const selectedAction = actions[action];
+      if (!selectedAction) return alert("Invalid action.");
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: `You are about to ${selectedAction.text}.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: selectedAction.confirmText,
+        cancelButtonText: 'Cancel',
+        reverseButtons: true
+      }).then(result => {
+        if (result.isConfirmed) {
+          fetch(`/admin/reservation/${reservationId}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.message) {
+              Swal.fire({
+                title: 'Success!',
+                text: data.message,
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              }).then(() => window.location.reload());
+            } else throw new Error();
+          })
+          .catch(() => Swal.fire('Error!', 'Failed to update status.', 'error'));
+        }
+      });
     }
 
-    Swal.fire({
-      title: 'Are you sure?',
-      text: `You are about to ${selectedAction.text}.`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: selectedAction.confirmText,
-      cancelButtonText: 'Cancel',
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-        fetch(`/admin/reservation/${reservationId}/status`, {
+    // ===== Dropdown Logic =====
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
+        toggle.addEventListener("click", function (e) {
+          e.preventDefault();
+          const parentDropdown = this.closest(".dropdown");
 
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ action })
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.message) {
-            Swal.fire({
-              title: 'Success!',
-              text: data.message,
-              icon: 'success',
-              timer: 2000,
-              showConfirmButton: false
-            }).then(() => window.location.reload());
-          } else {
-            throw new Error();
-          }
-        })
-        .catch(() => {
-          Swal.fire('Error!', 'Failed to update status.', 'error');
+          document.querySelectorAll(".dropdown").forEach(d => {
+            if (d !== parentDropdown) d.classList.remove("show");
+          });
+
+          parentDropdown.classList.toggle("show");
         });
-      }
-    });
-  }
+      });
 
-   document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".dropdown-toggle").forEach(toggle => {
-      toggle.addEventListener("click", function (e) {
-        e.preventDefault();
-
-        const parentDropdown = this.closest(".dropdown");
-
-        // Close others
-        document.querySelectorAll(".dropdown").forEach(d => {
-          if (d !== parentDropdown) d.classList.remove("show");
-        });
-
-        parentDropdown.classList.toggle("show");
+      document.addEventListener("click", e => {
+        if (!e.target.closest(".dropdown")) {
+          document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
+        }
       });
     });
 
-    document.addEventListener("click", function (e) {
-      if (!e.target.closest(".dropdown")) {
-        document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
-      }
-    });
-  });
-   const rowsPerPage = 10;
-  let currentPage = 1;
+    // ===== Pagination & Search =====
+    const rowsPerPage = 10;
+    let currentPage = 1;
+    const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const dateFrom = document.getElementById("dateFrom");
+    const dateTo = document.getElementById("dateTo");
+    const clearFilters = document.getElementById("clearFilters");
+    const pagination = document.getElementById("pagination");
 
-  const rows = Array.from(document.querySelectorAll("#reservationTableBody tr"));
-  const searchInput = document.getElementById("searchInput");
-  const statusFilter = document.getElementById("statusFilter");
-  const pagination = document.getElementById("pagination");
+    function filterRows() {
+      const searchValue = searchInput.value.toLowerCase();
+      const statusValue = statusFilter.value;
+      const fromDateValue = dateFrom.value;
+      const toDateValue = dateTo.value;
 
-  function filterRows() {
-    const searchValue = searchInput.value.toLowerCase();
-    const statusValue = statusFilter.value;
+      return rows.filter(row => {
+        const name = row.dataset.name?.toLowerCase() || '';
+        const email = row.dataset.email?.toLowerCase() || '';
+        const table = row.dataset.table?.toLowerCase() || '';
+        const rowStatus = row.dataset.status;
+        
+        // Get date from table (6th column: Date)
+        const dateText = row.cells[5].innerText; 
+        const rowDate = new Date(dateText);
 
-    return rows.filter(row => {
-      const text = row.innerText.toLowerCase();
-      const matchesSearch = text.includes(searchValue);
-      const statusText = row.querySelector("td:nth-child(10)")?.innerText.trim().toLowerCase(); // Status column
+        // Search filter
+        const matchesSearch = name.includes(searchValue) || 
+                             email.includes(searchValue) || 
+                             table.includes(searchValue);
+        
+        // Status filter
+        const matchesStatus = !statusValue || rowStatus === statusValue.toLowerCase();
+        
+        // Date filter
+        let isWithinRange = true;
+        if (fromDateValue) {
+          const from = new Date(fromDateValue);
+          isWithinRange = isWithinRange && rowDate >= from;
+        }
+        if (toDateValue) {
+          const to = new Date(toDateValue);
+          // include entire day (set 23:59:59)
+          to.setHours(23, 59, 59, 999);
+          isWithinRange = isWithinRange && rowDate <= to;
+        }
 
-      const matchesStatus = !statusValue || statusText === statusValue.toLowerCase();
-      return matchesSearch && matchesStatus;
-    });
-  }
-
-  function renderTable() {
-    const filteredRows = filterRows();
-    const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-
-    rows.forEach(row => row.style.display = "none");
-    filteredRows.slice(start, end).forEach(row => row.style.display = "");
-
-    renderPagination(totalPages);
-  }
-
-  function renderPagination(totalPages) {
-    pagination.innerHTML = "";
-
-    for (let i = 1; i <= totalPages; i++) {
-      const li = document.createElement("li");
-      li.className = `page-item ${i === currentPage ? 'active' : ''}`;
-      li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
-      li.addEventListener("click", e => {
-        e.preventDefault();
-        currentPage = i;
-        renderTable();
+        return matchesSearch && matchesStatus && isWithinRange;
       });
-      pagination.appendChild(li);
     }
-  }
 
-  searchInput.addEventListener("input", () => {
-    currentPage = 1;
+    function renderTable() {
+      const filteredRows = filterRows();
+      const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+      const start = (currentPage - 1) * rowsPerPage;
+      const end = start + rowsPerPage;
+
+      rows.forEach(row => row.style.display = "none");
+      filteredRows.slice(start, end).forEach(row => row.style.display = "");
+
+      renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+      pagination.innerHTML = "";
+      
+      if (totalPages <= 1) return;
+      
+      // Previous button
+      if (currentPage > 1) {
+        const prevLi = document.createElement("li");
+        prevLi.className = "page-item";
+        prevLi.innerHTML = `<a class="page-link" href="#">«</a>`;
+        prevLi.addEventListener("click", e => {
+          e.preventDefault();
+          currentPage--;
+          renderTable();
+        });
+        pagination.appendChild(prevLi);
+      }
+      
+      // Page numbers
+      for (let i = 1; i <= totalPages; i++) {
+        const li = document.createElement("li");
+        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+        li.addEventListener("click", e => {
+          e.preventDefault();
+          currentPage = i;
+          renderTable();
+        });
+        pagination.appendChild(li);
+      }
+      
+      // Next button
+      if (currentPage < totalPages) {
+        const nextLi = document.createElement("li");
+        nextLi.className = "page-item";
+        nextLi.innerHTML = `<a class="page-link" href="#">»</a>`;
+        nextLi.addEventListener("click", e => {
+          e.preventDefault();
+          currentPage++;
+          renderTable();
+        });
+        pagination.appendChild(nextLi);
+      }
+    }
+
+    // Event listeners
+    searchInput.addEventListener("input", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    statusFilter.addEventListener("change", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    dateFrom.addEventListener("change", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    dateTo.addEventListener("change", () => {
+      currentPage = 1;
+      renderTable();
+    });
+
+    clearFilters.addEventListener("click", () => {
+      searchInput.value = "";
+      dateFrom.value = "";
+      dateTo.value = "";
+      statusFilter.value = "";
+      currentPage = 1;
+      renderTable();
+    });
+
+    // Initial render
     renderTable();
+  </script>
+  
+  <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const toggle = document.getElementById("restaurantToggle");
+    const label = document.getElementById("restaurantLabel");
+
+    const isClosed = localStorage.getItem("restaurantClosed") === "true";
+    toggle.checked = !isClosed;
+    label.textContent = isClosed ? "Closed" : "Open";
+
+    toggle.addEventListener("change", () => {
+      const newStatusClosed = !toggle.checked;
+      localStorage.setItem("restaurantClosed", newStatusClosed);
+      label.textContent = newStatusClosed ? "Closed" : "Open";
+
+      Swal.fire({
+        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
+        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
+        icon: newStatusClosed ? "error" : "success",
+        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
+        confirmButtonText: "OK"
+      });
+    });
   });
-
-  statusFilter.addEventListener("change", () => {
-    currentPage = 1;
-    renderTable();
-  });
-
-  // Initial render
-  renderTable();
-</script>
-
+</script>   
 </body>
 </html>

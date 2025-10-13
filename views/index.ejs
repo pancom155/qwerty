@@ -7,73 +7,239 @@
     <link rel="icon" type="image/png" href="https://scontent.fmnl8-6.fna.fbcdn.net/v/t39.30808-6/380741479_131206030075540_3076164827494524329_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeE-Vik8eSQGYAGt14wfSyIA4P8mAP1_9SLg_yYA_X_1Ik9yLKvQebvsaygQ7vLe7VpIz6jw8gyFFebxY6n5x2pp&_nc_ohc=xWqnBPNSxGUQ7kNvgFNAOXL&_nc_oc=AdiZAZLOpoBBd7d5_TlOsCFXMLLtgmECjcevYUFBwT5f0bCW_1NOQ7Qz9XpfKkXEpNA&_nc_zt=23&_nc_ht=scontent.fmnl8-6.fna&_nc_gid=AWvhnDJxXcXu4UKhxWffrKA&oh=00_AYA2AUJ07aVz41BjtO-TwfKwJkGlT1snfISKrYcu9hly9w&oe=67C33380">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 </head>
 <style>
-    body{
-    background-color: #e6e6f0;
+:root {
+    --primary: #ff6600;
+    --primary-dark: #e55a00;
+    --secondary: #ff7700;
+    --dark: #333333;
+    --light: #e4e4e4;
+    --transition: all 0.3s ease;
 }
 
-.account-btn {
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.navbar {
-    border-radius: 40px;
-    margin: 20px;
-    background-color: #fff;
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light);
+    color: var(--dark);
+    line-height: 1.6;
+    overflow-x: hidden;
 }
 
-html{
+html {
     scroll-behavior: smooth;
 }
 
-.hero-text h1 {
-    font-size: 36px;
-    margin-bottom: 10px;
-    font-weight: bold;
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    line-height: 1.2;
 }
 
-.hero-text p {
-    font-size: 36px;
-    margin-bottom: 20px;
-    font-weight: bold;
+/* ===== REUSABLE COMPONENTS ===== */
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    position: relative;
 }
 
-.highlight {
-    background-image: linear-gradient(to right, #03C4E7, #0047FF);
+.section-title:after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+}
+
+.gradient-text {
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    font-weight: bold;
 }
 
-.carousel-indicators .active {
-    background-color: #03C4E7 !important;
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 500;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(255, 102, 0, 0.4);
+}
+
+.account-btn {
+    background: var(--primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 30px;
+    font-weight: 500;
+    padding: 8px 20px;
+    transition: var(--transition);
+}
+
+.account-btn:hover {
+    background: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+    border-radius: 40px;
+    margin: 20px;
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+    z-index: 1000;
+}
+
+/* ===== HERO SECTION ===== */
+.hero-section {
+    position: relative;
+    height: 110vh;
+    min-height: 600px;
+    background: url('/images/bgbg.png') no-repeat center center;
+    background-size: cover;
+    background-attachment: fixed;
+    display: flex;
+    align-items: center;
+    margin-top: -120px;
+    padding-top: 100px;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+
+#heroCarousel {
+    width: 100%;
+}
+
+.carousel-item {
+    height: 70vh;
+    min-height: 750px;
+}
+
+.hero-carousel-item {
+    margin: 50px auto;
+    width: 75%;
+    margin-top: 100px;
+    padding: 30px 40px;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    border-radius: 40px;
+}
+
+.hero-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 30px;
+    width: 100%;
+}
+
+.hero-text {
+    flex: 1;
+    z-index: 2;
+    color: white;
+}
+
+.hero-text h1 {
+    font-size: 3.5rem;
+    margin-bottom: 15px;
+    font-weight: 700;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.hero-text p {
+    font-size: 1.5rem;
+    margin-bottom: 25px;
+    font-weight: 500;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-image {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    z-index: 1;
+}
+
+.hero-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 20px;
+    transition: var(--transition);
+}
+
+.hero-image img:hover {
+    transform: scale(1.03);
+}
+
+.carousel-indicators {
+    bottom: 150px;
+}
+
+.carousel-indicators button {
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
+    margin: 0 5px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 2px solid transparent;
+    transition: var(--transition);
 }
 
-.review-img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
+.carousel-indicators button.active {
+    background-color: var(--primary);
+    transform: scale(1.2);
 }
 
-.table-img {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 8px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+.carousel-control-prev:hover, 
+.carousel-control-next:hover {
+    background-color: rgba(255, 255, 255, 0.3);
 }
 
-.highlightss {
-    font-family: 'Arial', sans-serif;
-    color: #333;
-    font-size: 36px;
-    font-weight: bold;
-}
-
+/* ===== TABLES SECTION ===== */
 .table-card {
     width: 250px;
     height: 400px;
@@ -107,8 +273,17 @@ html{
     color: #777;
 }
 
+.table-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
 .reserve-btn {
-    background: linear-gradient(90deg, #03C4E7, #0047FF);
+    background: #ff6600;
     border: none;
     color: #fff;
     padding: 10px 20px;
@@ -124,14 +299,114 @@ html{
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.modal-step {
+/* ===== DISHES SECTION ===== */
+#Dishes {
+    width: 100%;
+    padding: 80px 0;
+    background-color: #e6e6f000;
+}
+
+.dish-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+}
+
+.dish-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dish-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.dish-card:hover .dish-image {
+    transform: scale(1.05);
+}
+
+.dish-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 48px;
+}
+
+.dish-img-container {
+    overflow: hidden;
+    border-radius: 1rem 1rem 0 0;
+}
+
+/* Filter buttons */
+.filter-btn {
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    margin-bottom: 10px;
+}
+
+.filter-btn.active {
+    background: #ff6600;
+    color: white !important;
+    border-color: transparent;
+}
+
+/* ===== REVIEWS SECTION ===== */
+.review-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.reviews-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.reviews-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* ===== LOADING OVERLAY ===== */
+#loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
     display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    flex-direction: column;
 }
 
-.modal-step.active {
-    display: block;
+#loadingOverlay img {
+    width: 200px;
 }
 
+.loading-text {
+    margin-top: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #6e6e6e;
+}
+
+/* ===== MODALS ===== */
 .modal {
     display: none;
     position: fixed;
@@ -170,353 +445,580 @@ html{
     color: #000;
 }
 
-.fa-user {
-    font-size: 24px;
-    color: #000;
-    cursor: pointer;
+.modal-step {
+    display: none;
 }
 
-/* Dishes */
-
-#Dishes {
-    width: 100%;
-    height: 90vh;
-    background-image: url(bg1.jpg);
-    background-size: cover;
-    background-position: center;
+.modal-step.active {
+    display: block;
 }
 
-#Dishes .Dish_box {
-    width: 95%;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+/* ===== FOOTER ===== */
+.footer {
+    background: rgb(50, 50, 50);
+    color: white;
+    padding: 60px 0 30px;
+}
+
+.footer h5 {
+    font-weight: 600;
+    margin-bottom: 20px;
     position: relative;
-    top: 13%;
+    padding-bottom: 10px;
 }
 
-#Dishes .Dish_box .profile {
-    width: 320px;
-    height: 320px;
-    border-radius: 50%;
-    margin: 0 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 0 8px rgba(0,0,0,0.5);
-    transition: 0.4s;
-}
-
-#Dishes .Dish_box .profile:hover {
-    border-radius: 20px;
-    height: 320px;
-}
-
-#Dishes .Dish_box .profile img {
-    width: 250px;
-    height: 250px;
-    object-fit: cover;
-    object-position: center;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 8px rgba(0,0,0,0.5);
-    z-index: 2;
-    transition: 0.4s;
-}
-
-#Dishes .Dish_box .profile:hover img {
-    border-radius: 20px;
-    margin-top: -230px;
-}
-
-#Dishes .Dish_box .profile .info {
+.footer h5:after {
+    content: '';
     position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background: var(--primary);
+}
+
+.footer p {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 10px;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.social-link {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    transition: var(--transition);
+}
+
+.social-link:hover {
+    background: var(--primary);
+    transform: translateY(-3px);
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 20px;
+    margin-top: 40px;
     text-align: center;
-    top: 25%;
-    transition: 0.4s;
+    color: rgba(255, 255, 255, 0.5);
 }
 
-#Dishes .Dish_box .profile:hover .info {
-    top: 60%;
-}
-
-#Dishes .Dish_box .profile .info .name {
-    color: #000000;
-    margin-bottom: 15px;
-    font-size: 1.5rem;
-}
-
-#Dishes .Dish_box .profile .info .bio {
-    width: 70%;
-    text-align: center;
-    margin: 0 auto 10px auto;
-}
-
-    .offer_btn {
-        display: inline-block;
-        padding: 10px 20px;
-        background: linear-gradient(90deg, #03C4E7, #0047FF);
-        color: white !important;
-        border-radius: 30px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 10px rgba(3, 196, 231, 0.3);
-        border: none;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    .offer_btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(3, 196, 231, 0.4);
-        background: linear-gradient(90deg, #03a1c4, #0036d4);
-    }
-
-    .offer_btn i {
-        margin-right: 5px;
-    }
-
-.reviews-container::-webkit-scrollbar {
-    width: 8px;
-}
-
-.reviews-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-.reviews-container::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
-
-.reviews-container::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-.view-all-btn:hover {
-    background: linear-gradient(90deg, #03C4E7, #0047FF) !important;
+/* ===== UTILITY CLASSES ===== */
+.offer_btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #ff6600;
     color: white !important;
-    border: none !important;
-}
-    
-    .all-items-container {
-        transition: all 0.3s ease;
-    }
-    
-    .card {
-        transition: transform 0.2s ease;
-    }
-    
-    .card:hover {
-        transform: translateY(-2px);
-    }
-
-.btn.btn-sm.btn-outline-primary#toggleRatingDistributionBtn {
-  background: linear-gradient(90deg, #03C4E7, #0047FF);
-  color: white;
-  border: none;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(3, 196, 231, 0.3);
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
 }
 
-.btn.btn-sm.btn-outline-primary#toggleRatingDistributionBtn:hover {
-  background: linear-gradient(90deg, #03a1c4, #0036d4);
-  color: white;
+.offer_btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(3, 196, 231, 0.4);
+    background: #ff6600;
 }
 
-.btn.btn-sm.btn-outline-primary#toggleRatingDistributionBtn i {
-  color: white;
+.highlightss {
+    font-family: 'Arial', sans-serif;
+    color: #333;
+    font-size: 36px;
+    font-weight: bold;
 }
 
 .gradient-btn {
-  background: linear-gradient(90deg, #03C4E7, #0047FF);
-  border: none;
-  color: #fff !important;
-  font-weight: 500;
-
-  
-  transition: 0.3s ease;
+    background: #ff6600;
+    border: none;
+    color: #fff !important;
+    font-weight: 500;
+    transition: 0.3s ease;
 }
 
-.gradient-btn:hover {
-  background: linear-gradient(90deg, #0047FF, #03C4E7);
-  transform: translateY(-2px);
+.view-all-btn:hover {
+    background: #ff6600;
+    color: white !important;
+    border: none !important;
 }
-.modal-body img {
-  transition: transform 0.3s;
+
+.all-items-container {
+    transition: all 0.3s ease;
 }
-.modal-body img:hover {
-  transform: scale(1.05);
+
+.shadow-lg {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
+.shadow-lg:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important;
+}
+
+.rounded-circle {
+    transition: transform 0.3s ease;
+}
+
+.rounded-circle:hover {
+    transform: scale(1.1);
+}
+
+.hover-zoom img {
+    transition: transform 0.5s ease;
+}
+
+.hover-zoom:hover img {
+    transform: scale(1.1);
+}
+
+/* ===== PAGINATION STYLES ===== */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    gap: 5px;
+}
+
+.pagination li {
+    margin: 0 2px;
+}
+
+.pagination a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+}
+
+.pagination a:hover {
+    background-color: #e9ecef;
+    transform: translateY(-2px);
+}
+
+.pagination a.active {
+    background-color: #ff6600;
+    color: white;
+    border-color: #ff6600;
+}
+
+.pagination a.disabled {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #f8f9fa;
+}
+
+.page-item-count {
+    text-align: center;
+    margin-top: 10px;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animation classes */
+.animate-fadeInUp {
+    animation: fadeInUp 0.8s ease forwards;
+}
+
+.animate-fadeInLeft {
+    animation: fadeInLeft 0.8s ease forwards;
+}
+
+.animate-fadeInRight {
+    animation: fadeInRight 0.8s ease forwards;
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+.animate-slideInFromBottom {
+    animation: slideInFromBottom 0.8s ease forwards;
+}
+
+/* Staggered animations for grid items */
+.stagger-item {
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
 
 /* Large tablets / small desktops */
 @media (max-width: 992px) {
-  /* Hero Text */
-  .hero-text h1,
-  .hero-text p,
-  .highlightss {
-    font-size: 28px;
-    text-align: center;
-  }
-
-  /* Table Cards */
-  .table-card {
-    width: 200px;
-    height: auto;
-    margin-bottom: 20px;
-  }
-
-  /* Dishes Section */
-  #Dishes .Dish_box {
-    flex-wrap: wrap;
-    gap: 20px;
-    top: 5%;
-  }
-
-  #Dishes .Dish_box .profile {
-    width: 260px;
-    height: 260px;
-  }
-
-  #Dishes .Dish_box .profile img {
-    width: 200px;
-    height: 200px;
-  }
-
-  /* Reviews Container */
-  .reviews-container {
-    overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: 10px;
-  }
-
-  .reviews-container .review-card {
-    display: inline-block;
-    margin-right: 15px;
-    vertical-align: top;
-  }
+    .hero-text h1 {
+        font-size: 2.8rem;
+    }
+    
+    .hero-text p {
+        font-size: 1.3rem;
+    }
+    
+    .hero-carousel-item {
+        padding: 30px;
+    }
+    
+    .hero-text h1,
+    .hero-text p,
+    .highlightss {
+        font-size: 28px;
+        text-align: center;
+    }
+    
+    .hero-carousel-item {
+        padding: 25px 30px;
+        width: 90%;
+    }
+    
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .hero-text {
+        margin-bottom: 20px;
+    }
+    
+    .hero-image {
+        justify-content: center;
+    }
+    
+    .hero-image img {
+        max-width: 80%;
+    }
+    
+    .table-card {
+        width: 200px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+    
+    .dish-image {
+        height: 160px;
+    }
 }
 
 /* Tablets / large phones */
 @media (max-width: 768px) {
-  .navbar {
-    margin: 10px;
-    border-radius: 20px;
-    position: relative;
-  }
-
-  /* Hamburger Button */
-  .navbar .burger-btn {
-    display: block;
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    cursor: pointer;
-    font-size: 28px;
-    color: #000;
-    z-index: 1000;
-  }
-
-  .navbar .nav-links {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    position: absolute;
-    top: 60px;
-    right: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  }
-
-  .navbar .nav-links.active {
-    display: flex;
-  }
-
-  .hero-text h1,
-  .hero-text p {
-    font-size: 22px;
-  }
-
-  /* Table Cards */
-  .table-card {
-    width: 100%;
-    max-width: 300px;
-  }
-
-  /* Modal */
-  .modal-content {
-    width: 95%;
-    margin: 20% auto;
-  }
-
-  /* Buttons Full Width */
-  .reserve-btn,
-  .offer_btn,
-  .gradient-btn {
-    width: 100%;
-    text-align: center;
-  }
+    .hero-section {
+        height: auto;
+        min-height: 500px;
+        background-attachment: scroll;
+    }
+    
+    .carousel-item {
+        height: auto;
+        min-height: 400px;
+    }
+    
+    .hero-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .hero-text {
+        margin-bottom: 30px;
+    }
+    
+    .hero-text h1 {
+        font-size: 2.2rem;
+    }
+    
+    .hero-text p {
+        font-size: 1.1rem;
+    }
+    
+    .hero-image {
+        justify-content: center;
+    }
+    
+    .hero-image img {
+        max-width: 80%;
+    }
+    
+    .navbar {
+        margin: 10px;
+        border-radius: 20px;
+        position: relative;
+    }
+    
+    .hero-carousel-item {
+        padding: 20px 25px;
+        width: 95%;
+        margin-top: 80px;
+        border-radius: 30px;
+    }
+    
+    .hero-text h1,
+    .hero-text p {
+        font-size: 22px;
+    }
+    
+    .hero-image img {
+        max-width: 100%;
+    }
+    
+    .table-card {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .dish-image {
+        height: 140px;
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 20% auto;
+    }
+    
+    .reserve-btn,
+    .offer_btn,
+    .gradient-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .display-5 {
+        font-size: 2rem !important;
+    }
+    
+    .bg-light.p-4 {
+        padding: 1rem !important;
+    }
+    
+    .d-flex.flex-wrap.gap-3 {
+        justify-content: center;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
 
 /* Mobile phones */
 @media (max-width: 576px) {
-  .hero-text h1,
-  .hero-text p,
-  .highlightss {
-    font-size: 20px;
-  }
-
-  /* Table Text */
-  .table-name {
-    font-size: 18px;
-  }
-
-  .table-price,
-  .table-pax {
-    font-size: 14px;
-  }
-
-  /* Dishes Section */
-  #Dishes .Dish_box {
-    flex-direction: column;
-    top: 0;
-  }
-
-  #Dishes .Dish_box .profile {
-    width: 220px;
-    height: 220px;
-  }
-
-  #Dishes .Dish_box .profile img {
-    width: 180px;
-    height: 180px;
-  }
-
-  /* Reviews */
-  .reviews-container {
-    overflow-x: auto;
-    padding-bottom: 10px;
-  }
-
-  .reviews-container .review-card {
-    display: inline-block;
-    margin-right: 10px;
-  }
+    .hero-text h1 {
+        font-size: 1.8rem;
+    }
+    
+    .hero-text p {
+        font-size: 1rem;
+    }
+    
+    .hero-carousel-item {
+        padding: 20px;
+    }
+    
+    .carousel-control-prev, 
+    .carousel-control-next {
+        display: none;
+    }
+    
+    .hero-text h1,
+    .hero-text p,
+    .highlightss {
+        font-size: 20px;
+    }
+    
+    .hero-carousel-item {
+        padding: 15px 20px;
+        width: 95%;
+        margin-top: 70px;
+        border-radius: 20px;
+    }
+    
+    .hero-text h1,
+    .hero-text p {
+        font-size: 18px;
+    }
+    
+    .hero-image img {
+        max-width: 100%;
+        border-radius: 15px;
+    }
+    
+    .table-name {
+        font-size: 18px;
+    }
+    
+    .table-price,
+    .table-pax {
+        font-size: 14px;
+    }
+    
+    .dish-image {
+        height: 120px;
+    }
+    
+    .pagination a {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
 }
+
+/* Small mobile phones */
+@media (max-width: 400px) {
+    .hero-carousel-item {
+        padding: 10px 15px;
+        width: 98%;
+        margin-top: 60px;
+        border-radius: 15px;
+    }
+    
+    .hero-text h1,
+    .hero-text p {
+        font-size: 16px;
+    }
+    
+    .hero-image img {
+        max-width: 100%;
+        border-radius: 10px;
+    }
+    
+    .pagination a {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+}
+  .bg-gradient-primary {
+    background: rgb(0, 110, 255);
+    color: #fff;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .bg-gradient-warning {
+    background: linear-gradient(135deg, #f6c23e, #f0ad4e);
+    color: #212529;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .bg-gradient-primary:hover,
+  .bg-gradient-warning:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  }
+
+  .rounded-3 {
+    border-radius: 1rem !important;
+  }
+  .p-3 {
+    padding: 1rem !important;
+  }
+  .text-center {
+    text-align: center !important;
+  }
 </style>
 
 <body>
-    <nav class="navbar navbar-expand-lg shadow-sm sticky-top px-3">
+    <nav class="navbar navbar-expand-lg shadow-sm sticky-top px-3" data-aos="fade-down" data-aos-duration="800">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold" href="#">
                 <img src="<%= settings.logo ? settings.logo : '/images/napslogo.png' %>" alt="Logo"  height="50"width="50"style="border-radius: 50%;"/>
-            
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -528,14 +1030,14 @@ html{
                     <li class="nav-item"><a class="nav-link" href="#Dishes">Dishes</a></li>
                     <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
                 </ul>
-                <ul class="navbar-nav ms-2   fw-semibold">
+                <ul class="navbar-nav ms-2 fw-semibold">
                     <li class="nav-item dropdown">
-                        <a class="btn btn-primary dropdown-toggle fw-semibold account-btn" style="border-radius: 30px;" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="btn account-btn dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle"></i> Account
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
-                            <li><a class="dropdown-item" href="/login">Login</a></li>
-                            <li><a class="dropdown-item" href="/register">Register</a></li>
+                            <li><a class="dropdown-item login-link" href="/login">Login</a></li>
+                            <li><a class="dropdown-item register-link" href="/register">Register</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -543,54 +1045,75 @@ html{
         </div>
     </nav>
 
-    <section id="home" class="py-1">
+    <!-- Loading Effect Overlay -->
+    <div id="loadingOverlay">
+        <img src="/images/loading.gif" alt="Loading...">
+        <div class="loading-text">Redirecting to Login...</div>
+    </div>
+
+    <!-- Hero Section with Background Image -->
+    <section id="home" class="hero-section">
         <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="bg-light active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" class="bg-light" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" class="bg-light" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
             </div>
         
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <div class="hero d-flex justify-content-between align-items-center" style="background-color: white; padding: 100px 60px; border-radius: 40px; margin: 50px auto; width: 85%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 100px;">
-                        <div class="hero-text">
-                            <h1>Welcome to <span style="highlight">Naps Grill and Restobar</span></h1>
-                            <p>Get your Meal and Reserve a Table 
-                            <br><span class="highlight">In an easy way</span></p>
-                            <button style="background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer;" onclick="window.location.href='/login'"><i class="bi bi-cart-fill"></i> Order Now</button>
-                        </div>
-                        <div class="hero-image" style="position: absolute; top: 0; right: 0; padding-right: 10px;">
-                            <img src="/images/burgerbc.png" alt="Burger" style="max-width: 600px; height: auto; margin: 10px;" alt="Burger">
-                        </div>
-                    </div>
-                </div>
-        
-                <div class="carousel-item">
-                    <div class="hero d-flex justify-content-between align-items-center" style="background-color: white; padding: 30px 40px; border-radius: 40px; margin: 50px auto; width: 85%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 100px;">
-                        <div class="hero-text">
-                            <h1>Delicious Meals <span class="highlight">Served Fresh</span></h1>
-                            <p>Experience the best dining at <br>
-                            <span class="highlight">Naps Grill and Restobar</span></p>
-                            <button style="background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer;" onclick="window.location.href='/login'"><i class="bi bi-calendar-check-fill"></i> Reserve a Table</button>
-                        </div>
-                        <div class="hero-image">
-                            <img src="images/naps.png" style="max-width: 560px; border-radius: 30px;;" alt="Steak">
+                    <div class="container">
+                        <div class="hero-carousel-item">
+                            <div class="hero-content">
+                                <div class="hero-text" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="200">
+                                    <h1>Welcome to <span class="gradient-text">Nap's Grill and Restobar</span></h1>
+                                    <p>Get your Meal and Reserve a Table <br><span class="gradient-text">In an easy way</span></p>
+                                    <button class="btn btn-primary order-now-btn animate-pulse">
+                                        <i class="bi bi-cart-fill"></i> Order Now
+                                    </button>
+                                </div>
+                                <div class="hero-image" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="400">
+                                    <img src="/images/burgerbc.png" alt="Burger" class="animate-float">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
         
                 <div class="carousel-item">
-                    <div class="hero d-flex justify-content-between align-items-center" style="background-color: white; padding: 30px 40px; border-radius: 40px; margin: 50px auto; width: 85%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); margin-top: 100px;">
-                        <div class="hero-text">
-                              <h1>Claim Your <span class="highlight">Voucher</span></h1>
-                              <p>Get exclusive discounts and special rewards 
-                              <br>when you claim your 
-                              <span class="highlight">Naps Grill and Restobar</span> voucher.</p>
-                            <button style="background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; padding: 10px 20px; border: none; border-radius: 20px; cursor: pointer;" onclick="window.location.href='/login'"><i class="bi bi-person-raised-hand"></i> Claim Now</button>
+                    <div class="container">
+                        <div class="hero-carousel-item">
+                            <div class="hero-content">
+                                <div class="hero-text" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="200">
+                                    <h1>Delicious Meals <span class="gradient-text">Served Fresh</span></h1>
+                                    <p>Experience the best dining at <br><span class="gradient-text">Nap's Grill and Restobar</span></p>
+                                    <button class="btn btn-primary reserve-table-btn animate-pulse">
+                                        <i class="bi bi-calendar-check-fill"></i> Reserve a Table
+                                    </button>
+                                </div>
+                                <div class="hero-image" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="400">
+                                    <img src="images/naps.png" alt="Restaurant" class="animate-float">
+                                </div>
+                            </div>
                         </div>
-                        <div class="hero-image">
-                            <img src="images/voucher.png" style="max-width: 365px; border-radius: 30px;" alt="Voucher">
+                    </div>
+                </div>
+        
+                <div class="carousel-item">
+                    <div class="container">
+                        <div class="hero-carousel-item">
+                            <div class="hero-content">
+                                <div class="hero-text" data-aos="fade-right" data-aos-duration="1000" data-aos-delay="200">
+                                    <h1>Claim Your <span class="gradient-text">Voucher</span></h1>
+                                    <p>Get exclusive discounts and special rewards <br>when you claim your <span class="gradient-text">Nap's Grill and Restobar</span> voucher.</p>
+                                    <button class="btn btn-primary claim-voucher-btn animate-pulse">
+                                        <i class="bi bi-ticket-perforated"></i> Claim Now
+                                    </button>
+                                </div>
+                                <div class="hero-image" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="400">
+                                    <img src="images/vouchers.png" alt="Voucher" class="animate-float">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>            
@@ -598,89 +1121,207 @@ html{
         </div>
     </section>
 
-    <section class="py-5" id="about">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-10 bg-white p-4 rounded-4 shadow-lg">
-                    <div class="row align-items-center">
-                        <div class="col-md-5 position-relative">
-                            <img src="images/naps.png" class="img-fluid rounded-4 shadow-lg" alt="Restaurant" style="width: 100%; height: 500px;">
-                            <img src="images/naps.png" class="img-fluid rounded-4 shadow-lg position-absolute" alt="Restaurant View" 
-                                 style="width: 60%; bottom: -30px; left: 20px; border: 5px solid white;">
-                        </div>
-                        <div class="col-md-7">
-                            <h2 class="fw-bold">Why Food Choose Us?</h2>
-                            <p class="text-muted">
-                                Choose us because of the fusion of American and Filipino food with the ambience of the place.  
-                                We bring together the bold, smoky flavors of American classics with the rich, savory taste of Filipino delicacies,  
-                                creating a unique dining experience that satisfies every craving. Our carefully curated menu blends  
-                                tradition with innovation, offering comfort food with a twist.
-                            </p>
-
-                            <p class="text-muted">
-                                Not only do we serve delicious meals, but we also provide a warm and inviting atmosphere—  
-                                perfect for family gatherings, romantic dinners, and friendly meet-ups.
-                                Our restaurant ensures a memorable experience every time you visit.  
-                            </p>
-                            
-                            <div class="d-flex gap-3">
-                              <a href="/login" class="btn gradient-btn"><i class="bi bi-calendar-check"></i> Book Now</a>
-                              <a href="/login" class="btn gradient-btn"><i class="bi bi-cart"></i> Order Now</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
- <section class="tables py-5" id="Tables">
+<section class="py-5" id="about" style="background: linear-gradient(135deg, #ffffff00 0%, #ffffff00 100%);" data-aos="fade-up" data-aos-duration="800">
   <div class="container">
-    <h1 class="text-center mb-4 fw-bold" style="font-size: 35px;">
-      Available <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tables</span>
-    </h1>
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <div class="row justify-content-center">
+          <div class="col-lg-11">
+            <div class="bg-white p-5 rounded-4 shadow-lg position-relative overflow-hidden">
+              <div class="row align-items-center">
 
-    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-  <% tables.forEach(table => { %>
-    <div class="col d-flex">
-      <div class="card shadow-lg border-0 rounded-4 w-100 hover-shadow" style="transition: transform 0.3s;">
-        
-        <!-- Table Image -->
-        <img src="/uploads/<%= table.image %>" class="card-img-top rounded-top-4" 
-             alt="<%= table.name %>" style="height:220px; object-fit:cover; cursor:pointer;"
-             data-bs-toggle="modal" data-bs-target="#imageModal<%= table._id %>">
+                <!-- Image Section -->
+                <div class="col-md-5 position-relative" data-aos="fade-right" data-aos-duration="800" data-aos-delay="200">
+                  <div class="position-relative">
+                    <img
+                      src="images/naps.png"
+                      class="img-fluid rounded-4 shadow-lg"
+                      alt="Restaurant Interior"
+                      style="width: 100%; height: 320px; object-fit: cover;"
+                    >
 
-        <!-- Table Details -->
-        <div class="card-body d-flex flex-column justify-content-between">
-          <div class="text-center">
-            <h5 class="card-title fw-bold text-primary"><%= table.name %></h5>
-            <hr class="mx-auto" style="width:50px; border-top:2px solid #03C4E7;">
-            <p class="text-muted small mt-3 mb-2"><%= table.description %></p>
-            <p class="fw-bold text-success mb-1">₱<%= table.price.toFixed(2) %></p>
-            
-            <% if (table.reservation_fee !== undefined) { %>
-              <p class="fw-semibold text-primary mb-3">Reservation Fee: ₱<%= parseFloat(table.reservation_fee).toFixed(2) %></p>
-            <% } else { %>
-              <p class="fw-semibold text-secondary mb-3">No Reservation Fee</p>
-            <% } %>
-          </div>
+                    <div
+                      class="review-summary p-4 rounded-top"
+                      style="position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #ffffff;"
+                    >
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center" style="gap: 15px;">
+                          <h2 class="mb-0" style="font-size: 2rem; font-weight: bold; line-height: 2;">
+                            <%= (reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length).toFixed(1) %>
+                          </h2>
+                          <div style="color: #ffc107; font-size: 1.5rem;">
+                            <%= '★'.repeat(Math.round(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length)) %>
+                            <%= '☆'.repeat(5 - Math.round(reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length)) %>
+                          </div>
+                          <p class="text-muted mb-0" style="font-size: 1rem;">
+                            <%= reviews.length %> reviews
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-          <!-- Footer with Pax and Book Now -->
-          <div class="d-flex justify-content-between align-items-center mt-3">
-            <p class="mb-0"><i class="bi bi-people-fill"></i> <strong><%= table.pax %></strong> Pax</p>
-            <!-- Redirect to login page -->
-            <a href="/login" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm">
-              <i class="bi bi-calendar-check"></i> Book Now
-            </a>
+                <!-- Content Section -->
+                <div class="col-md-7 mt-4 mt-md-0" data-aos="fade-left" data-aos-duration="800" data-aos-delay="400">
+                  <div class="ps-md-4">
+
+                    <!-- Promotional Header -->
+                    <div class="d-flex align-items-center mb-3">
+                      <h2 class="fw-bold mb-0 me-3">Why Food Lovers Choose Us?</h2>
+                      <span class="badge bg-danger fs-6">
+                        <i class="bi bi-fire me-1"></i>Trending
+                      </span>
+                    </div>
+
+                    <!-- Features List -->
+                    <div class="row mb-4">
+                      <div class="col-6 mb-3" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">
+                        <div class="d-flex align-items-center">
+                          <div class="bg-primary rounded-circle p-2 me-3">
+                            <i class="bi bi-star-fill text-white"></i>
+                          </div>
+                          <div>
+                            <div class="fw-semibold">Best Quality</div>
+                            <small class="text-muted">Fresh & Premium Ingredients</small>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-6 mb-3" data-aos="fade-up" data-aos-duration="600" data-aos-delay="200">
+                        <div class="d-flex align-items-center">
+                          <div class="bg-success rounded-circle p-2 me-3">
+                            <i class="bi bi-clock text-white"></i>
+                          </div>
+                          <div>
+                            <div class="fw-semibold">Quick Service</div>
+                            <small class="text-muted">15-20 mins</small>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-6 mb-3" data-aos="fade-up" data-aos-duration="600" data-aos-delay="300">
+                        <div class="d-flex align-items-center">
+                          <div class="bg-warning rounded-circle p-2 me-3">
+                            <i class="bi bi-phone text-white"></i>
+                          </div>
+                          <div>
+                            <div class="fw-semibold">Easy to Order</div>
+                            <small class="text-muted">Simple & Convenient Process</small>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Promotional Text -->
+                    <div class="bg-light rounded-3 p-4 mb-4 border-start border-4 border-primary" data-aos="zoom-in" data-aos-duration="600" data-aos-delay="400">
+                      <p class="mb-3 fw-semibold">
+                        <i class="bi bi-quote text-primary me-2"></i>
+                        Experience the perfect fusion where bold American flavors meet authentic Filipino hospitality
+                      </p>
+                      <p class="text-muted mb-0 small">
+                        Our chefs craft each dish with premium ingredients, blending traditional recipes with modern
+                        culinary techniques for an unforgettable dining experience.
+                      </p>
+                    </div>
+
+                    <!-- Special Offers -->
+                    <div class="mb-4">
+                      <h5 class="fw-bold mb-3">
+                        <i class="bi bi-gift-fill text-danger me-2"></i>
+                        Our Special Offers
+                      </h5>
+                      <div class="row g-3">
+                        <div class="col-md-6" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">
+                          <div class="bg-gradient-primary text-white rounded-3 p-3 text-center">
+                            <i class="fa-solid fa-wheelchair fs-3 mb-2"></i>
+                            <div class="fw-bold">PWD & Senior Citizen Discount</div>
+                          </div>
+                        </div>
+                        <div class="col-md-6" data-aos="fade-up" data-aos-duration="600" data-aos-delay="200">
+                          <div class="bg-gradient-warning text-dark rounded-3 p-3 text-center">
+                            <i class="fa-solid fa-gift fs-3 mb-2"></i>
+                            <div class="fw-bold">Free Seasonal Vouchers</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex flex-wrap gap-3 mt-4">
+
+                      <!-- Book Table Now -->
+                      <a href="#"
+                         class="btn fw-semibold px-4 py-2 d-flex align-items-center gap-2 book-now-btn"
+                         style="background: #ff6600; color: #fff; border: none; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,123,255,0.25); transition: all 0.3s ease;"
+                         onmouseover="this.style.filter='brightness(1.15)'; this.style.transform='translateY(-3px)';"
+                         onmouseout="this.style.filter='brightness(1)'; this.style.transform='translateY(0)';"
+                         data-aos="zoom-in" data-aos-duration="600" data-aos-delay="100">
+                        <i class="bi bi-calendar-check fs-5"></i>
+                        <span>Book Table Now</span>
+                      </a>
+
+                      <!-- Order Online -->
+                      <a href="#"
+                         class="btn fw-semibold px-4 py-2 d-flex align-items-center gap-2 order-now-btn"
+                         style="background: #ff6600; color: #fff; border: none; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,123,255,0.25); transition: all 0.3s ease;"
+                         onmouseover="this.style.filter='brightness(1.15)'; this.style.transform='translateY(-3px)';"
+                         onmouseout="this.style.filter='brightness(1)'; this.style.transform='translateY(0)';"
+                         data-aos="zoom-in" data-aos-duration="600" data-aos-delay="200">
+                        <i class="bi bi-cart fs-5"></i>
+                        <span>Order Online</span>
+                      </a>
+
+                      <!-- Get Voucher -->
+                      <a href="#"
+                         class="btn fw-semibold px-4 py-2 d-flex align-items-center gap-2"
+                         style="background: linear-gradient(90deg, #28a745, #44d17a); color: #fff; border: none; border-radius: 50px; box-shadow: 0 4px 10px rgba(40,167,69,0.25); transition: all 0.3s ease;"
+                         onmouseover="this.style.filter='brightness(1.15)'; this.style.transform='translateY(-3px)';"
+                         onmouseout="this.style.filter='brightness(1)'; this.style.transform='translateY(0)';"
+                         data-aos="zoom-in" data-aos-duration="600" data-aos-delay="300">
+                        <i class="bi bi-ticket-perforated fs-5"></i>
+                        <span>Get Voucher</span>
+                      </a>
+
+                    </div>
+
+                  </div>
+                </div>
+
+              </div> 
+            </div> 
           </div>
         </div>
       </div>
     </div>
-  <% }) %>
-</div>
-
   </div>
+</section>
+
+ <section class="tables py-5" id="Tables" data-aos="fade-up" data-aos-duration="800">
+  <div class="container">
+    <h1 class="text-center mb-4 fw-bold" style="font-size: 35px;" data-aos="fade-up" data-aos-duration="800">
+      Available <span style="background: #ff6600; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Tables</span>
+    </h1>
+
+    <!-- Tables Grid with Pagination -->
+    <div class="tables-container">
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4" id="tablesGrid">
+        <!-- Tables will be loaded here by JavaScript -->
+      </div>
+      
+      <!-- Tables Pagination -->
+      <div class="pagination-container" id="tablesPagination">
+        <!-- Pagination will be generated by JavaScript -->
+      </div>
+      
+      <div class="page-item-count" id="tablesPageInfo">
+        <!-- Page info will be updated by JavaScript -->
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modals for table images -->
   <% tables.forEach(table => { %>
-  <!-- Modal for full image -->
   <div class="modal fade" id="imageModal<%= table._id %>" tabindex="-1" aria-labelledby="imageModalLabel<%= table._id %>" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content border-0 rounded-4">
@@ -694,18 +1335,16 @@ html{
       </div>
     </div>
   </div>
-<% }) %>
-
+  <% }) %>
 </section>
 
 
-<section class="team py-5" id="Dishes">
+<!-- DISHES SECTION WITH PAGINATION -->
+<section class="dishes py-5" id="Dishes" data-aos="fade-up" data-aos-duration="800">
   <div class="container">
-
- 
-    <h1 class="text-center mb-4 fw-bold" style="font-size: 35px;">
+    <h1 class="text-center mb-4 fw-bold" style="font-size: 35px;" data-aos="fade-up" data-aos-duration="800">
       Our Special 
-      <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); 
+      <span style="background: linear-gradient(to right, #ff6600, #ff7700); 
                   -webkit-background-clip: text; 
                   -webkit-text-fill-color: transparent; 
                   background-clip: text;">
@@ -713,81 +1352,49 @@ html{
       </span>
     </h1>
 
-
-    <div class="text-center mb-5">
-      <button class="btn btn-outline-primary me-2 filter-btn active" data-filter="all">All</button>
-      <button class="btn btn-outline-info me-2 filter-btn" data-filter="seafood">Seafood</button>
-      <button class="btn btn-outline-warning me-2 filter-btn" data-filter="appetizer">Appetizer</button>
-      <button class="btn btn-outline-danger me-2 filter-btn" data-filter="meat">Meat</button>
-      <button class="btn btn-outline-success me-2 filter-btn" data-filter="vegetable">Vegetable</button>
-      <button class="btn btn-outline-secondary me-2 filter-btn" data-filter="dessert">Dessert</button>
-      <button class="btn btn-outline-dark me-2 filter-btn" data-filter="beverage">Beverage</button>
+    <div class="text-center mb-4">
+      <button class="btn btn-outline-secondary me-2 mb-2 filter-btn active" data-filter="all" data-aos="fade-up" data-aos-duration="600" data-aos-delay="100">All</button>
+      <button class="btn btn-outline-secondary me-2 mb-2 filter-btn" data-filter="seafood" data-aos="fade-up" data-aos-duration="600" data-aos-delay="150">Seafood</button>
+      <button class="btn btn-outline-secondary me-2 mb-2 filter-btn" data-filter="appetizer" data-aos="fade-up" data-aos-duration="600" data-aos-delay="200">Appetizer</button>
+      <button class="btn btn-outline-secondary me-2 mb-2 filter-btn" data-filter="meat" data-aos="fade-up" data-aos-duration="600" data-aos-delay="250">Meat</button>
+      <button class="btn btn-outline-secondary me-2 mb-2 filter-btn" data-filter="vegetable" data-aos="fade-up" data-aos-duration="600" data-aos-delay="300">Vegetable</button>
+      <button class="btn btn-outline-secondary me-2 mb-2 filter-btn" data-filter="dessert" data-aos="fade-up" data-aos-duration="600" data-aos-delay="350">Dessert</button>
+      <button class="btn btn-outline-secondary me-2 mb-2 filter-btn" data-filter="beverage" data-aos="fade-up" data-aos-duration="600" data-aos-delay="400">Beverage</button>
     </div>
 
-  <div style="max-height: 800px; overflow-y: auto;">
-  <div class="row g-4" id="productGrid">
-    <% products.forEach(product => { %>
-      <div class="col-12 col-sm-6 col-md-3 product-item" 
-           data-category="<%= product.category.toLowerCase() %>">
-        <div class="card h-100 shadow-sm border-0 rounded-4">
-
-          <img src="/uploads/<%= product.image %>" 
-               class="card-img-top rounded-top-4" 
-               alt="<%= product.name %>" 
-               style="height:200px; object-fit:cover;">
-
-          <div class="card-body d-flex flex-column">
-            <h6 class="card-title fw-bold text-dark"><%= product.name %></h6>
-            <p class="card-text text-muted small mb-2"><%= product.description %></p>
-
-            <span class="badge 
-              <% if (product.category === 'seafood') { %> bg-info-subtle text-info 
-              <% } else if (product.category === 'appetizer') { %> bg-warning-subtle text-warning 
-              <% } else if (product.category === 'meat') { %> bg-danger-subtle text-danger 
-              <% } else if (product.category === 'vegetable') { %> bg-success-subtle text-success 
-              <% } else if (product.category === 'desert') { %> bg-pink-subtle text-pink 
-              <% } else if (product.category === 'beverage') { %> bg-primary-subtle text-primary 
-              <% } else { %> bg-secondary-subtle text-secondary <% } %>
-              rounded-pill mb-2">
-              <%= product.category %>
-            </span>
-
-            <p class="fw-bold text-primary mb-3">₱<%= product.price.toFixed(2) %></p>
-
-            <form action="/cart/add" method="POST" class="mt-auto">
-              <input type="hidden" name="productId" value="<%= product._id %>">
-              <button type="submit" class="btn btn-primary w-100 rounded-pill">
-                <i class="bi bi-cart-plus"></i> Order Now
-              </button>
-            </form>
-          </div>
-        </div>
+    <!-- Dishes Grid with Pagination -->
+    <div class="dishes-container">
+      <div class="row g-4" id="dishesGrid">
+        <!-- Dishes will be loaded here by JavaScript -->
       </div>
-    <% }) %>
-  </div>
-</div>
+      
+      <!-- Dishes Pagination -->
+      <div class="pagination-container" id="dishesPagination">
+        <!-- Pagination will be generated by JavaScript -->
+      </div>
+      
+      <div class="page-item-count" id="dishesPageInfo">
+        <!-- Page info will be updated by JavaScript -->
+      </div>
+    </div>
 
-
-
+    <!-- No Results Message -->
     <div id="noResultsMessage" 
          class="text-center mt-5 text-muted fw-semibold" 
          style="display: none;">
       <i class="bi bi-emoji-frown" style="font-size: 2rem;"></i><br>
       No products found matching your criteria.
     </div>
-
   </div>
-
 </section>
-  <br><br><br><br><br><br><br><br><br>
 
-<section class="container mb-5" id="reviews">
-    <h1 class="text-center mb-5 fw-bold" style="font-size: 35px;">Customer <span style="background: linear-gradient(90deg, #03C4E7, #0047FF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Reviews</span></h1>
+<section class="container mb-5" id="reviews" data-aos="fade-up" data-aos-duration="800">
+    <h1 class="text-center mb-5 fw-bold" style="font-size: 35px;">Customer <span style="background: #ff6600; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Reviews</span></h1>
 
     <div style="background: white; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
         <% if (reviews && reviews.length > 0) { %>
-            <!-- Fixed Rating Summary Section - Now in one line -->
-            <div class="review-summary p-4 bg-light rounded-top" style="position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #dee2e6;">
+            <!-- Fixed Rating Summary Section -->
+            <div class="review-summary p-4 bg-light rounded-top" style="position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #dee2e6;" data-aos="fade-up" data-aos-duration="800">
                 <div class="d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center" style="gap: 15px;">
                         <h2 class="mb-0" style="font-size: 2rem; font-weight: bold; line-height: 2;">
@@ -829,11 +1436,11 @@ html{
                 </div>
             </div>
 
-            <!-- Scrollable Reviews Container -->
-            <div class="reviews-container p-4" style="max-height: 500px; overflow-y: auto;">
+            <!-- Scrollable Reviews Container - FIXED VERSION -->
+            <div class="reviews-container p-4" style="max-height: 600px; overflow-y: auto;">
                 <div class="d-flex flex-column" style="gap: 25px;">
-                    <% reviews.forEach(review => { %>
-                        <div class="card shadow-sm border-0 p-3">
+                    <% reviews.forEach((review, index) => { %>
+                        <div class="card shadow-sm border-0 p-3 review-item">
                             <div class="card-body d-flex flex-column flex-md-row align-items-start">
                                 <% if (review.orderId?.items?.length > 0) { %>
                                     <div class="me-md-3 mb-3 mb-md-0 position-relative" style="min-width: 120px;">
@@ -915,43 +1522,163 @@ html{
     </div>
 </section>
     
-    <footer style="padding: 40px 0; background: #fff;">
+    <!-- Footer -->
+    <footer class="footer" data-aos="fade-up" data-aos-duration="800">
         <div class="container">
-            <div class="row text-center text-md-start">
-                <div class="col-md-4 mb-3">
-                    <h5 style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">ADDRESS</h5>
-                    <p style="font-size: 14px; line-height: 1.6; margin: 0;">
+            <div class="row">
+                <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-duration="800" data-aos-delay="100">
+                    <h5>ADDRESS</h5>
+                    <p>
                         32nd Street corner Melencio St., <br>
                         Kapitan Pepe Phase II Subd., <br>
                         Cabanatuan City, Philippines
                     </p>
                 </div>
-                <div class="col-md-4 mb-3">
-                    <h5 style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">Stay Connected</h5>
-                    <p style="font-size: 14px; margin: 0;">
+                <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                    <h5>Stay Connected</h5>
+                    <p>
                         Contact: <br>
                         napsgrillandrestobar08@gmail.com <br>
                         0994 705 8003
                     </p>
-                    <div style="margin-top: 10px;">
-                        <a href="#" style="text-decoration: none; font-size: 18px; color: #000; margin-right: 10px;"><i class="bi bi-facebook"></i></a>
-                        <a href="#" style="text-decoration: none; font-size: 18px; color: #000;"><i class="bi bi-instagram"></i></a>
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="bi bi-youtube"></i></a>
                     </div>
                 </div>
-                <div class="col-md-4 mb-3 text-md-end text-center">
-                    <h5 style="font-weight: bold; font-size: 16px; margin-bottom: 10px;">
-                        Get Your Vouchers
-                    </h5>
-                    <p style="font-size: 14px; margin-bottom: 15px;">Our services are wide open for you</p>
-                    <a href="/login"class="btn" style="text-decoration: none; background-image: linear-gradient(to right, #03C4E7, #0047FF); color: white; border: none; border-radius: 30px; padding: 10px 20px;"><i class="bi bi-ticket-detailed-fill"></i> Claim your Vouchers</a>
+                <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-duration="800" data-aos-delay="300">
+                    <h5>Get Your Vouchers</h5>
+                    <p class="mb-3">Our services are wide open for you</p>
+                    <button class="btn btn-primary claim-voucher-btn">
+                        <i class="bi bi-ticket-perforated"></i> Claim your Vouchers
+                    </button>
                 </div>
             </div>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2023 Nap's Grill and Restobar. All rights reserved.</p>
+            </div>
         </div>
-    </footer>     
+    </footer>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
+// Initialize AOS with scroll-triggered animations
+AOS.init({
+    duration: 800,
+    easing: 'ease-in-out',
+    once: true,
+    mirror: false,
+    offset: 100, // Trigger animations slightly earlier
+    delay: 0, // No delay by default
+    anchorPlacement: 'top-bottom' // Trigger when top of element hits bottom of viewport
+});
+
+// Refresh AOS on page load and resize to ensure animations work properly
+window.addEventListener('load', AOS.refresh);
+window.addEventListener('resize', AOS.refresh);
+
+// Pagination functionality
 document.addEventListener('DOMContentLoaded', function() {
+    // Loading effect functionality
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingText = document.querySelector('.loading-text');
+    
+    // Ensure loading is hidden when page loads
+    function initializeLoading() {
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        // Clear any redirect flags
+        sessionStorage.removeItem('isRedirecting');
+    }
+    
+    // Function to show loading effect
+    function showLoading(message = 'Redirecting to Login...') {
+        if (loadingOverlay && loadingText) {
+            loadingText.textContent = message;
+            loadingOverlay.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            // Set a short timeout to ensure the overlay is visible
+            setTimeout(() => {
+                // If still on same page after a moment, proceed with redirect
+                if (window.location.pathname === '/') {
+                    window.location.href = '/login';
+                }
+            }, 1500);
+        }
+    }
+    
+    // Function to hide loading effect
+    function hideLoading() {
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+    
+    // Initialize - hide loading on page load
+    initializeLoading();
+    
+    // Add event listeners to login and register links
+    const loginLinks = document.querySelectorAll('.login-link');
+    const registerLinks = document.querySelectorAll('.register-link');
+    
+    loginLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLoading('Redirecting to Login...');
+        });
+    });
+    
+    registerLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLoading('Redirecting to Registration...');
+        });
+    });
+    
+    // Add loading effect to other buttons that require login
+    const orderButtons = document.querySelectorAll('.order-now-btn');
+    const reserveButtons = document.querySelectorAll('.reserve-table-btn');
+    const bookButtons = document.querySelectorAll('.book-now-btn');
+    const claimButtons = document.querySelectorAll('.claim-voucher-btn');
+    
+    const allAuthButtons = [...orderButtons, ...reserveButtons, ...bookButtons, ...claimButtons];
+    
+    allAuthButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            showLoading('Redirecting to Login...');
+        });
+    });
+
+    // Handle page visibility changes (for browser back button)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            hideLoading();
+        }
+    });
+
+    // Handle pageshow event (for bfcache)
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            hideLoading();
+        }
+    });
+
+    // Stagger animation for grid items
+    const staggerItems = document.querySelectorAll('.stagger-item');
+    staggerItems.forEach((item, index) => {
+        // Remove the inline animation and let AOS handle it
+        item.style.opacity = '1';
+        item.style.transform = 'translateY(0)';
+    });
+
     // Toggle rating distribution visibility
     const toggleBtn = document.getElementById('toggleRatingDistributionBtn');
     if (toggleBtn) {
@@ -982,38 +1709,328 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
 
-
- document.addEventListener("DOMContentLoaded", () => {
-    const filterButtons = document.querySelectorAll(".filter-btn");
-    const products = document.querySelectorAll(".product-item");
-    const noResultsMessage = document.getElementById("noResultsMessage");
-
-    filterButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        // remove active state
-        filterButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        const filter = btn.getAttribute("data-filter");
-        let visibleCount = 0;
-
-        products.forEach(product => {
-          const category = product.getAttribute("data-category");
-          if (filter === "all" || category === filter) {
-            product.style.display = "block";
-            visibleCount++;
-          } else {
-            product.style.display = "none";
-          }
+    // Pagination functionality for Tables and Dishes
+    const itemsPerPage = 8; // 4 items per row x 2 rows = 8 items per page
+    
+    // Global variables to track current state
+    let currentDishesData = [];
+    let currentDishesPage = 1;
+    let currentTablesPage = 1;
+    
+    // Tables Pagination
+    const tablesGrid = document.getElementById('tablesGrid');
+    const tablesPagination = document.getElementById('tablesPagination');
+    const tablesPageInfo = document.getElementById('tablesPageInfo');
+    const tablesData = [
+        <% tables.forEach((table, index) => { %>
+        {
+            id: '<%= table._id %>',
+            name: '<%= table.name %>',
+            description: '<%= table.description %>',
+            price: '<%= table.price.toFixed(2) %>',
+            reservation_fee: '<%= table.reservation_fee !== undefined ? parseFloat(table.reservation_fee).toFixed(2) : "No Reservation Fee" %>',
+            pax: '<%= table.pax %>',
+            image: '/uploads/<%= table.image %>'
+        }<%= index < tables.length - 1 ? ',' : '' %>
+        <% }); %>
+    ];
+    
+    // Dishes Pagination
+    const dishesGrid = document.getElementById('dishesGrid');
+    const dishesPagination = document.getElementById('dishesPagination');
+    const dishesPageInfo = document.getElementById('dishesPageInfo');
+    const dishesData = [
+        <% products.forEach((product, index) => { %>
+        {
+            id: '<%= product._id %>',
+            name: '<%= product.name %>',
+            description: '<%= product.description %>',
+            price: '<%= product.price.toFixed(2) %>',
+            category: '<%= product.category %>',
+            image: '/uploads/<%= product.image %>'
+        }<%= index < products.length - 1 ? ',' : '' %>
+        <% }); %>
+    ];
+    
+    // Initialize pagination for both sections
+    initTablesPagination(1);
+    initDishesPagination(1);
+    
+    // Filter functionality for dishes
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            let filteredDishes;
+            
+            if (filter === 'all') {
+                filteredDishes = dishesData;
+            } else {
+                filteredDishes = dishesData.filter(dish => 
+                    dish.category.toLowerCase() === filter.toLowerCase()
+                );
+            }
+            
+            // Update current dishes data and reset to page 1
+            currentDishesData = filteredDishes;
+            currentDishesPage = 1;
+            initDishesPagination(1);
+            
+            // Show/hide no results message
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            if (filteredDishes.length === 0) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+            }
         });
-
-        // show no results message if none visible
-        noResultsMessage.style.display = visibleCount === 0 ? "block" : "none";
-      });
     });
-  });
+    
+    // Tables Pagination initialization function
+    function initTablesPagination(currentPage) {
+        currentTablesPage = currentPage;
+        const totalItems = tablesData.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        // Calculate start and end index for current page
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        
+        // Get current page items
+        const currentItems = tablesData.slice(startIndex, endIndex);
+        
+        // Update grid
+        updateTablesGrid(currentItems);
+        
+        // Update pagination controls
+        updatePaginationControls('tables', currentPage, totalPages);
+        
+        // Update page info
+        updatePageInfo('tables', startIndex + 1, endIndex, totalItems);
+    }
+    
+    // Dishes Pagination initialization function
+    function initDishesPagination(currentPage) {
+        currentDishesPage = currentPage;
+        // Use current filtered data or all data
+        const dataToUse = currentDishesData.length > 0 ? currentDishesData : dishesData;
+        const totalItems = dataToUse.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        // Calculate start and end index for current page
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        
+        // Get current page items
+        const currentItems = dataToUse.slice(startIndex, endIndex);
+        
+        // Update grid
+        updateDishesGrid(currentItems);
+        
+        // Update pagination controls
+        updatePaginationControls('dishes', currentPage, totalPages);
+        
+        // Update page info
+        updatePageInfo('dishes', startIndex + 1, endIndex, totalItems);
+    }
+    
+    // Update tables grid with current items
+    function updateTablesGrid(items) {
+        tablesGrid.innerHTML = '';
+        
+        if (items.length === 0) {
+            tablesGrid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-emoji-frown display-4 text-muted mb-3"></i>
+                    <p class="text-muted fs-5">No tables found.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        items.forEach((item, index) => {
+            tablesGrid.innerHTML += `
+                <div class="col d-flex" data-aos="fade-up" data-aos-duration="800" data-aos-delay="${(index % 4) * 100}">
+                    <div class="card shadow-lg border-0 rounded-4 w-100 hover-shadow" style="transition: transform 0.3s;">
+                        
+                        <!-- Table Image -->
+                        <img src="${item.image}" class="card-img-top rounded-top-4" 
+                             alt="${item.name}" style="height:220px; object-fit:cover; cursor:pointer;"
+                             data-bs-toggle="modal" data-bs-target="#imageModal${item.id}">
+
+                        <!-- Table Details -->
+                        <div class="card-body d-flex flex-column justify-content-between">
+                            <div class="text-center">
+                                <h5 class="card-title fw-bold col">${item.name}</h5>
+                                <hr class="mx-auto" style="width:50px; border-top:2px solid #03C4E7;">
+                                <p class="text-muted small mt-3 mb-2">${item.description}</p>
+                                <p class="fw-bold text-success mb-1">₱${item.price}</p>
+                                
+                                ${item.reservation_fee !== 'No Reservation Fee' ? 
+                                    `<p class="fw-semibold mb-3" style="color: #6c757d;">Reservation Fee: ₱${item.reservation_fee}</p>` : 
+                                    `<p class="fw-semibold text-secondary mb-3">No Reservation Fee</p>`
+                                }
+                            </div>
+
+                            <!-- Footer with Pax and Book Now -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <p class="mb-0"><i class="bi bi-people-fill"></i> <strong>${item.pax}</strong> Pax</p>
+                                <!-- Redirect to login page -->
+                                <a href="#" class="btn btn-primary btn-sm rounded-pill px-4 shadow-sm book-now-btn">
+                                    <i class="bi bi-calendar-check"></i> Book Now
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Reinitialize AOS for new items
+        AOS.refresh();
+        
+        // Add event listeners to book now buttons
+        document.querySelectorAll('.book-now-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                showLoading('Redirecting to Login...');
+            });
+        });
+    }
+    
+    // Update dishes grid with current items
+    function updateDishesGrid(items) {
+        dishesGrid.innerHTML = '';
+        
+        if (items.length === 0) {
+            dishesGrid.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <i class="bi bi-emoji-frown display-4 text-muted mb-3"></i>
+                    <p class="text-muted fs-5">No dishes found.</p>
+                </div>
+            `;
+            return;
+        }
+        
+        items.forEach((item, index) => {
+            dishesGrid.innerHTML += `
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 product-item stagger-item" 
+                     data-category="${item.category.toLowerCase()}"
+                     data-aos="fade-up" data-aos-duration="800" data-aos-delay="${(index % 4) * 100}">
+                    <div class="card h-100 shadow-lg border-0 rounded-4 dish-card overflow-hidden hover-zoom">
+
+                        <!-- Product Image -->
+                        <div class="dish-img-container">
+                            <img src="${item.image}" 
+                                 class="card-img-top rounded-top-4 dish-image" 
+                                 alt="${item.name}">
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="card-body d-flex flex-column text-center p-3">
+                            <h6 class="card-title fw-bold text-dark mb-1">${item.name}</h6>
+                            <p class="card-text text-muted small mb-2 dish-description">${item.description}</p>
+
+                            <!-- Category Badge -->
+                            <span class="badge bg-light text-dark border rounded-pill px-3 py-1 mb-2">
+                                ${item.category}
+                            </span>
+
+                            <!-- Price -->
+                            <p class="fw-bold text-dark fs-5 mb-3">₱${item.price}</p>
+
+                            <!-- Order Button -->
+                            <form action="/cart/add" method="POST" class="mt-auto">
+                                <input type="hidden" name="productId" value="${item.id}">
+                                <button type="submit" class="btn btn-primary w-80 rounded-pill">
+                                    <i class="bi bi-cart-plus"></i> Order Now
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Reinitialize AOS for new items
+        AOS.refresh();
+    }
+    
+    // Update pagination controls
+    function updatePaginationControls(type, currentPage, totalPages) {
+        const paginationContainer = type === 'tables' ? tablesPagination : dishesPagination;
+        
+        if (totalPages <= 1) {
+            paginationContainer.innerHTML = '';
+            return;
+        }
+        
+        let paginationHTML = '<ul class="pagination">';
+        
+        // Previous button
+        if (currentPage > 1) {
+            paginationHTML += `<li><a href="#" class="page-link" data-page="${currentPage - 1}"><i class="bi bi-chevron-left"></i></a></li>`;
+        } else {
+            paginationHTML += `<li><a href="#" class="page-link disabled"><i class="bi bi-chevron-left"></i></a></li>`;
+        }
+        
+        // Page numbers
+        const maxVisiblePages = 5;
+        let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+        let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+        
+        if (endPage - startPage + 1 < maxVisiblePages) {
+            startPage = Math.max(1, endPage - maxVisiblePages + 1);
+        }
+        
+        for (let i = startPage; i <= endPage; i++) {
+            if (i === currentPage) {
+                paginationHTML += `<li><a href="#" class="page-link active" data-page="${i}">${i}</a></li>`;
+            } else {
+                paginationHTML += `<li><a href="#" class="page-link" data-page="${i}">${i}</a></li>`;
+            }
+        }
+        
+        // Next button
+        if (currentPage < totalPages) {
+            paginationHTML += `<li><a href="#" class="page-link" data-page="${currentPage + 1}"><i class="bi bi-chevron-right"></i></a></li>`;
+        } else {
+            paginationHTML += `<li><a href="#" class="page-link disabled"><i class="bi bi-chevron-right"></i></a></li>`;
+        }
+        
+        paginationHTML += '</ul>';
+        paginationContainer.innerHTML = paginationHTML;
+        
+        // Add event listeners to pagination buttons
+        paginationContainer.querySelectorAll('.page-link:not(.disabled)').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const page = parseInt(this.getAttribute('data-page'));
+                
+                if (type === 'tables') {
+                    initTablesPagination(page);
+                } else {
+                    initDishesPagination(page);
+                }
+                
+                // Scroll to section
+                const sectionId = type === 'tables' ? 'Tables' : 'Dishes';
+                document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    }
+    
+    // Update page info
+    function updatePageInfo(type, start, end, total) {
+        const pageInfo = type === 'tables' ? tablesPageInfo : dishesPageInfo;
+        pageInfo.textContent = `Showing ${start}-${end} of ${total} ${type}`;
+    }
+});
 </script>
 </body>
 </html>
