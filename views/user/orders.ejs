@@ -620,7 +620,7 @@
 <% 
   const pendingOrder = orders.find(o => o.status === 'pending');
   const processingOrder = orders.find(o => o.status === 'processing');
-  const readyOrder = orders.find(o => o.status === 'ready_to_pickup');
+  const readyOrder = orders.find(o => o.status === 'ready');
   
   let activeOrder = null;
   let currentStatus = '';
@@ -633,7 +633,7 @@
     currentStatus = 'processing';
   } else if (readyOrder) {
     activeOrder = readyOrder;
-    currentStatus = 'ready_to_pickup';
+    currentStatus = 'ready';
   }
 %>
 
@@ -645,7 +645,7 @@
     <% } else if (currentStatus === 'processing') { %>
       <img src="/images/cooking.gif" alt="Cooking" class="notification-gif">
       <strong>Preparing Your order...</strong>
-    <% } else if (currentStatus === 'ready_to_pickup') { %>
+    <% } else if (currentStatus === 'ready') { %>
       <img src="/images/ready.gif" alt="Ready for pickup" class="notification-gif">
       <strong>Your order is ready for pickup!</strong>
     <% } %>
@@ -669,7 +669,7 @@
             <% } else if (currentStatus === 'processing') { %>
               <img src="/images/cooking.gif" alt="Cooking" class="status-modal-gif">
               <h4 class="fw-bold text-warning mb-3">Preparing Your Order</h4>
-            <% } else if (currentStatus === 'ready_to_pickup') { %>
+            <% } else if (currentStatus === 'ready') { %>
               <img src="/images/ready.gif" alt="Ready for pickup" class="status-modal-gif">
               <h4 class="fw-bold text-success mb-3">Ready for Pickup!</h4>
             <% } %>
@@ -683,21 +683,21 @@
 
             <!-- Status Timeline -->
             <div class="status-timeline">
-              <div class="status-step <%= currentStatus === 'pending' || currentStatus === 'processing' || currentStatus === 'ready_to_pickup' ? 'completed' : '' %> <%= currentStatus === 'pending' ? 'active' : '' %>">
+              <div class="status-step <%= currentStatus === 'pending' || currentStatus === 'processing' || currentStatus === 'ready' ? 'completed' : '' %> <%= currentStatus === 'pending' ? 'active' : '' %>">
                 <div class="status-indicator">
                   <i class="bi bi-check-lg"></i>
                 </div>
                 <div class="status-label">Order Received</div>
               </div>
               
-              <div class="status-step <%= currentStatus === 'processing' || currentStatus === 'ready_to_pickup' ? 'completed' : '' %> <%= currentStatus === 'processing' ? 'active' : '' %>">
+              <div class="status-step <%= currentStatus === 'processing' || currentStatus === 'ready' ? 'completed' : '' %> <%= currentStatus === 'processing' ? 'active' : '' %>">
                 <div class="status-indicator">
                   <i class="bi bi-check-lg"></i>
                 </div>
                 <div class="status-label">Preparing</div>
               </div>
               
-              <div class="status-step <%= currentStatus === 'ready_to_pickup' ? 'completed' : '' %> <%= currentStatus === 'ready_to_pickup' ? 'active' : '' %>">
+              <div class="status-step <%= currentStatus === 'ready' ? 'completed' : '' %> <%= currentStatus === 'ready' ? 'active' : '' %>">
                 <div class="status-indicator">
                   <i class="bi bi-check-lg"></i>
                 </div>
@@ -711,7 +711,7 @@
                 <p class="text-muted">We've received your order and are getting it ready for preparation.</p>
               <% } else if (currentStatus === 'processing') { %>
                 <p class="text-muted">Our kitchen is currently preparing your delicious meal!</p>
-              <% } else if (currentStatus === 'ready_to_pickup') { %>
+              <% } else if (currentStatus === 'ready') { %>
                 <p class="text-success fw-bold">Your order is ready! Please proceed to the counter for pickup.</p>
               <% } %>
             </div>
@@ -780,49 +780,50 @@
       <div class="container py-4">
         <!-- ONGOING ORDERS -->
         <h3 class="mb-4 text-center fw-bold">Ongoing <span>Orders</span></h3>
-        <% const ongoingOrders = orders.filter(o => ['pending','processing','ready_to_pickup'].includes(o.status)); %>
+        <% const ongoingOrders = orders.filter(o => ['pending','processing','ready'].includes(o.status)); %>
         <% if (ongoingOrders.length > 0) { %>
           <div class="table-responsive">
             <table class="table table-bordered table-hover">
-              <thead>
-                <tr>
-                  <th>Order ID</th>
-                  <th>Status</th>
-                  <th>Ordered At</th>
-                  <th>Net Total</th>
-                  <th>Reference #</th>
-                  <th>Order Items</th>
-                </tr>
-              </thead>
-              <tbody>
-                <% ongoingOrders.forEach(order => { %>
-                  <tr>
-                    <td class="order-id"><%= order._id %></td>
-                    <td>
-                      <% if (order.status === 'pending') { %>
-                        <span class="status-badge bg-warning">Pending</span>
-                      <% } else if (order.status === 'processing') { %>
-                        <span class="status-badge bg-info">Processing</span>
-                      <% } else if (order.status === 'ready_to_pickup') { %>
-                        <span class="status-badge bg-success">Ready to Pickup</span>
-                      <% } %>
-                    </td>
-                    <td class="date-display"><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
-                    <td class="amount">₱<%= order.netTotal.toFixed(2) %></td>
-                    <td>
-                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
-                        View Proof
-                      </button>
-                    </td>
-                    <td>
-                      <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">
-                        View Items
-                      </button>
-                    </td>
-                  </tr>
-                <% }) %>
-              </tbody>
-            </table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Status</th>
+      <th>Ordered At</th>
+      <th>Net Total</th>
+      <th>Reference #</th>
+      <th>Order Items</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% ongoingOrders.forEach((order, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td>
+          <% if (order.status === 'pending') { %>
+            <span class="status-badge bg-warning">Pending</span>
+          <% } else if (order.status === 'processing') { %>
+            <span class="status-badge bg-info">Processing</span>
+          <% } else if (order.status === 'ready') { %>
+            <span class="status-badge bg-success">Ready to Pickup</span>
+          <% } %>
+        </td>
+        <td class="date-display"><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
+        <td class="amount">₱<%= order.netTotal.toFixed(2) %></td>
+        <td>
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
+            View Proof
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">
+            View Items
+          </button>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
           </div>
         <% } else { %>
           <div class="text-center py-5">
@@ -838,45 +839,46 @@
           <div class="order-history-section">
             <div class="table-responsive">
               <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Status</th>
-                    <th>Ordered At</th>
-                    <th>Net Total</th>
-                    <th>Reference #</th>
-                    <th>Order Items</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% historyOrders.forEach(order => { %>
-                    <tr>
-                      <td class="order-id"><%= order._id %></td>
-                      <td>
-                        <% if (order.status === 'completed') { %>
-                          <span class="status-badge bg-success">Completed</span>
-                        <% } else if (order.status === 'rejected') { %>
-                          <span class="status-badge bg-danger">Rejected</span>
-                        <% } else if (order.status === 'cancelled') { %>
-                          <span class="status-badge bg-secondary">Cancelled</span>
-                        <% } %>
-                      </td>
-                      <td class="date-display"><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
-                      <td class="amount">₱<%= order.netTotal.toFixed(2) %></td>
-                      <td>
-                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
-                          View Proof
-                        </button>
-                      </td>
-                      <td>
-                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">
-                          View Items
-                        </button>
-                      </td>
-                    </tr>
-                  <% }) %>
-                </tbody>
-              </table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Status</th>
+      <th>Ordered At</th>
+      <th>Net Total</th>
+      <th>Reference #</th>
+      <th>Order Items</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% historyOrders.forEach((order, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td>
+          <% if (order.status === 'completed') { %>
+            <span class="status-badge bg-success">Completed</span>
+          <% } else if (order.status === 'rejected') { %>
+            <span class="status-badge bg-danger">Rejected</span>
+          <% } else if (order.status === 'cancelled') { %>
+            <span class="status-badge bg-secondary">Cancelled</span>
+          <% } %>
+        </td>
+        <td class="date-display"><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
+        <td class="amount">₱<%= order.netTotal.toFixed(2) %></td>
+        <td>
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">
+            View Proof
+          </button>
+        </td>
+        <td>
+          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#itemsModal<%= order._id %>">
+            View Items
+          </button>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
             </div>
           </div>
         <% } else { %>

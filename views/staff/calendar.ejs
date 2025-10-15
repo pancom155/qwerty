@@ -275,12 +275,12 @@
   
   /* Event colors based on status */
   .fc-event-pending {
-    background-color: #f39c12;
+    background-color: #dddddd;
     border-left: 4px solid #e67e22;
   }
   
   .fc-event-confirmed {
-    background-color: #27ae60;
+    background-color: #dedede;
     border-left: 4px solid #229954;
   }
   
@@ -609,29 +609,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.getElementById("restaurantToggle");
-    const label = document.getElementById("restaurantLabel");
 
-    const isClosed = localStorage.getItem("restaurantClosed") === "true";
-    toggle.checked = !isClosed;
-    label.textContent = isClosed ? "Closed" : "Open";
-
-    toggle.addEventListener("change", () => {
-      const newStatusClosed = !toggle.checked;
-      localStorage.setItem("restaurantClosed", newStatusClosed);
-      label.textContent = newStatusClosed ? "Closed" : "Open";
-
-      Swal.fire({
-        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
-        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
-        icon: newStatusClosed ? "error" : "success",
-        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
-        confirmButtonText: "OK"
-      });
-    });
-  });
-</script>
 </body>
 </html>

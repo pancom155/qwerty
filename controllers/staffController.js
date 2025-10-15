@@ -27,7 +27,7 @@ exports.renderStaffDashboard = async (req, res) => {
       totalOrders: orders.length,
       pendingOrders: orders.filter(o => o.status === 'pending').length,
       processingOrders: orders.filter(o => o.status === 'processing').length,
-      readyToPickupOrders: orders.filter(o => o.status === 'ready_to_pickup').length,
+      readyToPickupOrders: orders.filter(o => o.status === 'ready').length,
       completedOrders: orders.filter(o => o.status === 'completed').length
     };
 
@@ -64,7 +64,7 @@ exports.getOrders = async (req, res) => {
   try {
   
     const orders = await Order.find({
-      status: { $in: ['pending', 'processing', 'ready_to_pickup'] }
+      status: { $in: ['pending', 'processing', 'ready'] }
     })
       .populate('userId', 'firstName lastName email contactNo')
 
@@ -482,7 +482,7 @@ exports.readyToPickupOrder = async (req, res) => {
       return res.redirect('/staff/order');
     }
 
-    order.status = 'ready_to_pickup';
+    order.status = 'ready';
     order.updatedAt = new Date();
     await order.save();
 
@@ -495,7 +495,7 @@ exports.readyToPickupOrder = async (req, res) => {
     req.flash('success', `Order #${order._id} marked as ready for pickup.`);
     res.redirect('/staff/order');
   } catch (error) {
-    console.error('[Ready to Pickup Error]:', error);
+    console.error('[ready Error]:', error);
     req.flash('error', 'Something went wrong while updating the order.');
     res.redirect('/staff/order');
   }

@@ -506,95 +506,158 @@ body {
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="reservationTableBody">
-            <% let hasPending = false; %>
-            <% reservations.forEach((r, i) => {
-                 if (r.status === 'pending') {
-                   hasPending = true;
-            %>
-              <tr>
-                <td><%= i + 1 %></td>
-                <td>
-                  <div class="customer-info">
-                    <div class="customer-name">
-                      <%= r.userId?.firstName %> <%= r.userId?.lastName %>
-                    </div>
-                    <div class="customer-email">
-                      <%= r.userId?.email %>
-                    </div>
-                  </div>
-                </td>
-                <td><%= r.phone %></td>
-                <td><%= r.tableId?.name %></td>
-                <td>
-                  <% if (r.reservation_fee != null) { %>
-                    ₱<%= r.reservation_fee.toFixed(2) %>
-                  <% } else { %>
-                    <span class="text-muted">N/A</span>
-                  <% } %>
-                </td>
-                <td>
-                  <div class="text-nowrap">
-                    <div><%= r.dineInDateTime.split(' ')[0] %></div>
-                    <div class="text-muted small"><%= r.dineInDateTime.split(' ')[1] %></div>
-                  </div>
-                </td>
-                <td><%= r.referenceNumber %></td>
-                <td>
-                  <% if (r.proofOfPayment) { %>
-                    <button class="btn btn-sm btn-view btn-action" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">
-                      <i class="bi bi-eye"></i> View
-                    </button>
-                  <% } else { %>
-                    <span class="text-muted">N/A</span>
-                  <% } %>
-                </td>
-                <td>
-                  <span class="status-badge status-pending">Pending</span>
-                </td>
-                <td>
-                  <div class="text-nowrap">
-                    <%= new Date(r.createdAt).toLocaleDateString() %>
-                    <div class="text-muted small"><%= new Date(r.createdAt).toLocaleTimeString() %></div>
-                  </div>
-                </td>
-                <td>
-                  <div class="d-flex gap-1">
-                    <button class="btn btn-sm btn-approve btn-action" onclick="confirmAction('<%= r._id %>', 'approve')">
-                      <i class="bi bi-check-circle"></i>
-                    </button>
-                    <button class="btn btn-sm btn-reject btn-action" onclick="confirmAction('<%= r._id %>', 'reject')">
-                      <i class="bi bi-x-circle"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
+         <tbody id="reservationTableBody">
+  <% 
+    let hasPending = false; 
+    if (reservations && reservations.length > 0) { 
+      reservations.forEach((r, i) => {
+        if (r.status === 'pending') {
+          hasPending = true;
+  %>
+    <tr>
+      <td><%= i + 1 %></td>
+      <td>
+        <div class="customer-info">
+          <div class="customer-name">
+            <%= r.userId?.firstName %> <%= r.userId?.lastName %>
+          </div>
+          <div class="customer-email">
+            <%= r.userId?.email %>
+          </div>
+        </div>
+      </td>
+      <td><%= r.phone %></td>
+      <td><%= r.tableId?.name %></td>
+      <td>
+        <% if (r.reservation_fee != null) { %>
+          ₱<%= r.reservation_fee.toFixed(2) %>
+        <% } else { %>
+          <span class="text-muted">N/A</span>
+        <% } %>
+      </td>
+      <td>
+        <div class="text-nowrap">
+          <div><%= r.dineInDateTime.split(' ')[0] %></div>
+          <div class="text-muted small"><%= r.dineInDateTime.split(' ')[1] %></div>
+        </div>
+      </td>
+      <td><%= r.referenceNumber %></td>
+      <td>
+        <% if (r.proofOfPayment) { %>
+          <button class="btn btn-sm btn-view btn-action" data-bs-toggle="modal" data-bs-target="#proofModal<%= r._id %>">
+            <i class="bi bi-eye"></i> View
+          </button>
+        <% } else { %>
+          <span class="text-muted">N/A</span>
+        <% } %>
+      </td>
+      <td>
+        <span class="status-badge status-pending">Pending</span>
+      </td>
+      <td>
+        <div class="text-nowrap">
+          <%= new Date(r.createdAt).toLocaleDateString() %>
+          <div class="text-muted small"><%= new Date(r.createdAt).toLocaleTimeString() %></div>
+        </div>
+      </td>
+      <td>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-approve btn-action" onclick="confirmAction('<%= r._id %>', 'approve')">
+            <i class="bi bi-check-circle"></i>
+          </button>
+          <button class="btn btn-sm btn-reject btn-action" onclick="confirmAction('<%= r._id %>', 'reject')">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+      </td>
+    </tr>
 
-              <% if (r.proofOfPayment) { %>
-                <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-labelledby="proofModalLabel<%= r._id %>" aria-hidden="true">
-                  <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content">
-                      <div class="modal-header" style="background: rgb(218, 218, 218); color: rgb(0, 0, 0);">
-                        <h5 class="modal-title" id="proofModalLabel<%= r._id %>">Proof of Payment</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body text-center">
-                        <img src="/uploads/<%= r.proofOfPayment %>" class="img-fluid rounded shadow" alt="Proof of Payment" style="max-height: 500px;">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              <% } %>
+    <% if (r.proofOfPayment) { %>
+      <div class="modal fade" id="proofModal<%= r._id %>" tabindex="-1" aria-labelledby="proofModalLabel<%= r._id %>" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+          <div class="modal-content">
+            <div class="modal-header" style="background: rgb(218, 218, 218); color: rgb(0, 0, 0);">
+              <h5 class="modal-title" id="proofModalLabel<%= r._id %>">Proof of Payment</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img src="/uploads/<%= r.proofOfPayment %>" class="img-fluid rounded shadow" alt="Proof of Payment" style="max-height: 500px;">
+            </div>
+          </div>
+        </div>
+      </div>
+    <% } %>
 
-            <% } }); %>
+  <% 
+        } // end if pending
+      }); // end forEach
 
-            <% if (!hasPending) { %>
-              <tr>
-                <td colspan="11" class="text-center text-muted py-4">No pending reservations found.</td>
-              </tr>
-            <% } %>
-          </tbody>
+      if (!hasPending) { 
+  %>
+        <tr>
+          <td colspan="11" class="text-center text-muted py-4">No pending reservations found.</td>
+        </tr>
+  <% 
+      } 
+    } else { 
+  %>
+      <tr>
+        <td colspan="11" class="text-center text-muted py-4">No table reservations found.</td>
+      </tr>
+  <% } %>
+</tbody>
         </table>
+        <script>
+
+  const tableBody = document.getElementById("reservationTableBody");
+
+  function filterTable() {
+    const searchValue = searchInput.value.toLowerCase();
+    const selectedStatus = statusFilter.value.toLowerCase();
+    let visibleRows = 0;
+
+    // Remove any old "no data" rows
+    const oldMsg = document.querySelector(".no-data-row");
+    if (oldMsg) oldMsg.remove();
+
+    // Select all actual reservation rows (exclude modals)
+    const rows = tableBody.querySelectorAll("tr");
+
+    rows.forEach(row => {
+      const statusCell = row.querySelector(".status-badge");
+      const statusText = statusCell ? statusCell.textContent.toLowerCase() : "";
+      const rowText = row.textContent.toLowerCase();
+
+      // Hide message rows from the check
+      if (row.classList.contains("no-data-row")) return;
+
+      const matchesSearch = rowText.includes(searchValue);
+      const matchesStatus = !selectedStatus || statusText.includes(selectedStatus);
+
+      if (matchesSearch && matchesStatus) {
+        row.style.display = "";
+        visibleRows++;
+      } else {
+        row.style.display = "none";
+      }
+    });
+
+    // If no visible rows, show "No table reservations found"
+    if (visibleRows === 0) {
+      const noRow = document.createElement("tr");
+      noRow.classList.add("no-data-row");
+      noRow.innerHTML = `
+        <td colspan="11" class="text-center text-muted py-4">
+          No table reservations found.
+        </td>`;
+      tableBody.appendChild(noRow);
+    }
+  }
+
+  searchInput.addEventListener("input", filterTable);
+  statusFilter.addEventListener("change", filterTable);
+</script>
+
       </div>
       
       <div class="pagination-container">
@@ -848,6 +911,8 @@ body {
         });
       });
     });
+
+    
   </script>
 </body>
 </html>

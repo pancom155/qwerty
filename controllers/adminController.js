@@ -580,7 +580,7 @@ exports.getOrders_rejected = async (req, res) => {
 };
 exports.getOrders_pending = async (req, res) => {
   try {
-    const allOrders = await Order.find({ status: { $in: ['pending', 'processing', 'ready_to_pickup'] } })
+    const allOrders = await Order.find({ status: { $in: ['pending', 'processing', 'ready'] } })
       .sort({ createdAt: -1 })
       .populate('userId', 'firstName lastName email') 
       .populate('items.productId', 'image name')

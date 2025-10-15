@@ -11,6 +11,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/StaffDashboard.css">
 </head>
+<style>
+  .custom-toast-margin {
+  margin-top: 60px !important; /* adjust this value as you like */
+}
+
+</style>
 <body>
 
 <section>
@@ -209,7 +215,20 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  const cart = [];
+  let cart = [];
+
+  // Load cart from localStorage when page loads
+  window.addEventListener('load', () => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      cart = JSON.parse(savedCart);
+      updateCartUI();
+    }
+  });
+
+  function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+  }
 
   function addToCart(id, name, price, image) {
     const existing = cart.find(item => item.productId === id);
@@ -226,12 +245,14 @@
       });
     }
 
+    saveCart();
     updateCartUI();
     showSuccessToast(`${name} added to cart`);
   }
 
   function removeFromCart(index) {
     const removedItem = cart.splice(index, 1)[0];
+    saveCart();
     updateCartUI();
     showWarningToast(`${removedItem.name} removed from cart`);
   }
@@ -247,6 +268,7 @@
     });
 
     applyPWDDiscount(true);
+    saveCart();
     updateCartUI();
   }
 
@@ -280,7 +302,6 @@
         total += subtotal;
         totalDiscount += itemTotalDiscount;
 
-        // Sidebar cart item - NO REMOVE BUTTON
         const sidebarItem = document.createElement("div");
         sidebarItem.className = "cart-item";
         sidebarItem.innerHTML = `
@@ -297,7 +318,6 @@
         `;
         sidebarItems.appendChild(sidebarItem);
 
-        // Modal cart item (keep remove button in modal only)
         const modalRow = `
           <tr>
             <td>
@@ -305,9 +325,9 @@
                 productId: item.productId,
                 name: item.name,
                 price: item.unitPrice,
-              })}'>
+              })}' />
               ${item.name}
-              ${item.discount > 0 ? `<div class="text-success small">PWD Discount: -₱${(item.discount).toFixed(2)}</div>` : ''}
+              ${item.discount > 0 ? `<div class="text-success small">PWD Discount: -₱${item.discount.toFixed(2)}</div>` : ''}
             </td>
             <td>${item.qty}</td>
             <td>₱${item.unitPrice.toFixed(2)}</td>
@@ -341,11 +361,11 @@
           <td colspan="2" class="fw-bold">₱${total.toFixed(2)}</td>
         </tr>`;
         
-      // Update sidebar total
       totalAmount.textContent = `₱${total.toFixed(2)}`;
     }
 
     count.textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+    saveCart(); // ✅ Always save latest state
   }
 
   function applyPWDDiscount(silent = false) {
@@ -363,7 +383,7 @@
     let remainingDiscount = 250;
     const sortedCart = [...cart].sort((a, b) => b.unitPrice - a.unitPrice);
 
-    sortedCart.forEach((item) => {
+    sortedCart.forEach(item => {
       item.discount = 0;
       item.discountApplied = false;
 
@@ -377,15 +397,12 @@
         item.discount = remainingDiscount;
         item.discountApplied = true;
         remainingDiscount = 0;
-      } else {
-        item.discount = 0;
-        item.discountApplied = false;
       }
 
       item.discount = parseFloat(item.discount.toFixed(2));
     });
 
-    sortedCart.forEach((sortedItem) => {
+    sortedCart.forEach(sortedItem => {
       const original = cart.find(item => item.productId === sortedItem.productId);
       if (original) {
         original.discount = sortedItem.discount;
@@ -393,42 +410,53 @@
       }
     });
 
+    saveCart();
     if (!silent) showSuccessToast("PWD discount applied (1 qty per item, highest price first, max ₱250)");
     updateCartUI();
   }
 
-  function showSuccessToast(message) {
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'success',
-      title: message,
-      showConfirmButton: false,
-      timer: 3000
-    });
-  }
+function showSuccessToast(message) {
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'success',
+    title: message,
+    showConfirmButton: false,
+    timer: 3000,
+    customClass: {
+      popup: 'custom-toast-margin'
+    }
+  });
+}
 
-  function showErrorToast(message) {
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'error',
-      title: message,
-      showConfirmButton: false,
-      timer: 3000
-    });
-  }
+function showErrorToast(message) {
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'error',
+    title: message,
+    showConfirmButton: false,
+    timer: 3000,
+    customClass: {
+      popup: 'custom-toast-margin'
+    }
+  });
+}
 
-  function showWarningToast(message) {
-    Swal.fire({
-      toast: true,
-      position: 'top-end',
-      icon: 'warning',
-      title: message,
-      showConfirmButton: false,
-      timer: 3000
-    });
-  }
+function showWarningToast(message) {
+  Swal.fire({
+    toast: true,
+    position: 'top-end',
+    icon: 'warning',
+    title: message,
+    showConfirmButton: false,
+    timer: 3000,
+    customClass: {
+      popup: 'custom-toast-margin'
+    }
+  });
+}
+
 
   function searchProducts() {
     const input = document.getElementById('searchInput');
@@ -438,15 +466,10 @@
 
     for (let i = 0; i < products.length; i++) {
       const productName = products[i].getAttribute('data-name');
-      if (productName.includes(filter)) {
-        products[i].style.display = "";
-      } else {
-        products[i].style.display = "none";
-      }
+      products[i].style.display = productName.includes(filter) ? "" : "none";
     }
   }
 
-  // Cart sidebar toggle functions
   function openCartSidebar() {
     document.getElementById('cartSidebar').classList.add('active');
   }
@@ -458,7 +481,6 @@
   document.getElementById('cart-icon').addEventListener('click', openCartSidebar);
   document.getElementById('cartCloseBtn').addEventListener('click', closeCartSidebar);
 
-  // FIXED: Close cart sidebar only when clicking outside, not on cart items
   document.addEventListener('click', function(event) {
     const cartSidebar = document.getElementById('cartSidebar');
     const cartIcon = document.getElementById('cart-icon');
@@ -475,28 +497,27 @@
     }
   });
 
-  // Handle cart item quantity controls
   document.getElementById('cartItems').addEventListener('click', function(e) {
-    // Prevent event from bubbling up to parent elements
     e.stopPropagation();
     
     if (e.target.classList.contains('increase-quantity')) {
       const index = e.target.getAttribute('data-index');
       cart[index].qty += 1;
+      saveCart();
       updateCartUI();
     } else if (e.target.classList.contains('decrease-quantity')) {
       const index = e.target.getAttribute('data-index');
       if (cart[index].qty > 1) {
         cart[index].qty -= 1;
-        updateCartUI();
       } else {
-        // Remove item when quantity reaches 0
         removeFromCart(index);
+        return;
       }
+      saveCart();
+      updateCartUI();
     }
   });
 
-  // Order form submission
   document.getElementById('orderForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -504,17 +525,10 @@
     const tableNumber = document.getElementById('tableNumber').value;
     const pwdId = document.getElementById('pwdId').value.trim();
 
-    if (!fullName) {
-      return showErrorToast('Full name is required!');
-    }
+    if (!fullName) return showErrorToast('Full name is required!');
+    if (cart.length === 0) return showErrorToast('Cart is empty!');
 
-    if (cart.length === 0) {
-      return showErrorToast('Cart is empty!');
-    }
-
-    if (pwdId !== '') {
-      applyPWDDiscount(true);
-    }
+    if (pwdId !== '') applyPWDDiscount(true);
 
     const items = cart.map(item => ({
       productId: item.productId,
@@ -545,9 +559,7 @@
       netTotal,
       items,
       discounts,
-      payment: {
-        method: 'cash'
-      },
+      payment: { method: 'cash' },
       status: 'processing'
     };
 
@@ -564,6 +576,7 @@
         showSuccessToast('Order placed successfully!');
         document.getElementById('orderForm').reset();
         cart.length = 0;
+        saveCart();
         updateCartUI();
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('placeOrderModal'));
@@ -577,7 +590,6 @@
     }
   });
 
-  // Category navigation
   document.addEventListener('DOMContentLoaded', function() {
     const path = window.location.pathname;
     let currentCategory = 'all'; 

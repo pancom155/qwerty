@@ -105,17 +105,22 @@ exports.postLogin = async (req, res) => {
     });
   }
 
-  // Login attempt tracking
+  // ===== FIXED LOGIN ATTEMPT TRACKING =====
   if (!req.session.loginAttempts) req.session.loginAttempts = {};
   const loginAttempts = req.session.loginAttempts;
   const now = new Date();
 
-  if (!loginAttempts[email]) loginAttempts[email] = { count: 0, lastAttempt: null };
-  const userAttempt = loginAttempts[email];
-  const cooldown = 60 * 60 * 1000;
+  // Ensure record exists
+  if (!loginAttempts[email]) {
+    loginAttempts[email] = { count: 0, lastAttempt: null, lockUntil: null };
+  }
 
-  if (userAttempt.count >= 3 && now - userAttempt.lastAttempt < cooldown) {
-    const secondsLeft = Math.floor((cooldown - (now - userAttempt.lastAttempt)) / 1000);
+  const userAttempt = loginAttempts[email];
+  const cooldown = 2 * 60 * 1000; // 2 minutes cooldown
+
+  // Check if currently locked
+  if (userAttempt.lockUntil && now < userAttempt.lockUntil) {
+    const secondsLeft = Math.floor((userAttempt.lockUntil - now) / 1000);
     return res.render('login', {
       error: `Too many failed login attempts. Please wait ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds.`,
       cooldownSeconds: secondsLeft,
@@ -142,9 +147,21 @@ exports.postLogin = async (req, res) => {
     if (account) role = 'kitchen';
   }
 
+  // Wrong email
   if (!account) {
     userAttempt.count++;
     userAttempt.lastAttempt = now;
+
+    if (userAttempt.count >= 3) {
+      userAttempt.lockUntil = new Date(now.getTime() + cooldown);
+      const secondsLeft = Math.floor(cooldown / 1000);
+      return res.render('login', {
+        error: `Too many failed login attempts. Please wait ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds.`,
+        cooldownSeconds: secondsLeft,
+        success: false
+      });
+    }
+
     const attemptsLeft = Math.max(0, 3 - userAttempt.count);
     return res.render('login', {
       error: `Wrong email. ${attemptsLeft} attempt(s) left.`,
@@ -163,9 +180,10 @@ exports.postLogin = async (req, res) => {
     userAttempt.lastAttempt = now;
 
     if (userAttempt.count >= 3) {
+      userAttempt.lockUntil = new Date(now.getTime() + cooldown);
       const secondsLeft = Math.floor(cooldown / 1000);
       return res.render('login', {
-        error: `Too many failed login attempts. Please wait ${Math.floor(secondsLeft / 60)} minutes.`,
+        error: `Too many failed login attempts. Please wait ${Math.floor(secondsLeft / 60)} minutes and ${secondsLeft % 60} seconds.`,
         cooldownSeconds: secondsLeft,
         success: false
       });
@@ -179,8 +197,8 @@ exports.postLogin = async (req, res) => {
     });
   }
 
-  // Reset login attempts
-  loginAttempts[email] = { count: 0, lastAttempt: null };
+  // Reset login attempts on success
+  loginAttempts[email] = { count: 0, lastAttempt: null, lockUntil: null };
 
   // Save session
   req.session.user = {
@@ -207,6 +225,7 @@ exports.postLogin = async (req, res) => {
     return res.redirect('/user/menu');
   });
 };
+
 
 exports.postRegister = async (req, res) => {
   try {
@@ -439,7 +458,7 @@ exports.getAdminIndex = async (req, res) => {
     ] = await Promise.all([
       Order.countDocuments({ status: 'pending', createdAt: { $gte: monthStart, $lte: monthEnd } }),
       Order.countDocuments({ status: 'processing', createdAt: { $gte: monthStart, $lte: monthEnd } }),
-      Order.countDocuments({ status: 'ready_to_pickup', createdAt: { $gte: monthStart, $lte: monthEnd } }),
+      Order.countDocuments({ status: 'ready', createdAt: { $gte: monthStart, $lte: monthEnd } }),
       Order.countDocuments({ status: 'completed', createdAt: { $gte: monthStart, $lte: monthEnd } }),
       Order.countDocuments({ status: 'rejected', createdAt: { $gte: monthStart, $lte: monthEnd } }),
       Order.countDocuments({ status: 'cancelled', createdAt: { $gte: monthStart, $lte: monthEnd } }),

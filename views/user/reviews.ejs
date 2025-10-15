@@ -107,7 +107,7 @@
                     </div>
                     <div class="mb-2">
                       <label for="comment-<%= order._id %>" class="form-label">Comment:</label>
-                      <textarea name="comment" id="comment-<%= order._id %>" class="form-control" rows="3" placeholder="Write your review here..." required></textarea>
+                      <textarea name="comment" id="comment-<%= order._id %>" maxlength="50"  class="form-control" rows="3" placeholder="Write your review here..." required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit Review</button>
                   </form>

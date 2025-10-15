@@ -661,93 +661,90 @@
               <th>Actions</th>
             </tr>
           </thead>
-          <tbody id="accountsTableBody">
-            <!-- Accounts will be populated from server data -->
-            <% 
-              // Combine all account types into one array
-              const allAccounts = [];
-              
-              if (staff && staff.length > 0) {
-                staff.forEach(user => {
-                  allAccounts.push({
-                    _id: user._id,
-                    fullName: user.fullName,
-                    email: user.email,
-                    role: 'staff'
-                  });
-                });
-              }
-              
-              if (waiters && waiters.length > 0) {
-                waiters.forEach(user => {
-                  allAccounts.push({
-                    _id: user._id,
-                    fullName: user.fullName,
-                    email: user.email,
-                    role: 'waiter'
-                  });
-                });
-              }
-              
-              if (kitchens && kitchens.length > 0) {
-                kitchens.forEach(user => {
-                  allAccounts.push({
-                    _id: user._id,
-                    fullName: user.fullName,
-                    email: user.email,
-                    role: 'kitchen'
-                  });
-                });
-              }
-              
-              // Render accounts
-              if (allAccounts.length > 0) {
-                allAccounts.forEach((user, index) => {
-                  let badgeClass = '';
-                  switch(user.role) {
-                    case 'staff': badgeClass = 'role-staff'; break;
-                    case 'waiter': badgeClass = 'role-waiter'; break;
-                    case 'kitchen': badgeClass = 'role-kitchen'; break;
-                  }
-            %>
-              <tr data-role="<%= user.role %>" data-name="<%= user.fullName %>" data-email="<%= user.email %>">
-                <td class="user-index"><%= index + 1 %></td>
-                <td>
-                  <div class="user-info">
-                    <div class="user-name"><%= user.fullName %></div>
-                  </div>
-                </td>
-                <td><%= user.email %></td>
-                <td><span class="role-badge <%= badgeClass %>"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></span></td>
-                <td>
-                  <div class="account-actions">
-                    <button class="btn btn-sm btn-action btn-edit" onclick="openEditModal('<%= user._id %>', '<%= user.fullName %>', '<%= user.email %>', '<%= user.role %>')">
-                      <i class="bi bi-pencil-square"></i> Edit
-                    </button>
-                    <form action="/admin/staff/<%= user._id %>/delete?role=<%= user.role %>" method="POST" class="d-inline deleteForm">
-                      <button type="submit" class="btn btn-sm btn-action btn-delete">
-                        <i class="bi bi-trash3"></i> Delete
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            <%
-                });
-              } else {
-            %>
-              <tr>
-                <td colspan="5">
-                  <div class="empty-state">
-                    <i class="bi bi-people"></i>
-                    <p>No accounts found.</p>
-                  </div>
-                </td>
-              </tr>
-            <%
-              }
-            %>
-          </tbody>
+         <tbody id="accountsTableBody">
+  <% 
+    const allAccounts = [];
+
+    if (staff && staff.length > 0) {
+      staff.forEach(user => {
+        allAccounts.push({
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: 'staff'
+        });
+      });
+    }
+
+    if (waiters && waiters.length > 0) {
+      waiters.forEach(user => {
+        allAccounts.push({
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: 'waiter'
+        });
+      });
+    }
+
+    if (kitchens && kitchens.length > 0) {
+      kitchens.forEach(user => {
+        allAccounts.push({
+          _id: user._id,
+          fullName: user.fullName,
+          email: user.email,
+          role: 'kitchen'
+        });
+      });
+    }
+
+    // Render accounts
+    if (allAccounts.length > 0) {
+      allAccounts.forEach((user, index) => {
+        let badgeClass = '';
+        switch(user.role) {
+          case 'staff': badgeClass = 'role-staff'; break;
+          case 'waiter': badgeClass = 'role-waiter'; break;
+          case 'kitchen': badgeClass = 'role-kitchen'; break;
+        }
+  %>
+    <tr data-role="<%= user.role %>" data-name="<%= user.fullName %>" data-email="<%= user.email %>">
+      <td class="user-index"><%= index + 1 %></td>
+      <td>
+        <div class="user-info">
+          <div class="user-name"><%= user.fullName %></div>
+        </div>
+      </td>
+      <td><%= user.email %></td>
+      <td><span class="role-badge <%= badgeClass %>"><%= user.role.charAt(0).toUpperCase() + user.role.slice(1) %></span></td>
+      <td>
+        <div class="account-actions">
+          <button class="btn btn-sm btn-action btn-edit" onclick="openEditModal('<%= user._id %>', '<%= user.fullName %>', '<%= user.email %>', '<%= user.role %>')">
+            <i class="bi bi-pencil-square"></i> Edit
+          </button>
+          <form action="/admin/staff/<%= user._id %>/delete?role=<%= user.role %>" method="POST" class="d-inline deleteForm">
+            <button type="submit" class="btn btn-sm btn-action btn-delete">
+              <i class="bi bi-trash3"></i> Delete
+            </button>
+          </form>
+        </div>
+      </td>
+    </tr>
+  <% 
+      });
+    } else { 
+  %>
+    <tr>
+      <td colspan="5" class="text-center py-5">
+        <div class="empty-state">
+          <i class="bi bi-person-slash fs-2 text-muted d-block mb-2"></i>
+          <p class="text-muted fs-5 mb-0">No accounts found.</p>
+        </div>
+      </td>
+    </tr>
+  <% } %>
+</tbody>
+
         </table>
       </div>
       
@@ -786,7 +783,7 @@
             
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input type="text" name="name" class="form-control" required>
+              <input type="text" name="name" maxlength="30" class="form-control" required>
             </div>
             <div class="mb-3">
               <label class="form-label" id="emailLabel">Email (must end in @staff.com)</label>
@@ -824,7 +821,7 @@
             <input type="hidden" name="role" id="editRole"> 
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input type="text" name="name" id="editName" class="form-control" required>
+              <input type="text" name="name" maxlength="20" id="editName" class="form-control" required>
             </div>
             <div class="mb-3">
               <label class="form-label">Email</label>
@@ -1065,7 +1062,9 @@
         timer: 2000,
         showConfirmButton: false
       });
+      
     </script>
   <% } %>
+  
 </body>
 </html>

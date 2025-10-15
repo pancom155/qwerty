@@ -400,7 +400,7 @@
         <div class="modal-body row g-3">
           <div class="col-md-6">
             <label class="form-label"><i class="bi bi-type me-2"></i>Name</label>
-            <input type="text" name="name" class="form-control" value="<%= product.name %>" required>
+            <input type="text" name="name" maxlength="30" class="form-control" value="<%= product.name %>" required>
           </div>
           <div class="col-md-6">
             <label class="form-label"><i class="bi bi-tags-fill me-2"></i>Category</label>
@@ -415,7 +415,8 @@
           </div>
           <div class="col-md-6">
             <label class="form-label"><i class="fa-solid fa-peso-sign me-2"></i>Price</label>
-            <input type="number" name="price" class="form-control" value="<%= product.price %>" required>
+           <input type="number" name="price" class="form-control" value="<%= product.price %>" min="0" required oninput="this.value = Math.abs(this.value)">
+
           </div>
           <div class="col-md-6">
             <label class="form-label"><i class="bi bi-toggle-on me-2"></i>Status</label>
@@ -430,7 +431,7 @@
           </div>
           <div class="col-12">
             <label class="form-label"><i class="bi bi-card-text me-2"></i>Description</label>
-            <textarea name="description" class="form-control" required><%= product.description %></textarea>
+            <textarea name="description" maxlength="100" class="form-control" required><%= product.description %></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -460,7 +461,7 @@
       <div class="modal-body row g-3">
         <div class="col-md-6">
           <label class="form-label"><i class="bi bi-type me-2"></i>Name</label>
-          <input type="text" name="name" class="form-control" placeholder="Enter product name" required>
+          <input type="text" name="name" class="form-control" maxlength="30" placeholder="Enter product name" required>
         </div>
 
         <div class="col-md-6">
@@ -478,7 +479,7 @@
 
         <div class="col-md-6">
           <label class="form-label"><i class="fa-solid fa-peso-sign me-2"></i>Price</label>
-          <input type="number" name="price" class="form-control" placeholder="Enter price" required>
+          <input type="number" name="price" class="form-control" placeholder="Enter price" min="0" required oninput="this.value = Math.abs(this.value)" >
         </div>
 
         <div class="col-md-6">
@@ -496,7 +497,7 @@
 
         <div class="col-12">
           <label class="form-label"><i class="bi bi-card-text me-2"></i>Description</label>
-          <textarea name="description" class="form-control" placeholder="Enter description" required></textarea>
+          <textarea name="description" maxlength="100" class="form-control" placeholder="Enter description" required></textarea>
         </div>
       </div>
 
@@ -572,6 +573,7 @@
       });
     });
   });
+  
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -597,5 +599,48 @@
     });
   });
 </script>   
+<script>
+  const searchInput = document.getElementById('productSearch');
+  const tableBody = document.querySelector('#productsTable tbody');
+
+  // Create persistent "No product found" row
+  const noProductRow = document.createElement('tr');
+  noProductRow.id = 'noProductRow';
+  noProductRow.innerHTML = `
+    <td colspan="8" class="text-center text-muted py-3">No product found</td>
+  `;
+  noProductRow.style.display = 'none';
+  tableBody.appendChild(noProductRow);
+
+  function filterProducts() {
+    const searchValue = searchInput.value.toLowerCase().trim();
+    const rows = [...tableBody.querySelectorAll('tr')].filter(r => r.id !== 'noProductRow');
+    let visibleCount = 0;
+
+    rows.forEach(row => {
+      const name = row.querySelector('.product-name')?.textContent.toLowerCase() || '';
+      const category = row.querySelector('.product-category')?.textContent.toLowerCase() || '';
+      const description = row.querySelector('.product-description')?.textContent.toLowerCase() || '';
+
+      if (name.includes(searchValue) || category.includes(searchValue) || description.includes(searchValue)) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    // Show or hide the persistent message row
+    if (visibleCount === 0) {
+      noProductRow.style.display = '';
+    } else {
+      noProductRow.style.display = 'none';
+    }
+  }
+
+  // Listen to typing in search box
+  searchInput.addEventListener('input', filterProducts);
+</script>
+
 </body>
 </html>

@@ -209,7 +209,7 @@
 
             <div class="col-md-6">
             <label class="form-label">GCash Reference No.</label>
-            <input type="number" class="form-control" name="referenceNumber" placeholder="e.g. 1234567890" required>
+            <input type="number" class="form-control" name="referenceNumber"oninput="if(this.value.length > 30) this.value = this.value.slice(0, 30);" placeholder="e.g. 1234567890" required>
             </div>
 
             <div class="col-md-6">

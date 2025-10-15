@@ -242,19 +242,19 @@
                 <div class="modal-body row g-3 px-3">
                   <div class="col-md-6">
                     <label class="form-label">Name</label>
-                    <input type="text" name="name" class="form-control" value="<%= table.name %>" required>
+                    <input type="text" name="name" class="form-control" maxlength="40" value="<%= table.name %>" required>
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Price</label>
-                    <input type="number" name="price" class="form-control" value="<%= table.price %>" required>
+                    <input type="number" name="price" class="form-control" value="<%= table.price %>" min="0" max="1000000" required oninput="this.value = Math.abs(this.value)">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Reservation Fee</label>
-                    <input type="number" name="reservation_fee" class="form-control" value="<%= table.reservation_fee %>" required>
+                    <input type="number" name="reservation_fee" class="form-control" value="<%= table.reservation_fee %>" min="0" max="1000000" required oninput="this.value = Math.abs(this.value)">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Pax</label>
-                    <input type="number" name="pax" class="form-control" value="<%= table.pax %>" required>
+                    <input type="number" name="pax" class="form-control" value="<%= table.pax %>" min="0" max="100" required oninput="this.value = Math.abs(this.value)">
                   </div>
                   <div class="col-md-6">
                     <label class="form-label">Image (Leave blank to keep current)</label>
@@ -262,7 +262,7 @@
                   </div>
                   <div class="col-12">
                     <label class="form-label">Description</label>
-                    <textarea name="description" class="form-control" rows="3" required><%= table.description %></textarea>
+                    <textarea name="description" class="form-control" maxlength="100" rows="3" required><%= table.description %></textarea>
                   </div>
                 </div>
 
@@ -300,19 +300,22 @@
         <div class="modal-body row g-3 px-3">
           <div class="col-md-6">
             <label class="form-label">Name</label>
-            <input type="text" name="name" class="form-control" required>
+            <input type="text" name="name" class="form-control" placeholder="Enter Table Name..." required>
           </div>
           <div class="col-md-6">
             <label class="form-label">Price</label>
-            <input type="number" name="price" class="form-control" required>
+            <input type="number" name="price" class="form-control" placeholder="Enter Table Price..." min="0"  max="1000000"  required oninput="this.value = Math.abs(this.value)"
+>
           </div>
           <div class="col-md-6">
             <label class="form-label">Reservation Fee</label>
-            <input type="number" name="reservation_fee" class="form-control" required>
+            <input type="number" name="reservation_fee" class="form-control"max="1000000" placeholder="Enter Table Reservation Fee..." min="0" required oninput="this.value = Math.abs(this.value)"
+>
           </div>
           <div class="col-md-6">
             <label class="form-label">Pax</label>
-            <input type="number" name="pax" class="form-control" required>
+            <input type="number" name="pax" class="form-control" placeholder="Enter Table Pax..." min="0" required oninput="this.value = Math.abs(this.value)"
+>
           </div>
           <div class="col-md-6">
             <label class="form-label">Image</label>
@@ -320,7 +323,7 @@
           </div>
           <div class="col-12">
             <label class="form-label">Description</label>
-            <textarea name="description" class="form-control" rows="3" required></textarea>
+            <textarea name="description" maxlength="100 " class="form-control" rows="3" placeholder="Enter Description..." required></textarea>
           </div>
         </div>
 

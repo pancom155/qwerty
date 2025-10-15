@@ -130,7 +130,7 @@
 
     <!-- Chat Input -->
     <form id="chatForm" class="chat-input d-flex align-items-center mt-2" action="/user/customer_support/send" method="POST" enctype="multipart/form-data">
-      <input type="text" name="message" class="form-control" placeholder="Type a message...">
+      <input type="text" name="message" class="form-control"maxlength="100" placeholder="Type a message...">
       <input type="file" name="image" id="chatImageInput" accept="image/*" style="display:none;">
       
       <button type="button" class="btn btn-light me-2" id="uploadBtn" title="Attach Image">

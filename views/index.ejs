@@ -102,6 +102,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .account-btn:hover {
     background: var(--primary-dark);
+     color: #ffffff;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(255, 102, 0, 0.3);
 }
@@ -1320,22 +1321,30 @@ h1, h2, h3, h4, h5, h6 {
     </div>
   </div>
   
-  <!-- Modals for table images -->
-  <% tables.forEach(table => { %>
-  <div class="modal fade" id="imageModal<%= table._id %>" tabindex="-1" aria-labelledby="imageModalLabel<%= table._id %>" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content border-0 rounded-4">
-        <div class="modal-header border-0">
-          <h5 class="modal-title" id="imageModalLabel<%= table._id %>"><%= table.name %></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body text-center">
-          <img src="/uploads/<%= table.image %>" alt="<%= table.name %>" class="img-fluid rounded">
-        </div>
+ <!-- Modals for table images -->
+<% tables.forEach(table => { %>
+<div class="modal fade" 
+   id="imageModal<%= table._id %>" 
+   tabindex="-1" 
+   aria-labelledby="imageModalLabel<%= table._id %>" 
+   aria-hidden="true"
+   data-bs-backdrop="false">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content border-0 rounded-4">
+      <div class="modal-header border-0 position-relative">
+        <h5 class="modal-title"><%= table.name %></h5>
+        <!-- Close button (top-right) -->
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="/uploads/<%= table.image %>" alt="<%= table.name %>" class="img-fluid rounded table-image">
       </div>
     </div>
   </div>
-  <% }) %>
+</div>
+<% }) %>
+
 </section>
 
 

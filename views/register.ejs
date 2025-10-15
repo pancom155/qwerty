@@ -252,9 +252,12 @@
     
     .input-group:focus-within {
       transform: translateY(-2px);
+      
     }
     
-    .input-group:focus-within .input-group-text {
+    .input-group:focus-within 
+  
+    .input-group-text {
       background-color: #ff6600;
       color: white;
     }
@@ -466,7 +469,7 @@
             <div class="col-6">
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" name="firstName" id="firstName" class="form-control" placeholder="First Name" required>
+                <input type="text" name="firstName" id="firstName" class="form-control" maxlength="20" placeholder="First Name" required>
               </div>
               <div class="name-helper mt-1">
                 <small id="firstNameHelper" class="validation-item default">Only alphabetical characters allowed</small>
@@ -475,7 +478,7 @@
             <div class="col-6">
               <div class="input-group">
                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                <input type="text" name="lastName" id="lastName" class="form-control" placeholder="Last Name" required>
+                <input type="text" name="lastName" id="lastName" class="form-control" maxlength="20" placeholder="Last Name" required>
               </div>
               <div class="name-helper mt-1">
                 <small id="lastNameHelper" class="validation-item default">Only alphabetical characters allowed</small>
@@ -495,7 +498,7 @@
                 <span class="input-group-text"><i class="fas fa-phone"></i></span>
                 <input type="text" id="contactNo" name="contactNo" 
                       class="form-control" 
-                      placeholder="Contact Number (e.g., 09123456789)" 
+                      placeholder="Contact Num(e.g., 09123456789)" 
                       maxlength="11" required>
               </div>
               <div id="phoneHelper" class="helper-container small text-muted">
@@ -508,7 +511,7 @@
           
           <div class="mb-3 input-group">
             <span class="input-group-text"><i class="fas fa-home"></i></span>
-            <input type="text" name="address" class="form-control" placeholder="Address" required>
+            <input type="text" name="address" class="form-control"maxlength="40"  placeholder="Address (e.g., Purok 6,Bitas, Cabanatuan City...)" required>
           </div>
 
           <div class="row mb-3">

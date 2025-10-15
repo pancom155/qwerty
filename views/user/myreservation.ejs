@@ -558,47 +558,52 @@
         <% if (reservations && reservations.filter(r => r.status === 'pending' || r.status === 'confirmed').length > 0) { %>
           <div class="reservation-section">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>Reference #</th>
-                    <th>Status</th>
-                    <th>Date & Time</th>
-                    <th>Guest</th>
-                    <th>Table</th>
-                    <th>Total Price</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% reservations.filter(r => r.status === 'pending' || r.status === 'confirmed').forEach(reservation => { %>
-                    <tr>
-                      <td class="reference-number">#<%= reservation.referenceNumber %></td>
-                      <td>
-                        <% if (reservation.status === 'pending') { %>
-                          <span class="status-badge bg-warning">Pending</span>
-                        <% } else if (reservation.status === 'confirmed') { %>
-                          <span class="status-badge bg-success">Confirmed</span>
-                        <% } %>
-                      </td>
-                      <td class="date-display"><%= reservation.dineInDateTime %></td>
-                      <td class="guest-name"><%= reservation.fullName %></td>
-                      <td><%= reservation.tableId.name %></td>
-                      <td class="amount">₱<%= reservation.totalPrice.toFixed(2) %></td>
-                      <td>
-                        <div class="d-flex gap-2 justify-content-center">
-                          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= reservation._id %>">
-                            View Proof
-                          </button>
-                          <% if (reservation.status === 'pending') { %>
-                            <button class="btn-delete cancel-btn" data-id="<%= reservation._id %>">Cancel</button>
-                          <% } %>
-                        </div>
-                      </td>
-                    </tr>
-                  <% }); %>
-                </tbody>
-              </table>
+            <table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Reference #</th>
+      <th>Status</th>
+      <th>Date & Time</th>
+      <th>Guest</th>
+      <th>Table</th>
+      <th>Total Price</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% reservations
+        .filter(r => r.status === 'pending' || r.status === 'confirmed')
+        .forEach((reservation, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td class="reference-number">#<%= reservation.referenceNumber %></td>
+        <td>
+          <% if (reservation.status === 'pending') { %>
+            <span class="status-badge bg-warning">Pending</span>
+          <% } else if (reservation.status === 'confirmed') { %>
+            <span class="status-badge bg-success">Confirmed</span>
+          <% } %>
+        </td>
+        <td class="date-display"><%= reservation.dineInDateTime %></td>
+        <td class="guest-name"><%= reservation.fullName %></td>
+        <td><%= reservation.tableId.name %></td>
+        <td class="amount">₱<%= reservation.totalPrice.toFixed(2) %></td>
+        <td>
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= reservation._id %>">
+              View Proof
+            </button>
+            <% if (reservation.status === 'pending') { %>
+              <button class="btn-delete cancel-btn" data-id="<%= reservation._id %>">Cancel</button>
+            <% } %>
+          </div>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
             </div>
           </div>
         <% } else { %>
@@ -616,47 +621,52 @@
         <% if (reservations && reservations.filter(r => r.status === 'cancelled' || r.status === 'done').length > 0) { %>
           <div class="reservation-section">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>Reference #</th>
-                    <th>Status</th>
-                    <th>Date & Time</th>
-                    <th>Guest</th>
-                    <th>Table</th>
-                    <th>Total Price</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% reservations.filter(r => r.status === 'cancelled' || r.status === 'done').forEach(reservation => { %>
-                    <tr>
-                      <td class="reference-number">#<%= reservation.referenceNumber %></td>
-                      <td>
-                        <% if (reservation.status === 'done') { %>
-                          <span class="status-badge bg-success">Done</span>
-                        <% } else if (reservation.status === 'cancelled') { %>
-                          <span class="status-badge bg-danger">Cancelled</span>
-                        <% } %>
-                      </td>
-                      <td class="date-display"><%= reservation.dineInDateTime %></td>
-                      <td class="guest-name"><%= reservation.fullName %></td>
-                      <td><%= reservation.tableId ? reservation.tableId.name : 'No Table Assigned' %></td>
-                      <td class="amount">₱<%= reservation.totalPrice.toFixed(2) %></td>
-                      <td>
-                        <div class="d-flex gap-2 justify-content-center">
-                          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= reservation._id %>">
-                            View Proof
-                          </button>
-                          <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#detailsModal<%= reservation._id %>">
-                            Details
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  <% }); %>
-                </tbody>
-              </table>
+             <table class="table table-bordered table-hover">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Reference #</th>
+      <th>Status</th>
+      <th>Date & Time</th>
+      <th>Guest</th>
+      <th>Table</th>
+      <th>Total Price</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% reservations
+        .filter(r => r.status === 'cancelled' || r.status === 'done')
+        .forEach((reservation, index) => { %>
+      <tr>
+        <td><%= index + 1 %></td>
+        <td class="reference-number">#<%= reservation.referenceNumber %></td>
+        <td>
+          <% if (reservation.status === 'done') { %>
+            <span class="status-badge bg-success">Done</span>
+          <% } else if (reservation.status === 'cancelled') { %>
+            <span class="status-badge bg-danger">Cancelled</span>
+          <% } %>
+        </td>
+        <td class="date-display"><%= reservation.dineInDateTime %></td>
+        <td class="guest-name"><%= reservation.fullName %></td>
+        <td><%= reservation.tableId ? reservation.tableId.name : 'No Table Assigned' %></td>
+        <td class="amount">₱<%= reservation.totalPrice.toFixed(2) %></td>
+        <td>
+          <div class="d-flex gap-2 justify-content-center">
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= reservation._id %>">
+              View Proof
+            </button>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#detailsModal<%= reservation._id %>">
+              Details
+            </button>
+          </div>
+        </td>
+      </tr>
+    <% }); %>
+  </tbody>
+</table>
+
             </div>
           </div>
         <% } else { %>

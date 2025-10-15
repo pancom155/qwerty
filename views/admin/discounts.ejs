@@ -83,15 +83,25 @@
               <div class="row g-3">
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Code Name</label>
-                  <input name="code" class="form-control" required>
+                  <input name="code"  maxlength="20" class="form-control" required>
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Discount (₱)</label>
-                  <input name="discount" type="number" min="1" max="2000" class="form-control" required>
+                  <input 
+  name="discount" 
+  type="number" 
+  min="1" 
+  max="2000" 
+  class="form-control" 
+  required
+  oninput="if(this.value < 0) this.value = '';"
+  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
+
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Min Spend (₱)</label>
-                  <input name="minSpend" type="number" min="0" class="form-control">
+                  <input name="minSpend" type="number" min="0" class="form-control"oninput="if(this.value < 0) this.value = '';"
+  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Expiry Date</label>
@@ -154,7 +164,7 @@
             <h5 class="modal-title">Edit Voucher – <%= v.code %></h5>
             <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
           </div>
-          <form action="/admin/vouchers/<%= v._id %>/edit" method="POST" enctype="multipart/form-data">
+          <form action="/admin/vouchers/<%= v._id %>/edit" method="POST" enctype="multipart/form-data" onsubmit="return confirmUpdate(event)">
             <div class="modal-body">
               <div class="row g-3">
                 <div class="col-md-4">
@@ -163,13 +173,15 @@
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Discount (₱)</label>
-                  <input name="discount" type="number" min="1" max="100"
-                         value="<%= v.discount %>" class="form-control" required>
+                  <input name="discount" type="number" min="1" 
+                         value="<%= v.discount %>" class="form-control" required oninput="if(this.value < 0) this.value = '';"
+  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Min Spend (₱)</label>
                   <input name="minSpend" type="number" min="0"
-                         value="<%= v.minSpend %>" class="form-control">
+                         value="<%= v.minSpend %>" class="form-control" oninput="if(this.value < 0) this.value = '';"
+  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
                 </div>
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Expiry Date</label>
@@ -184,7 +196,8 @@
               </div>
             </div>
             <div class="modal-footer">
-              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+
               <button class="btn gradient-btn">Save Changes</button>
             </div>
           </form>
@@ -201,42 +214,52 @@
 <script>
   (function(){
     const key = new URLSearchParams(location.search).get('success');
-    const map = {create:'Voucher created!',update:'Voucher updated!',delete:'Voucher deleted!'};
-    if (map[key]) Swal.fire({icon:'success',title:map[key],timer:1600,showConfirmButton:false});
+    const map = {
+      create: 'Voucher created!',
+      update: 'Voucher updated!',
+      delete: 'Voucher deleted!'
+    };
+    if (map[key]) {
+      Swal.fire({
+        icon: 'success',
+        title: map[key],
+        timer: 1600,
+        showConfirmButton: false
+      });
+    }
   })();
 
-  function confirmDelete(e){
+  // 🗑 DELETE confirmation
+  function confirmDelete(e) {
     e.preventDefault();
     Swal.fire({
-      icon:'warning',title:'Delete this voucher?',showCancelButton:true,
-      confirmButtonText:'Yes, delete'
-    }).then(res=>{ if(res.isConfirmed) e.target.submit(); });
+      icon: 'warning',
+      title: 'Delete this voucher?',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete'
+    }).then(res => {
+      if (res.isConfirmed) e.target.submit();
+    });
+    return false;
+  }
+
+  // ✏️ UPDATE confirmation (Save Changes only)
+  function confirmUpdate(e) {
+    e.preventDefault();
+    Swal.fire({
+      icon: 'question',
+      title: 'Save changes?',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, update',
+      cancelButtonText: 'Cancel'
+    }).then(res => {
+      if (res.isConfirmed) e.target.submit(); // ✅ only submit if confirmed
+      // ❌ if canceled, do nothing (modal stays open)
+    });
     return false;
   }
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.getElementById("restaurantToggle");
-    const label = document.getElementById("restaurantLabel");
 
-    const isClosed = localStorage.getItem("restaurantClosed") === "true";
-    toggle.checked = !isClosed;
-    label.textContent = isClosed ? "Closed" : "Open";
 
-    toggle.addEventListener("change", () => {
-      const newStatusClosed = !toggle.checked;
-      localStorage.setItem("restaurantClosed", newStatusClosed);
-      label.textContent = newStatusClosed ? "Closed" : "Open";
-
-      Swal.fire({
-        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
-        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
-        icon: newStatusClosed ? "error" : "success",
-        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
-        confirmButtonText: "OK"
-      });
-    });
-  });
-</script>  
 </body>
 </html>

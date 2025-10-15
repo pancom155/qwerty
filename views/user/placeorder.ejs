@@ -518,7 +518,7 @@
 
             <div class="mb-3">
               <label class="form-label fw-semibold">Reference Number <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" name="referenceNumber" placeholder="Enter reference number" required>
+              <input type="number" class="form-control" name="referenceNumber" oninput="if(this.value.length > 30) this.value = this.value.slice(0, 30);"  placeholder="Enter reference number" required>
             </div>
 
             <div class="mb-3">
@@ -529,7 +529,7 @@
 
             <div class="mb-3">
               <label class="form-label fw-semibold">Note (optional)</label>
-              <textarea class="form-control" name="note" placeholder="Add any special request..." rows="3"></textarea>
+              <textarea class="form-control" name="note" maxlength="250"  placeholder="Add any special request..." rows="3"></textarea>
             </div>
           </div>
           <div class="modal-footer">
