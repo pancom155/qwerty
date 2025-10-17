@@ -15,6 +15,7 @@ const reportRoutes = require("./routes/reportRoutes");
 const userRoutes = require('./routes/userRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const staffRoutes = require('./routes/staffRoutes');
+const statusRoutes = require('./routes/statusRoutes');
 const waiterRoutes = require('./routes/waiterRoutes');
 const kitchenStaffRoutes = require('./routes/kitchenStaffRoutes');
 const loadSettings = require('./middleware/loadSettings');
@@ -74,6 +75,7 @@ app.use("/", reportRoutes);
 app.use('/staff', staffRoutes);
 app.use('/calendar', calendarRoutes);
 app.use('/staff/order', staffRoutes);
+app.use('/status', statusRoutes);
 
 
 

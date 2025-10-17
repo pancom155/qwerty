@@ -966,6 +966,31 @@
             }
             loadCart();
         };
+
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    const res = await fetch('/status');
+    const data = await res.json();
+
+    const orderMessage = document.getElementById('orderMessage');
+    const productGrid = document.getElementById('productGrid');
+
+    if (!data.isOpen) {
+      orderMessage.style.display = 'block';
+      productGrid.style.pointerEvents = 'none';
+      productGrid.style.opacity = '0.5';
+    } else {
+      orderMessage.style.display = 'none';
+      productGrid.style.pointerEvents = 'auto';
+      productGrid.style.opacity = '1';
+    }
+  } catch (err) {
+    console.error('Failed to load restaurant status', err);
+  }
+});
     </script>
+
 </body>
 </html>
