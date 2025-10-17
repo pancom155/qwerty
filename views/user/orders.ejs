@@ -862,7 +862,10 @@
             <span class="status-badge bg-secondary">Cancelled</span>
           <% } %>
         </td>
-        <td class="date-display"><%= moment(order.createdAt).format('MMMM D, YYYY - h:mm A') %></td>
+      <td class="date-display">
+  <%= moment(order.createdAt).tz('Asia/Manila').format('MMMM D, YYYY - h:mm A') %>
+</td>
+
         <td class="amount">₱<%= order.netTotal.toFixed(2) %></td>
         <td>
           <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#proofModal<%= order._id %>">

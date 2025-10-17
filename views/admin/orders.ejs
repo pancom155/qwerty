@@ -319,136 +319,138 @@
 </div>
 
 
-        <table class="table table-bordered table-hover align-middle text-center">
-          <thead class="table-dark">
-            <tr>
-              <th>Order ID</th>
-              <th>Customer Name</th>
-              <th>Customer Email</th>
-              <th>Total (₱)</th>
-              <th>Date</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% allOrders.forEach(order => { %>
-              <tr data-name="<%= order.userId?.firstName + ' ' + order.userId?.lastName %>" 
-                  data-email="<%= order.userId?.email || 'N/A' %>" 
-                  data-id="<%= order._id %>" 
-                  data-status="<%= order.status %>">
-                <td><%= order._id %></td>
-                <td><%= order.userId?.firstName && order.userId?.lastName ? `${order.userId.firstName} ${order.userId.lastName}` : order.fullName %></td>
-                <td><%= order.userId?.email || 'N/A' %></td>
-                <td>₱<%= order.netTotal.toFixed(2) %></td>
-                <td><%= new Date(order.createdAt).toLocaleString('en-PH', { timeZone: 'Asia/Manila' }) %></td>
-                <td>
-                  <% if (order.status === 'completed') { %>
-                    <span class="badge bg-success">Completed</span>
-                  <% } else if (order.status === 'rejected') { %>
-                    <span class="badge bg-danger">Rejected</span>
-                  <% } else if (order.status === 'cancelled') { %>
-                    <span class="badge bg-secondary">Cancelled</span>
-                  <% } else if (order.status === 'pending') { %>
-                    <span class="badge bg-warning text-dark">Pending</span>
-                  <% } else if (order.status === 'processing') { %>
-                    <span class="badge bg-info text-dark">Processing</span>
-                  <% } else if (order.status === 'ready') { %>
-                    <span class="badge bg-primary">Ready to Pickup</span>
-                  <% } %>
-                </td>
-                <td>
-                  <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#viewItemsModal<%= order._id %>">View Items</button>
-                </td>
-              </tr>
+       <table class="table table-bordered table-hover align-middle text-center">
+  <thead class="table-dark">
+    <tr>
+      <th>#</th>
+      <th>Customer Name</th>
+      <th>Customer Email</th>
+      <th>Total (₱)</th>
+      <th>Date</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% allOrders.forEach((order, index) => { %>
+      <tr data-name="<%= order.userId?.firstName + ' ' + order.userId?.lastName %>" 
+          data-email="<%= order.userId?.email || 'N/A' %>" 
+          data-id="<%= order._id %>" 
+          data-status="<%= order.status %>">
+        <!-- Auto-incremented row number -->
+        <td><%= index + 1 %></td>
+        
+        <td><%= order.userId?.firstName && order.userId?.lastName ? `${order.userId.firstName} ${order.userId.lastName}` : order.fullName %></td>
+        <td><%= order.userId?.email || 'N/A' %></td>
+        <td>₱<%= order.netTotal.toFixed(2) %></td>
+        <td><%= new Date(order.createdAt).toLocaleString('en-PH', { timeZone: 'Asia/Manila' }) %></td>
+        <td>
+          <% if (order.status === 'completed') { %>
+            <span class="badge bg-success">Completed</span>
+          <% } else if (order.status === 'rejected') { %>
+            <span class="badge bg-danger">Rejected</span>
+          <% } else if (order.status === 'cancelled') { %>
+            <span class="badge bg-secondary">Cancelled</span>
+          <% } else if (order.status === 'pending') { %>
+            <span class="badge bg-warning text-dark">Pending</span>
+          <% } else if (order.status === 'processing') { %>
+            <span class="badge bg-info text-dark">Processing</span>
+          <% } else if (order.status === 'ready') { %>
+            <span class="badge bg-primary">Ready to Pickup</span>
+          <% } %>
+        </td>
+        <td>
+          <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#viewItemsModal<%= order._id %>">View Items</button>
+        </td>
+      </tr>
 
-                <!-- Order Items Modal -->
-                <div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-labelledby="modalLabel<%= order._id %>" aria-hidden="true">
-                  <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                    <div class="modal-content">
-          <div class="modal-header text-black"
-             style="background: rgb(218, 218, 218); border-radius: 12px 12px 0 0;">
-                        <h5 class="modal-title" id="modalLabel<%= order._id %>">
-                          <i class="bi bi-receipt me-2"></i>
-                          Order Details — <%= order._id %>
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                      </div>
-                      <div class="modal-body">
-                        <!-- Customer Info -->
-                        <div class="mb-4 p-3 bg-light rounded">
-                          <h6 class="fw-bold mb-2">Customer Information</h6>
-                          <div class="row">
-                            <div class="col-md-6">
-                              <strong>Name:</strong> <%= order.userId?.firstName && order.userId?.lastName ? `${order.userId.firstName} ${order.userId.lastName}` : order.fullName %>
-                            </div>
-                            <div class="col-md-6">
-                              <strong>Email:</strong> <%= order.userId?.email || 'N/A' %>
-                            </div>
-                          </div>
-                        </div>
+      <!-- Order Items Modal -->
+      <div class="modal fade" id="viewItemsModal<%= order._id %>" tabindex="-1" aria-labelledby="modalLabel<%= order._id %>" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+          <div class="modal-content">
+            <div class="modal-header text-black" style="background: rgb(218, 218, 218); border-radius: 12px 12px 0 0;">
+              <h5 class="modal-title" id="modalLabel<%= order._id %>">
+                <i class="bi bi-receipt me-2"></i>
+                Order Details — <%= index + 1 %>
+              </h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <!-- Customer Info -->
+              <div class="mb-4 p-3 bg-light rounded">
+                <h6 class="fw-bold mb-2">Customer Information</h6>
+                <div class="row">
+                  <div class="col-md-6">
+                    <strong>Name:</strong> <%= order.userId?.firstName && order.userId?.lastName ? `${order.userId.firstName} ${order.userId.lastName}` : order.fullName %>
+                  </div>
+                  <div class="col-md-6">
+                    <strong>Email:</strong> <%= order.userId?.email || 'N/A' %>
+                  </div>
+                </div>
+              </div>
 
-                        <!-- Ordered Items -->
-                        <h6 class="mb-3 fw-bold">Ordered Items</h6>
-                        <div class="list-group mb-4">
-                          <% order.items.forEach(item => { %>
-                            <div class="list-group-item">
-                              <div class="d-flex align-items-center justify-content-between">
-                                <div class="d-flex align-items-center gap-3">
-                                  <img src="/uploads/<%= item.productId?.image || 'default.png' %>" 
-                                       alt="<%= item.name %>" 
-                                       width="50" 
-                                       height="50" 
-                                       class="rounded">
-                                  <div>
-                                    <strong class="d-block"><%= item.name %></strong>
-                                    <small class="text-muted">Quantity: <%= item.quantity %></small>
-                                  </div>
-                                </div>
-                                <div class="text-end">
-                                  <div class="fw-semibold">₱<%= item.price.toFixed(2) %></div>
-                                  <small class="text-muted">Subtotal: ₱<%= item.subtotal.toFixed(2) %></small>
-                                </div>
-                              </div>
-                            </div>
-                          <% }) %>
-                        </div>
-
-                        <!-- Discounts -->
-                        <% if (order.discounts && order.discounts.length > 0) { %>
-                          <div class="mb-4">
-                            <h6 class="fw-bold mb-3">Discounts Applied</h6>
-                            <div class="list-group">
-                              <% order.discounts.forEach(discount => { %>
-                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                  <span>
-                                    <i class="bi bi-tag me-2"></i>
-                                    <%= discount.type === 'voucher' ? 'Voucher Discount' : 'PWD Discount' %>
-                                  </span>
-                                  <span class="text-danger">-₱<%= discount.amount.toFixed(2) %></span>
-                                </div>
-                              <% }) %>
-                            </div>
-                          </div>
-                        <% } %>
-
-                        <!-- Total -->
-                        <div class="border-top pt-3">
-                          <div class="d-flex justify-content-between align-items-center">
-                            <strong class="fs-5">Net Total:</strong>
-                            <strong class="fs-5 text-success">₱<%= order.netTotal.toFixed(2) %></strong>
-                          </div>
+              <!-- Ordered Items -->
+              <h6 class="mb-3 fw-bold">Ordered Items</h6>
+              <div class="list-group mb-4">
+                <% order.items.forEach(item => { %>
+                  <div class="list-group-item">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div class="d-flex align-items-center gap-3">
+                        <img src="/uploads/<%= item.productId?.image || 'default.png' %>" 
+                             alt="<%= item.name %>" 
+                             width="50" 
+                             height="50" 
+                             class="rounded">
+                        <div>
+                          <strong class="d-block"><%= item.name %></strong>
+                          <small class="text-muted">Quantity: <%= item.quantity %></small>
                         </div>
                       </div>
-                      <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <div class="text-end">
+                        <div class="fw-semibold">₱<%= item.price.toFixed(2) %></div>
+                        <small class="text-muted">Subtotal: ₱<%= item.subtotal.toFixed(2) %></small>
                       </div>
                     </div>
                   </div>
+                <% }) %>
+              </div>
+
+              <!-- Discounts -->
+              <% if (order.discounts && order.discounts.length > 0) { %>
+                <div class="mb-4">
+                  <h6 class="fw-bold mb-3">Discounts Applied</h6>
+                  <div class="list-group">
+                    <% order.discounts.forEach(discount => { %>
+                      <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <span>
+                          <i class="bi bi-tag me-2"></i>
+                          <%= discount.type === 'voucher' ? 'Voucher Discount' : 'PWD Discount' %>
+                        </span>
+                        <span class="text-danger">-₱<%= discount.amount.toFixed(2) %></span>
+                      </div>
+                    <% }) %>
+                  </div>
                 </div>
-              <% }) %>
-            </tbody>
-          </table>
+              <% } %>
+
+              <!-- Total -->
+              <div class="border-top pt-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <strong class="fs-5">Net Total:</strong>
+                  <strong class="fs-5 text-success">₱<%= order.netTotal.toFixed(2) %></strong>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </tbody>
+</table>
+
           <div class="d-flex justify-content-center">
   <nav>
     <ul class="pagination" id="orderPagination"></ul>
