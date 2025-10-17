@@ -341,9 +341,15 @@
 
               <div class="text-end">
                 <span class="badge bg-warning d-block mb-2">Processing</span>
-                <span class="time-badge">
-                  <%= new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %>
-                </span>
+              <span class="time-badge">
+  <%= new Date(order.createdAt).toLocaleTimeString('en-PH', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+    timeZone: 'Asia/Manila'
+  }) %>
+</span>
+
               </div>
             </div>
           </div>
