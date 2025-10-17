@@ -187,7 +187,9 @@
           </div>
 
 <!-- Messages -->
-<div class="chat-box flex-grow-1 p-3" 
+<div class="chat-box flex-grow-1 p-3"
+     id="chatBox-<%= chat._id %>"
+     data-chat-id="<%= chat._id %>"
      style="overflow-y:auto; display:flex; flex-direction:column; gap:12px; scrollbar-width:thin; scrollbar-color:#ccc transparent; background:#f9fafc;">
   <% if (chat.messages.length === 0) { %>
     <div style="text-align:center; color:#777; font-size:14px; margin-top:20px;">
@@ -270,7 +272,6 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-
   /** ---------------- IMAGE MODAL ---------------- */
   const modalEl = document.getElementById("imageModal");
   const modalImg = document.getElementById("modalImage");
@@ -330,7 +331,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const userItems = document.querySelectorAll(".user-item");
     const chatPanels = document.querySelectorAll(".chat-panel");
 
-    if (!userItems.length) return; // skip if no sidebar
+    if (!userItems.length) return;
     userItems.forEach(item => {
       item.onclick = () => {
         const index = item.getAttribute("data-chat-index");
@@ -373,6 +374,66 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  /** ---------------- AUTO-REFRESH ACTIVE CHAT ---------------- */
+  const chatPanels = document.querySelectorAll('.chat-panel');
+  let activeChatId = chatPanels[0]?.dataset.chatId; // default to first chat
+
+  // Switch active chat when user clicks a sidebar item
+  document.querySelectorAll('.user-item').forEach((item, index) => {
+    item.addEventListener('click', () => {
+      chatPanels.forEach(panel => panel.style.display = 'none');
+      chatPanels[index].style.display = 'flex';
+      activeChatId = chatPanels[index].dataset.chatId;
+    });
+  });
+
+ const chatBox = document.getElementById('chatBox'); // Your chat container
+
+async function fetchMessages() {
+  try {
+    const res = await fetch('/user/customer_support/messages');
+    if (!res.ok) throw new Error('Failed to fetch');
+    
+    const chats = await res.json();
+    if (!Array.isArray(chats) || chats.length === 0) return;
+
+    // Combine all messages from all chat sessions
+    const allMessages = chats.flatMap(chat => chat.messages);
+    allMessages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+    // Clear and rebuild the message box
+    chatBox.innerHTML = '';
+    allMessages.forEach(msg => {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `d-flex mb-2 ${msg.sender === 'user' ? 'justify-content-end flex-row-reverse' : 'justify-content-start'} align-items-end`;
+
+      const profileIcon = document.createElement('div');
+      profileIcon.className = 'profile-icon ms-2';
+      profileIcon.innerHTML = `<i class="bi bi-person-circle fs-4 ${msg.sender === 'staff' ? 'text-primary' : 'text-success'}"></i>`;
+
+      const bubble = document.createElement('div');
+      bubble.className = `message ${msg.sender === 'user' ? 'user-message' : 'staff-message'} shadow-sm`;
+      bubble.innerHTML = `
+        <div class="sender-email">${msg.email}</div>
+        ${msg.message ? `<div class="message-text">${msg.message}</div>` : ''}
+        ${msg.image ? `<img src="${msg.image}" alt="sent image" style="max-width:200px; border-radius:8px; margin-top:5px; display:block;">` : ''}
+        <div class="message-time">${msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute:'2-digit' }) : ''}</div>
+      `;
+
+      msgDiv.appendChild(profileIcon);
+      msgDiv.appendChild(bubble);
+      chatBox.appendChild(msgDiv);
+    });
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+  }
+}
+
+// Poll every 5 seconds
+setInterval(fetchMessages, 5000);
+fetchMessages();
   /** ---------------- NOTIFICATIONS ---------------- */
   const notificationBtn = document.getElementById("notificationBtn");
   const notificationDropdown = document.getElementById("notificationDropdown");
@@ -480,31 +541,10 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => div.classList.remove("new-notification"), 500);
   });
 });
+
+
 </script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.getElementById("restaurantToggle");
-    const label = document.getElementById("restaurantLabel");
 
-    const isClosed = localStorage.getItem("restaurantClosed") === "true";
-    toggle.checked = !isClosed;
-    label.textContent = isClosed ? "Closed" : "Open";
-
-    toggle.addEventListener("change", () => {
-      const newStatusClosed = !toggle.checked;
-      localStorage.setItem("restaurantClosed", newStatusClosed);
-      label.textContent = newStatusClosed ? "Closed" : "Open";
-
-      Swal.fire({
-        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
-        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
-        icon: newStatusClosed ? "error" : "success",
-        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
-        confirmButtonText: "OK"
-      });
-    });
-  });
-</script>
 </body>
 </html>

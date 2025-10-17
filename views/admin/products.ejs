@@ -573,7 +573,28 @@
       });
     });
   });
-  
+  document.addEventListener("DOMContentLoaded", () => {
+    const addProductForm = document.querySelector('#addProductModal form');
+    if (!addProductForm) return;
+
+    // Get all existing product names (converted to lowercase for case-insensitive comparison)
+    const existingProducts = JSON.parse('<%- JSON.stringify(products.map(p => p.name.toLowerCase())) %>');
+
+    addProductForm.addEventListener("submit", (e) => {
+      const nameInput = addProductForm.querySelector('input[name="name"]');
+      const enteredName = nameInput.value.trim().toLowerCase();
+
+      if (existingProducts.includes(enteredName)) {
+        e.preventDefault(); // Stop form submission
+        Swal.fire({
+          icon: 'warning',
+          title: 'Duplicate Product Name',
+          text: 'A product with this name already exists!',
+          confirmButtonColor: '#3b82f6'
+        });
+      }
+    });
+  });
 </script>
 <script>
   document.addEventListener("DOMContentLoaded", () => {

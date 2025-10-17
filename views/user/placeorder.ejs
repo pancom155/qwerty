@@ -409,9 +409,6 @@
                   <% }}); %>
                 <% } %>
               </select>
-              <button class="btn btn-outline-primary" type="submit">
-                <i class="fas fa-check"></i>
-              </button>
             </div>
           </form>
         </div>
@@ -441,9 +438,11 @@
               <span class="text-primary">₱<%= netTotal.toFixed(2) %></span>
             </li>
           </ul>
-          <button class="btn gradient-btn w-100 rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#stepOneModal">
-            <i class="fas fa-credit-card me-2"></i>Proceed to Payment
-          </button>
+          <div class="d-flex justify-content-center ">
+            <button class="btn gradient-btn w-40 rounded-pill py-2 fw-bold" data-bs-toggle="modal" data-bs-target="#stepOneModal">
+              <i class="fas fa-credit-card me-2"></i>Proceed to Payment
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -518,7 +517,7 @@
 
             <div class="mb-3">
               <label class="form-label fw-semibold">Reference Number <span class="text-danger">*</span></label>
-              <input type="number" class="form-control" name="referenceNumber" oninput="if(this.value.length > 30) this.value = this.value.slice(0, 30);"  placeholder="Enter reference number" required>
+              <input type="number" class="form-control" name="referenceNumber"maxlength="20"   placeholder="Enter reference number" min="0" required oninput="this.value = Math.abs(this.value)">
             </div>
 
             <div class="mb-3">
@@ -529,7 +528,7 @@
 
             <div class="mb-3">
               <label class="form-label fw-semibold">Note (optional)</label>
-              <textarea class="form-control" name="note" maxlength="250"  placeholder="Add any special request..." rows="3"></textarea>
+              <textarea class="form-control" name="note" maxlength="100"  placeholder="Add any special request..." rows="3"></textarea>
             </div>
           </div>
           <div class="modal-footer">

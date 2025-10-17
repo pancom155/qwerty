@@ -131,12 +131,12 @@
   }
 
   .btn-complete {
-    background-color: #17a2b8;
+    background-color: #026a0b;
     color: white;
   }
 
   .btn-complete:hover {
-    background-color: #138496;
+    background-color: #06b209;
     color: white;
   }
 
@@ -571,7 +571,7 @@
       <% orders.forEach((order, index) => { %>
         <tr>
           <td><%= index + 1 %></td>
-          <td><%= order.tableNumber ? order.tableNumber : 'N/A' %></td>
+          <td><%= order.tableNumber ? order.tableNumber : 'Online' %></td>
           <td>
             <div class="customer-info">
               <div class="customer-name">

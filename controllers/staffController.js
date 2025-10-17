@@ -684,3 +684,23 @@ exports.updateOrderItem = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+exports.getMessages = async (req, res) => {
+  try {
+    const staffSession = req.session.staff;
+
+    if (!staffSession || !staffSession._id) {
+      return res.status(401).json({ error: 'Unauthorized - No staff session found' });
+    }
+
+    const staffId = staffSession._id;
+    const chats = await CustomerSupport.find({ staffId })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    res.json(chats); // send as JSON for polling
+  } catch (err) {
+    console.error('Error fetching staff messages:', err);
+    res.status(500).json({ error: 'Failed to fetch messages' });
+  }
+};
+

@@ -56,7 +56,8 @@ exports.placeOrder = async (req, res) => {
       discounts = [],
       payment = {},
       tableNumber = null,
-      status = 'processing'
+      status = 'processing',
+      note = '',
     } = req.body;
 
     // Sanitize and validate items
@@ -87,6 +88,7 @@ exports.placeOrder = async (req, res) => {
     const newOrder = new Order({
       fullName: fullName.trim(),
       tableNumber: tableNumber || null,
+      note: note.trim(), 
       items: validItems,
       discounts: validDiscounts,
       payment: {
@@ -107,4 +109,4 @@ exports.placeOrder = async (req, res) => {
     console.error('Order placement error:', err);
     res.status(500).json({ message: 'Failed to place order' });
   }
-};
+}

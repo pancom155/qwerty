@@ -66,7 +66,7 @@
     <h2 class="mb-4 fw-bold ms-2" style="color:#333446;">Vouchers</h2>
 
     <div class="d-flex align-items-center justify-content-between ms-2 mb-3 flex-wrap">
-      <button class="btn gradient-btn" data-bs-toggle="modal" data-bs-target="#addVoucherModal">
+      <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addVoucherModal">
         <i class="bi bi-plus-circle me-1"></i>Add Voucher
       </button>
     </div>
@@ -75,7 +75,7 @@
       <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header modal-header-gradient">
-            <h5 class="modal-title">Create New Voucher</h5>
+            <h5 class="modal-title fw-bold">Create New Voucher</h5>
             <button type="button" class="btn-close" style="filter: invert(0);" data-bs-dismiss="modal"></button>
           </div>
           <form action="/admin/vouchers/create" method="POST" enctype="multipart/form-data">
@@ -83,39 +83,66 @@
               <div class="row g-3">
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Code Name</label>
-                  <input name="code"  maxlength="20" class="form-control" required>
+                  <div class="input-group">
+                    <input 
+                      name="code" 
+                      id="voucherCode" 
+                      class="form-control" 
+                      readonly 
+                      required>
+                    <button 
+                      class="btn btn-outline-primary" 
+                      type="button" 
+                      id="generateCodeBtn"
+                      title="Generate Random Voucher Code">
+                      <i class="bi bi-shuffle"></i> Randomize
+                    </button>
+                  </div>
                 </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Discount (₱)</label>
-                  <input 
-  name="discount" 
-  type="number" 
-  min="1" 
-  max="2000" 
-  class="form-control" 
-  required
-  oninput="if(this.value < 0) this.value = '';"
-  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
 
-                </div>
                 <div class="col-md-4">
-                  <label class="form-label fw-semibold">Min Spend (₱)</label>
-                  <input name="minSpend" type="number" min="0" class="form-control"oninput="if(this.value < 0) this.value = '';"
-  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
+                  <label class="form-label fw-semibold">Discount (₱)</label>
+                  <input 
+                    name="discount" 
+                    type="number" 
+                    min="1" 
+                    max="999" 
+                    maxlength="3"
+                    class="form-control" 
+                    required
+                    oninput="validateMaxLength(this, 3)"
+                    onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
                 </div>
+
                 <div class="col-md-4">
-                  <label class="form-label fw-semibold">Expiry Date</label>
+                  <label class="form-label fw-semibold">Min Spend (₱)</label>
+                  <input 
+                    name="minSpend" 
+                    type="number" 
+                    min="0" 
+                    max="9999" 
+                    maxlength="4"
+                    class="form-control"
+                    oninput="validateMaxLength(this, 4)"
+                    onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Expiry Date</label>
                   <input name="expiryDate" type="date" class="form-control" required>
                 </div>
+
                 <div class="col-md-8">
                   <label class="form-label fw-semibold">Voucher Image</label>
-                  <input name="image" type="file" accept="image/*" class="form-control">
+                  <input name="image" type="file" accept="image/*" class="form-control voucher-image-input" required>
+                  <small class="text-muted">Allowed formats: JPEG, PNG only</small>
                 </div>
               </div>
             </div>
+
             <div class="modal-footer">
-              <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button class="btn gradient-btn">Save Voucher</button>
+              <button class="btn btn-danger" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Cancel</button>
+              <button class="btn gradient-btn"><i class="bi bi-plus-square"></i> Save Voucher</button>
             </div>
           </form>
         </div>
@@ -141,13 +168,13 @@
               </p>
             </div>
             <div class="card-footer d-flex justify-content-between p-2">
-              <button class="btn btn-sm gradient-btn-icon me-1"
+              <button class="btn btn-sm bg-primary text-light me-1"
                       data-bs-toggle="modal" data-bs-target="#editVoucher-<%= v._id %>">
                 <i class="bi bi-pencil-square"></i>
               </button>
               <form action="/admin/vouchers/<%= v._id %>/delete"
                     class="d-inline" method="POST" onsubmit="return confirmDelete(event)">
-                <button class="btn btn-sm gradient-btn-icon"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-sm bg-danger text-light"><i class="bi bi-trash"></i></button>
               </form>
             </div>
           </div>
@@ -157,53 +184,90 @@
     </div>
 
     <% vouchers.forEach(v => { %>
-    <div class="modal fade" id="editVoucher-<%= v._id %>" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header modal-header-gradient">
-            <h5 class="modal-title">Edit Voucher – <%= v.code %></h5>
-            <button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-          </div>
-          <form action="/admin/vouchers/<%= v._id %>/edit" method="POST" enctype="multipart/form-data" onsubmit="return confirmUpdate(event)">
-            <div class="modal-body">
-              <div class="row g-3">
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Code Name</label>
-                  <input name="code" value="<%= v.code %>" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Discount (₱)</label>
-                  <input name="discount" type="number" min="1" 
-                         value="<%= v.discount %>" class="form-control" required oninput="if(this.value < 0) this.value = '';"
-  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Min Spend (₱)</label>
-                  <input name="minSpend" type="number" min="0"
-                         value="<%= v.minSpend %>" class="form-control" oninput="if(this.value < 0) this.value = '';"
-  onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label fw-semibold">Expiry Date</label>
-                  <input name="expiryDate" type="date"
-                         value="<%= v.expiryDate.toISOString().split('T')[0] %>"
-                         class="form-control" required>
-                </div>
-                <div class="col-md-8">
-                  <label class="form-label fw-semibold">Replace Image</label>
-                  <input name="image" type="file" accept="image/*" class="form-control">
+      <div class="modal fade" id="editVoucher-<%= v._id %>" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header modal-header-gradient">
+              <h5 class="modal-title fw-bold">Edit Voucher – <%= v.code %></h5>
+              <button class="btn-close btn-close-dark" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form action="/admin/vouchers/<%= v._id %>/edit" method="POST" enctype="multipart/form-data" onsubmit="return confirmUpdate(event)">
+              <div class="modal-body">
+                <div class="row g-3">
+
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Code Name</label>
+                    <div class="input-group">
+                      <input 
+                        name="code" 
+                        id="editCode-<%= v._id %>" 
+                        value="<%= v.code %>" 
+                        class="form-control" 
+                        readonly 
+                        required>
+                      <button 
+                        type="button" 
+                        class="btn btn-outline-primary edit-randomizer-btn" 
+                        data-id="<%= v._id %>">
+                        <i class="bi bi-shuffle"></i> Randomize
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Discount (₱)</label>
+                    <input 
+                      name="discount" 
+                      type="number" 
+                      min="1" 
+                      max="999" 
+                      maxlength="3"
+                      value="<%= v.discount %>"
+                      class="form-control" 
+                      required
+                      oninput="validateMaxLength(this, 3)"
+                      onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
+                    <small class="text-muted">Current Discount: ₱<%= v.discount %></small>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Min Spend (₱)</label>
+                    <input 
+                      name="minSpend" 
+                      type="number" 
+                      min="0" 
+                      max="9999" 
+                      maxlength="4"
+                      value="<%= v.minSpend %>"
+                      class="form-control"
+                      oninput="validateMaxLength(this, 4)"
+                      onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();">
+                    <small class="text-muted">Current Min Spend: ₱<%= v.minSpend %></small>
+                  </div>
+
+                  <div class="col-md-4">
+                    <label class="form-label fw-semibold">Expiry Date</label>
+                    <input name="expiryDate" type="date" value="<%= v.expiryDate.toISOString().split('T')[0] %>" class="form-control" required>
+                  </div>
+
+                  <div class="col-md-8">
+                    <label class="form-label fw-semibold">Replace Image</label>
+                    <input name="image" type="file" accept="image/*" class="form-control voucher-image-input">
+                    <small class="text-muted">Allowed formats: JPEG, PNG only</small>
+                  </div>
+
                 </div>
               </div>
-            </div>
-            <div class="modal-footer">
-             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
 
-              <button class="btn gradient-btn">Save Changes</button>
-            </div>
-          </form>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Cancel</button>
+                <button class="btn gradient-btn"><i class="bi bi-plus-square"></i>  Save Changes</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
     <% }) %>
 
   </div>
@@ -229,7 +293,6 @@
     }
   })();
 
-  // 🗑 DELETE confirmation
   function confirmDelete(e) {
     e.preventDefault();
     Swal.fire({
@@ -243,7 +306,6 @@
     return false;
   }
 
-  // ✏️ UPDATE confirmation (Save Changes only)
   function confirmUpdate(e) {
     e.preventDefault();
     Swal.fire({
@@ -253,13 +315,136 @@
       confirmButtonText: 'Yes, update',
       cancelButtonText: 'Cancel'
     }).then(res => {
-      if (res.isConfirmed) e.target.submit(); // ✅ only submit if confirmed
-      // ❌ if canceled, do nothing (modal stays open)
+      if (res.isConfirmed) e.target.submit(); 
     });
     return false;
   }
+
+  
 </script>
 
+<script>
+  const generateBtn = document.getElementById('generateCodeBtn');
+  const codeInput = document.getElementById('voucherCode');
+
+  const existingVoucherCodes = <%- JSON.stringify(vouchers.map(v => v.code.toLowerCase())) %>;
+
+  generateBtn.addEventListener('click', function () {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code;
+
+    do {
+      code = '';
+      for (let i = 0; i < 8; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+    } while (existingVoucherCodes.includes(code.toLowerCase()));
+
+    codeInput.value = code;
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Voucher Code Generated!',
+      text: `Generated code: ${code}`,
+      timer: 1200,
+      showConfirmButton: false
+    });
+  });
+
+  codeInput.addEventListener('keydown', e => e.preventDefault());
+  codeInput.addEventListener('paste', e => e.preventDefault());
+
+  function validateMaxLength(input, maxLength) {
+    const value = input.value.toString();
+
+    if (value.length > maxLength) {
+      input.value = value.slice(0, maxLength);
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Input too long!',
+        text: `Maximum ${maxLength} digits allowed.`,
+        timer: 1200,
+        showConfirmButton: false
+      });
+    }
+  }
+
+  document.querySelectorAll('form').forEach(form => {
+    form.addEventListener('submit', function(e) {
+      const discount = this.querySelector('input[name="discount"]');
+      const minSpend = this.querySelector('input[name="minSpend"]');
+
+      if (discount && discount.value.length > 3) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Discount',
+          text: 'Discount can only have up to 3 digits (max 999).',
+        });
+        return false;
+      }
+
+      if (minSpend && minSpend.value.length > 4) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid Minimum Spend',
+          text: 'Minimum spend can only have up to 4 digits (max 9999).',
+        });
+        return false;
+      }
+    });
+  });
+</script>
+
+<script>
+  document.getElementById("generateCodeBtn")?.addEventListener("click", () => {
+    const codeField = document.getElementById("voucherCode");
+    const randomCode = "VCH-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+    codeField.value = randomCode;
+  });
+
+  document.querySelectorAll(".edit-randomizer-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      const codeInput = document.getElementById(`editCode-${id}`);
+      const randomCode = "VCH-" + Math.random().toString(36).substring(2, 10).toUpperCase();
+      codeInput.value = randomCode;
+    });
+  });
+
+  function validateMaxLength(input, maxLength) {
+    const value = input.value.toString();
+    if (value.length > maxLength) {
+      input.value = value.slice(0, maxLength);
+      Swal.fire({
+        icon: 'warning',
+        title: 'Too Many Digits',
+        text: `Maximum ${maxLength} digits allowed.`,
+        timer: 1200,
+        showConfirmButton: false
+      });
+    }
+  }
+
+  document.addEventListener("change", function(e) {
+    if (e.target.matches(".voucher-image-input")) {
+      const file = e.target.files[0];
+      if (file) {
+        const validTypes = ["image/jpeg", "image/png"];
+        if (!validTypes.includes(file.type)) {
+          Swal.fire({
+            icon: "error",
+            title: "Invalid File Type!",
+            text: "Please upload only JPEG or PNG images."
+          });
+          e.target.value = "";
+        }
+      }
+    }
+  });
+</script>
 
 </body>
 </html>

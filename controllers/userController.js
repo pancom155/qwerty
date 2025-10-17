@@ -795,9 +795,20 @@ exports.sendMessage = async (req, res) => {
     res.send('Error sending message');
   }
 };
+
+
+
+
+
 exports.getMessages = async (req, res) => {
   try {
-    const userId = req.session.user._id;
+    const userSession = req.session.user;
+
+    if (!userSession || !userSession._id) {
+      return res.status(401).json({ error: 'Unauthorized - No user session found' });
+    }
+
+    const userId = userSession._id;
     const chats = await CustomerSupport.find({ userId })
       .sort({ createdAt: 1 })
       .lean();
@@ -808,3 +819,4 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch messages' });
   }
 };
+

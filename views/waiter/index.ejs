@@ -13,7 +13,10 @@
 </head>
 <style>
   .custom-toast-margin {
-  margin-top: 60px !important; /* adjust this value as you like */
+  margin-top: 60px !important; 
+}
+.modal-footer{
+  padding-bottom: 40px;
 }
 
 </style>
@@ -43,7 +46,7 @@
         <i class="fas fa-shopping-cart"></i>
         <span class="badge" id="cartCount">0</span>
       </button>
-      <a href="/logout" class="logout-btn">
+      <a href="/logout" style="text-decoration: none;" class="logout-btn">
         <i class="fas fa-sign-out-alt"></i> Logout
       </a>
     </div>
@@ -69,27 +72,33 @@
 <h2>Waiter <span>Ordering</span></h2>
 
 <div class="product-grid" id="productGrid">
+
+
   <% products.forEach((product) => { %>
     <div class="product-card" data-category="<%= product.category %>" data-name="<%= product.name.toLowerCase() %>">
       <img src="/uploads/<%= product.image %>" class="card-img-top rounded-top img-fluid" alt="Product Image">
       <div class="product-details">
         <h5 class="product-name"><%= product.name %></h5>
         <p class="product-description"><%= product.description %></p>
-        <span class="product-category <%= product.category.toLowerCase() %>">
-          <i class="<%= 
-            product.category.toLowerCase() === 'seafood' ? 'fas fa-fish' :
-            product.category.toLowerCase() === 'appetizer' ? 'fas fa-cheese' :
-            product.category.toLowerCase() === 'meat' ? 'fas fa-drumstick-bite' :
-            product.category.toLowerCase() === 'vegetable' ? 'fas fa-carrot' :
-            product.category.toLowerCase() === 'dessert' ? 'fas fa-ice-cream' :
-            product.category.toLowerCase() === 'beverage' ? 'fas fa-glass-whiskey' :
-            'fas fa-utensils'%>"></i>
-          <%= product.category %>
-        </span>
-        <p class="product-price">₱<%= product.price.toFixed(2) %></p>
-        <button class="add-to-cart-btn" onclick='addToCart("<%= product._id %>", "<%= product.name %>", <%= product.price %>, "/uploads/<%= product.image %>")'>
+        <div class="d-flex justify-content-center">
+          <span class="product-category w-50 <%= product.category.toLowerCase() %>">
+            <i class="<%= 
+              product.category.toLowerCase() === 'seafood' ? 'fas fa-fish' :
+              product.category.toLowerCase() === 'appetizer' ? 'fas fa-cheese' :
+              product.category.toLowerCase() === 'meat' ? 'fas fa-drumstick-bite' :
+              product.category.toLowerCase() === 'vegetable' ? 'fas fa-carrot' :
+              product.category.toLowerCase() === 'dessert' ? 'fas fa-ice-cream' :
+              product.category.toLowerCase() === 'beverage' ? 'fas fa-glass-whiskey' :
+              'fas fa-utensils'%>"></i>
+            <%= product.category %>
+          </span>
+        </div>
+        <p class="product-price text-success">₱<%= product.price.toFixed(2) %></p>
+        <div class="d-flex justify-content-center">
+        <button class="add-to-cart-btn w-50" onclick='addToCart("<%= product._id %>", "<%= product.name %>", <%= product.price %>, "/uploads/<%= product.image %>")'>
           <i class="fas fa-shopping-cart"></i> Add to Cart
         </button>
+        </div>
       </div>
     </div>
   <% }); %>
@@ -129,36 +138,38 @@
 
 <!-- Order Modal -->
 <div class="modal fade" id="placeOrderModal" tabindex="-1" aria-labelledby="placeOrderModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 800px;">
+  <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 900px;">
     <form id="orderForm">
-      <div class="modal-content" style="height: 80vh; display: flex; flex-direction: column;">
+      <div class="modal-content" style="height: 85vh; display: flex; flex-direction: column;">
         <div class="modal-header">
           <h5 class="modal-title text-gray" id="placeOrderModalLabel">
             <i class="fas fa-utensils me-2"></i>Place Dine-In Order
           </h5>
-           <button type="button" class="btn-close" style="filter: invert(0);" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close" style="filter: invert(0);" data-bs-dismiss="modal"></button>
         </div>
 
         <div class="modal-body p-4">
           <div class="row g-3 mb-4">
             <div class="col-md-6">
               <div class="form-floating">
-                <input type="text" name="fullName" id="fullName" class="form-control" placeholder="Customer Name" required>
+                <input type="text" name="fullName" maxlength="30" id="fullName" class="form-control" placeholder="Customer Name" required>
                 <label for="fullName" class="text-muted">Customer Name</label>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-floating">
-                <input type="number" name="tableNumber" id="tableNumber" class="form-control" placeholder="Table Number" required>
+                <input type="text" name="tableNumber" id="tableNumber" class="form-control"
+                       placeholder="Table Number" required pattern="\d{1,3}" maxlength="3"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 <label for="tableNumber" class="text-muted">Table Number</label>
               </div>
             </div>
           </div>
 
-          <div class="row g-3 mb-4">
+          <div class="row g-3 mb-3">
             <div class="col-md-8">
               <div class="form-floating">
-                <input type="text" id="pwdId" name="pwdId" class="form-control" placeholder="PWD ID (Optional)">
+                <input type="text" id="pwdId" maxlength="20" name="pwdId" class="form-control" placeholder="PWD ID (Optional)">
                 <label for="pwdId" class="text-muted">PWD/SENIOR ID (Optional)</label>
               </div>
             </div>
@@ -167,6 +178,12 @@
                 <i class="fas fa-percentage me-1"></i>Apply PWD Discount
               </button>
             </div>
+          </div>
+
+          <!-- Notes Field -->
+          <div class="form-floating mb-4">
+            <textarea name="note" id="note" class="form-control" placeholder="Add notes (optional)" style="height: 100px; resize: none;"></textarea>
+            <label for="note" class="text-muted">Notes (Optional)</label>
           </div>
 
           <input type="hidden" name="paymentMethod" value="cash">
@@ -198,7 +215,7 @@
           </div>
         </div>
 
-        <div class="modal-footer d-flex justify-content-between">
+        <div class="modal-footer d-flex justify-content-between" >
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
             <i class="fas fa-times me-2"></i> Cancel
           </button>
@@ -210,6 +227,7 @@
     </form>
   </div>
 </div>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -524,6 +542,7 @@ function showWarningToast(message) {
     const fullName = document.getElementById('fullName').value.trim();
     const tableNumber = document.getElementById('tableNumber').value;
     const pwdId = document.getElementById('pwdId').value.trim();
+      const note = document.getElementById('note').value.trim();
 
     if (!fullName) return showErrorToast('Full name is required!');
     if (cart.length === 0) return showErrorToast('Cart is empty!');
@@ -555,6 +574,7 @@ function showWarningToast(message) {
       fullName,
       tableNumber,
       pwdId,
+         note,
       grossTotal,
       netTotal,
       items,

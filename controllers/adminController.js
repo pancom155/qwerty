@@ -14,7 +14,7 @@ const bcrypt = require('bcrypt');
 const path = require('path');
 const fs = require('fs');
 const nodemailer = require('nodemailer');
-const {sendUserBlockedEmail, sendUserUnblockedEmail  } = require('../middleware/emailService');
+const { sendUserBlockedEmail, sendUserUnblockedEmail,sendVoucherEmail } = require('../middleware/emailService');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -39,64 +39,69 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.blockUser = async (req, res) => {
-  console.log('Blocking user:', req.params.id); 
+  console.log('Blocking user:', req.params.id);
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, { isVerified: false }, { new: true });
-    
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isVerified: false },
+      { new: true }
+    );
+
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    // Send block email
-    await transporter.sendMail({
-      from: `"DineHub Admin" <${process.env.GMAIL_USER}>`,
-      to: user.email,
-      subject: 'Account Blocked - DineHub',
-      html: `
-        <p>Dear ${user.firstName || 'User'},</p>
-        <p>Your DineHub account has been <strong>blocked</strong> by the administrator. You will not be able to log in until your account is unblocked.</p>
-        <p>If you believe this is a mistake, please contact support.</p>
-        <br>
-        <p>Best regards,<br>DineHub Team</p>
-      `
-    });
+    // ✅ Fixed template string
+    if (user.email) {
+      await sendUserBlockedEmail({
+        to: user.email,
+        name: `${(user.firstName || '')} ${(user.lastName || '')}`.trim() || 'Customer'
+      });
+    }
 
-    res.status(200).json({ success: true, message: 'User successfully blocked and notified via email.' });
+    res.status(200).json({
+      success: true,
+      message: 'User successfully blocked and notified via email.'
+    });
   } catch (error) {
     console.error('Error blocking user:', error);
     res.status(500).json({ success: false, message: 'Failed to block user.' });
   }
 };
 
+
+// UNBLOCK USER
 exports.unblockUser = async (req, res) => {
   console.log('Unblocking user:', req.params.id);
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, { isVerified: true }, { new: true });
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { isVerified: true },
+      { new: true }
+    );
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' });
     }
 
-    // Send unblock email
-    await transporter.sendMail({
-      from: `"DineHub Admin" <${process.env.GMAIL_USER}>`,
-      to: user.email,
-      subject: 'Account Unblocked - DineHub',
-      html: `
-        <p>Dear ${user.firstName || 'User'},</p>
-        <p>Good news! Your DineHub account has been <strong>unblocked</strong> and you can now log in again.</p>
-        <p>Welcome back, and happy dining!</p>
-        <br>
-        <p>Best regards,<br>DineHub Team</p>
-      `
-    });
+    // ✅ Fixed template string
+    if (user.email) {
+      await sendUserUnblockedEmail({
+        to: user.email,
+        name: `${(user.firstName || '')} ${(user.lastName || '')}`.trim() || 'Customer'
+      });
+    }
 
-    res.status(200).json({ success: true, message: 'User successfully unblocked and notified via email.' });
+    res.status(200).json({
+      success: true,
+      message: 'User successfully unblocked and notified via email.'
+    });
   } catch (error) {
     console.error('Error unblocking user:', error);
     res.status(500).json({ success: false, message: 'Failed to unblock user.' });
   }
 };
+
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find();
@@ -467,18 +472,15 @@ exports.createVoucher = async (req, res) => {
   try {
     const { code, discount, minSpend, expiryDate } = req.body;
 
-    // Check if voucher code already exists
     const existingVoucher = await Voucher.findOne({ code });
     if (existingVoucher) {
       return res.status(400).send('Voucher code already exists');
     }
 
-    // Get all user IDs
-    const users = await User.find({}, '_id');
+    const users = await User.find({}, 'email firstName lastName _id');
     const claimedByAll = users.map(user => user._id);
 
-    // Create ONE voucher document for all users
-    await Voucher.create({
+    const voucher = await Voucher.create({
       code,
       discount,
       minSpend: minSpend || 0,
@@ -489,6 +491,17 @@ exports.createVoucher = async (req, res) => {
       claimedBy: claimedByAll,
       isRedeemed: false
     });
+
+    for (const user of users) {
+      if (user.email) {
+        const fullName = `${(user.firstName || '')} ${(user.lastName || '')}`.trim();
+        await sendVoucherEmail({
+          to: user.email,
+          name: fullName || 'Customer',
+          voucher
+        });
+      }
+    }
 
     res.redirect('/admin/discounts?success=create');
   } catch (err) {
@@ -564,6 +577,7 @@ exports.getOrdersPage = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
 exports.getOrders_rejected = async (req, res) => {
   try {
     const allOrders = await Order.find({ status: 'rejected' })
@@ -578,6 +592,7 @@ exports.getOrders_rejected = async (req, res) => {
     res.status(500).send('Server Error');
   }
 };
+
 exports.getOrders_pending = async (req, res) => {
   try {
     const allOrders = await Order.find({ status: { $in: ['pending', 'processing', 'ready'] } })

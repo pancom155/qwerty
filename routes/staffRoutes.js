@@ -44,5 +44,6 @@ router.post('/chat/add', staffController.addChat);
 router.delete('/chat/:chatId', staffController.deleteChat);
 router.get('/chat', checkStaffAuth, staffController.getAllChats);
 router.post('/chat/send', upload.single('image'), staffController.sendMessage);
+router.get('/chat/messages', staffController.getMessages);
 
 module.exports = router;

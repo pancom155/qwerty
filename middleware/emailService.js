@@ -290,17 +290,36 @@ exports.sendOrderCompletedEmail = async ({ to, name, orderId }) => {
 
 exports.sendUserBlockedEmail = async ({ to, name }) => {
   await transporter.sendMail({
-    from: `"Nap's Grill and Restobar" <${process.env.GMAIL_USER}>`,
+    from: `"Nap's Grill & Restobar" <${process.env.GMAIL_USER}>`,
     to,
-    subject: 'Account Blocked - Nap’s Grill and Restobar',
+    subject: 'Account Blocked - Nap’s Grill & Restobar',
     html: `
-      <div style="max-width:600px;margin:auto;padding:20px;font-family:'Segoe UI',sans-serif;background:#fff;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.05);">
-        <h2 style="color:#d32f2f;text-align:center;">Account Blocked</h2>
-        <p>Hi <strong>${name}</strong>,</p>
-        <p>We regret to inform you that your account has been <strong>blocked</strong> by the administrator.</p>
-        <p>You will not be able to log in until your account is unblocked. If you believe this is a mistake, please contact our support team.</p>
-        <hr style="margin:30px 0;border:none;border-top:1px solid #eee;" />
-        <p style="font-size:14px;">Thank you,<br>The Nap’s Team</p>
+      <div style="background:#f4f4f4;padding:30px 0;font-family:'Segoe UI',sans-serif;">
+        <div style="max-width:600px;margin:auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+          
+          <!-- HEADER -->
+          <div style="background:#d32f2f;padding:20px;text-align:center;">
+            <h1 style="color:#fff;margin:0;font-size:22px;">Nap's Grill & Restobar</h1>
+          </div>
+          
+          <!-- BODY -->
+          <div style="padding:30px;text-align:center;">
+            <img src="https://img.icons8.com/ios-filled/100/d32f2f/cancel.png" alt="Blocked Icon" style="width:80px;height:80px;margin-bottom:15px;" />
+            <h2 style="color:#d32f2f;margin-bottom:20px;">Account Blocked</h2>
+            
+            <p style="font-size:15px;color:#333;">Hi <strong>${name}</strong>,</p>
+            <p style="font-size:15px;color:#555;line-height:1.6;">
+              We regret to inform you that your account has been <strong>blocked</strong> by the administrator.
+              You will not be able to log in until your account is unblocked.
+            </p>
+            <p style="font-size:15px;color:#555;">If you believe this is a mistake, please contact our support team.</p>
+          </div>
+          
+          <!-- FOOTER -->
+          <div style="background:#fafafa;padding:20px;text-align:center;border-top:1px solid #eee;">
+            <p style="font-size:13px;color:#777;margin:0;">© ${new Date().getFullYear()} Nap's Grill & Restobar. All rights reserved.</p>
+          </div>
+        </div>
       </div>
     `
   });
@@ -308,17 +327,35 @@ exports.sendUserBlockedEmail = async ({ to, name }) => {
 
 exports.sendUserUnblockedEmail = async ({ to, name }) => {
   await transporter.sendMail({
-    from: `"Nap's Grill and Restobar" <${process.env.GMAIL_USER}>`,
+    from: `"Nap's Grill & Restobar" <${process.env.GMAIL_USER}>`,
     to,
-    subject: 'Account Unblocked - Nap’s Grill and Restobar',
+    subject: 'Account Unblocked - Nap’s Grill & Restobar',
     html: `
-      <div style="max-width:600px;margin:auto;padding:20px;font-family:'Segoe UI',sans-serif;background:#fff;border-radius:10px;box-shadow:0 0 10px rgba(0,0,0,0.05);">
-        <h2 style="color:#4caf50;text-align:center;">Account Unblocked</h2>
-        <p>Hi <strong>${name}</strong>,</p>
-        <p>Good news! Your account has been <strong>unblocked</strong> and you can now log in again.</p>
-        <p>If you have any questions, please feel free to contact us.</p>
-        <hr style="margin:30px 0;border:none;border-top:1px solid #eee;" />
-        <p style="font-size:14px;">Welcome back!<br>The Nap’s Team</p>
+      <div style="background:#f4f4f4;padding:30px 0;font-family:'Segoe UI',sans-serif;">
+        <div style="max-width:600px;margin:auto;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+          
+          <!-- HEADER -->
+          <div style="background:#4caf50;padding:20px;text-align:center;">
+            <h1 style="color:#fff;margin:0;font-size:22px;">Nap's Grill & Restobar</h1>
+          </div>
+          
+          <!-- BODY -->
+          <div style="padding:30px;text-align:center;">
+            <img src="https://img.icons8.com/ios-filled/100/4caf50/ok.png" alt="Unblocked Icon" style="width:80px;height:80px;margin-bottom:15px;" />
+            <h2 style="color:#4caf50;margin-bottom:20px;">Account Unblocked</h2>
+            
+            <p style="font-size:15px;color:#333;">Hi <strong>${name}</strong>,</p>
+            <p style="font-size:15px;color:#555;line-height:1.6;">
+              Good news! Your account has been <strong>unblocked</strong> and you can now log in again.
+            </p>
+            <p style="font-size:15px;color:#555;">If you have any questions, feel free to reach out to us anytime.</p>
+          </div>
+          
+          <!-- FOOTER -->
+          <div style="background:#fafafa;padding:20px;text-align:center;border-top:1px solid #eee;">
+            <p style="font-size:13px;color:#777;margin:0;">© ${new Date().getFullYear()} Nap's Grill & Restobar. All rights reserved.</p>
+          </div>
+        </div>
       </div>
     `
   });
@@ -340,5 +377,37 @@ exports.sendReadyToPickupEmail = async ({ to, name, orderId }) => {
     console.log(`Ready-to-pickup email sent to ${to}`);
   } catch (error) {
     console.error(`Failed to send ready-to-pickup email:`, error);
+  }
+};
+
+exports.sendVoucherEmail = async ({ to, name, voucher }) => {
+  try {
+    await transporter.sendMail({
+      from: `"Nap's Grill & Restobar" <${process.env.GMAIL_USER}>`,
+      to,
+      subject: `New Voucher Just for You: ${voucher.code}`,
+      html: `
+        <div style="max-width:600px;margin:0 auto;padding:20px;border:1px solid #ddd;border-radius:8px;font-family:Arial,sans-serif;background:#fff;">
+          <h2 style="text-align:center;color:#d32f2f;">Nap's Grill & Restobar</h2>
+          <p style="font-size:16px;">Hi <strong>${name}</strong>,</p>
+          <p style="font-size:15px;">We’re excited to share an exclusive voucher with you!</p>
+          <div style="background:#f9f9f9;padding:15px;border-radius:6px;margin:20px 0;">
+            <p style="font-size:15px;margin:5px 0;"><b>Voucher Code:</b> <span style="color:#1976d2;">${voucher.code}</span></p>
+            <p style="font-size:15px;margin:5px 0;"><b>Discount:</b> ${voucher.discount}% Off</p>
+            <p style="font-size:15px;margin:5px 0;"><b>Minimum Spend:</b> ₱${voucher.minSpend}</p>
+            <p style="font-size:15px;margin:5px 0;"><b>Valid Until:</b> ${new Date(voucher.expiryDate).toLocaleDateString()}</p>
+          </div>
+          <p style="font-size:15px;">Use this voucher on your next order with <strong>Dinehub</strong> and enjoy your savings at <strong>Nap's Grill & Restobar</strong>!</p>
+          <hr style="margin:20px 0;">
+          <p style="font-size:14px;">Thank you for being one of our valued customers. We look forward to serving you again soon! 🍽️</p>
+          <p style="font-size:13px;color:#888;">If you have any questions, feel free to contact us.</p>
+          <div style="text-align:center;margin-top:30px;">
+            <a href="#" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">Order Now</a>
+          </div>
+        </div>
+      `
+    });
+  } catch (error) {
+    console.error('Failed to send voucher email:', error);
   }
 };

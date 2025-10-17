@@ -370,6 +370,28 @@
         });
         return false;
     }
+  document.addEventListener("DOMContentLoaded", () => {
+    const addTableForm = document.querySelector('#addTableModal form');
+    if (!addTableForm) return;
+
+    // Safely embed EJS array into JS
+    const existingTables = JSON.parse('<%- JSON.stringify(tables.map(t => t.name.toLowerCase())) %>');
+
+    addTableForm.addEventListener("submit", (e) => {
+      const nameInput = addTableForm.querySelector('input[name="name"]');
+      const enteredName = nameInput.value.trim().toLowerCase();
+
+      if (existingTables.includes(enteredName)) {
+        e.preventDefault();
+        Swal.fire({
+          icon: 'warning',
+          title: 'Duplicate Table Name',
+          text: 'A table with this name already exists!',
+          confirmButtonColor: '#006aff'
+        });
+      }
+    });
+  });
 </script>
 
 <script>

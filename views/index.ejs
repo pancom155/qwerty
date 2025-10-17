@@ -1606,50 +1606,51 @@ document.addEventListener('DOMContentLoaded', function() {
         sessionStorage.removeItem('isRedirecting');
     }
     
-    // Function to show loading effect
-    function showLoading(message = 'Redirecting to Login...') {
-        if (loadingOverlay && loadingText) {
-            loadingText.textContent = message;
-            loadingOverlay.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            // Set a short timeout to ensure the overlay is visible
-            setTimeout(() => {
-                // If still on same page after a moment, proceed with redirect
-                if (window.location.pathname === '/') {
-                    window.location.href = '/login';
-                }
-            }, 1500);
-        }
-    }
-    
-    // Function to hide loading effect
-    function hideLoading() {
-        if (loadingOverlay) {
-            loadingOverlay.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-    }
-    
-    // Initialize - hide loading on page load
-    initializeLoading();
-    
-    // Add event listeners to login and register links
-    const loginLinks = document.querySelectorAll('.login-link');
-    const registerLinks = document.querySelectorAll('.register-link');
-    
-    loginLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            showLoading('Redirecting to Login...');
-        });
-    });
-    
-    registerLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            showLoading('Redirecting to Registration...');
-        });
-    });
+   // Function to show loading effect with dynamic redirect
+function showLoading(message = 'Redirecting...', redirectPath = '/login') {
+  if (loadingOverlay && loadingText) {
+    loadingText.textContent = message;
+    loadingOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+
+    // Ensure the overlay is visible, then redirect
+    setTimeout(() => {
+      if (window.location.pathname === '/') {
+        window.location.href = redirectPath;
+      }
+    }, 1500);
+  }
+}
+
+// Function to hide loading effect
+function hideLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+}
+
+// Initialize - hide loading on page load
+initializeLoading();
+
+// Add event listeners to login and register links
+const loginLinks = document.querySelectorAll('.login-link');
+const registerLinks = document.querySelectorAll('.register-link');
+
+loginLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    showLoading('Redirecting to Login...', '/login');
+  });
+});
+
+registerLinks.forEach(link => {
+  link.addEventListener('click', function(e) {
+    e.preventDefault();
+    showLoading('Redirecting to Registration...', '/register');
+  });
+});
+
     
     // Add loading effect to other buttons that require login
     const orderButtons = document.querySelectorAll('.order-now-btn');
