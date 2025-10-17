@@ -718,7 +718,13 @@
             <span class="status-badge status-<%= order.status.replace('_', '-') %>"><%= order.status %></span>
           </td>
 
-          <td><%= new Date(order.createdAt).toLocaleString() %></td>
+        <td>
+  <%= new Date(order.createdAt).toLocaleString('en-PH', { 
+    timeZone: 'Asia/Manila', 
+    hour12: true 
+  }) %>
+</td>
+
 
           <td>
             <div class="d-flex flex-column gap-1">

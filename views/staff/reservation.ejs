@@ -554,12 +554,18 @@ body {
       <td>
         <span class="status-badge status-pending">Pending</span>
       </td>
-      <td>
-        <div class="text-nowrap">
-          <%= new Date(r.createdAt).toLocaleDateString() %>
-          <div class="text-muted small"><%= new Date(r.createdAt).toLocaleTimeString() %></div>
-        </div>
-      </td>
+     <td>
+  <div class="text-nowrap">
+    <%= new Date(r.createdAt).toLocaleDateString('en-PH', { timeZone: 'Asia/Manila' }) %>
+    <div class="text-muted small">
+      <%= new Date(r.createdAt).toLocaleTimeString('en-PH', { 
+        timeZone: 'Asia/Manila', 
+        hour12: true 
+      }) %>
+    </div>
+  </div>
+</td>
+
       <td>
         <div class="d-flex gap-1">
           <button class="btn btn-sm btn-approve btn-action" onclick="confirmAction('<%= r._id %>', 'approve')">

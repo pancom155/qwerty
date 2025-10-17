@@ -664,13 +664,30 @@ exports.downloadSalesReportPDF = async (req, res) => {
 
     doc.moveDown(2);
 
-    // ===== TABLE HEADER FUNCTION =====
-    const drawTableHeader = (yPos) => {
-      doc.fontSize(12).text("Customer", 50, yPos);
-      doc.text("Date & Time", 250, yPos);
-      doc.text("Amount (₱)", 420, yPos);
-      doc.moveTo(50, yPos + 15).lineTo(550, yPos + 15).stroke();
-    };
+   // ===== TABLE HEADER FUNCTION =====
+const drawTableHeader = (yPos) => {
+  doc.fontSize(12).text("Customer", 50, yPos);
+
+  // Get current Philippine date and time
+  const date = new Date();
+  const options = { 
+    timeZone: 'Asia/Manila', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric', 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    hour12: true 
+  };
+  const phTime = date.toLocaleString('en-PH', options);
+
+  // Display Date & Time on the right side
+  doc.text(`Date & Time: ${phTime}`, 250, yPos, { align: 'right' });
+
+  doc.text("Amount (₱)", 420, yPos);
+  doc.moveTo(50, yPos + 15).lineTo(550, yPos + 15).stroke();
+};
+
 
     // ===== TABLE BODY =====
     let y = doc.y + 20;
