@@ -18,7 +18,7 @@ const staffRoutes = require('./routes/staffRoutes');
 const waiterRoutes = require('./routes/waiterRoutes');
 const kitchenStaffRoutes = require('./routes/kitchenStaffRoutes');
 const loadSettings = require('./middleware/loadSettings');
-
+const calendarRoutes = require('./routes/calendarRoutes');
 const http = require('http');
 const { Server } = require("socket.io");
 
@@ -72,7 +72,7 @@ app.use('/waiter', waiterRoutes);
 app.use('/kitchen', kitchenStaffRoutes);
 app.use("/", reportRoutes);
 app.use('/staff', staffRoutes);
-
+app.use('/calendar', calendarRoutes);
 app.use('/staff/order', staffRoutes);
 
 

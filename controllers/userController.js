@@ -10,7 +10,8 @@ const Reservation = require('../models/Reservation');
 const Order = require('../models/Order');
 const Review = require('../models/Review');
 const { sendReservationEmail, sendOrderConfirmationEmail } = require('../middleware/emailService');
-const moment = require('moment');
+const moment = require('moment-timezone');
+
 
 exports.renderMyReservationsPage = async (req, res) => {
   try {
@@ -598,15 +599,19 @@ exports.placeOrder = async (req, res) => {
 
 exports.renderOrdersPage = async (req, res) => {
   try {
-    const userId = req.session.user._id;
+    const userId = req.session.user?._id; // ✅ Safe check for session
+    if (!userId) return res.redirect('/login');
+
     const user = await User.findById(userId).lean();
     if (!user) return res.redirect('/login');
 
+    // ✅ Fetch user’s orders, sorted by latest first
     const orders = await Order.find({ userId })
-    .sort({ createdAt: -1 })
-    .populate('items.productId') 
-    .lean();
+      .sort({ createdAt: -1 })
+      .populate('items.productId')
+      .lean();
 
+    // ✅ Render orders page with moment-timezone available in EJS
     res.render('user/orders', {
       user,
       orders,

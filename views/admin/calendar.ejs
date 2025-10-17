@@ -488,19 +488,26 @@
     </nav>
   </div>
 
-  <div class="container-fluid mt-4"> 
-<h2 class="fw-bold mb-0" style="color: #333446;">Calendar</h2>
+  <div class="container-fluid mt-4">
+  <h2 class="fw-bold mb-3" style="color: #333446;">Calendar</h2>
 
-    <!-- ✅ Calendar Container -->
-    <div id="calendar"></div>
-  </div>
+  <!-- Block Date Button -->
+  <button id="blockDateBtn" class="btn btn-danger mb-3">
+    <i class="bi bi-ban me-2"></i> Block Selected Date
+  </button>
+
+  <!-- Calendar Container -->
+  <div id="calendar"></div>
 </div>
+
 <!-- Reservation Details Modal -->
 <div class="modal fade" id="reservationModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content shadow-lg border-0 rounded-3">
       <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title"><i class="bi bi-calendar-event me-2"></i> Reservation Details</h5>
+        <h5 class="modal-title">
+          <i class="bi bi-calendar-event me-2"></i> Reservation Details
+        </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
 
@@ -510,7 +517,9 @@
           <div class="col-md-6">
             <div class="card shadow-sm border-0">
               <div class="card-body">
-                <h6 class="fw-bold mb-3"><i class="bi bi-person-circle me-2"></i>User Information</h6>
+                <h6 class="fw-bold mb-3">
+                  <i class="bi bi-person-circle me-2"></i>User Information
+                </h6>
                 <p class="mb-1"><strong>Full Name:</strong> <span id="resFullName"></span></p>
                 <p class="mb-1"><strong>Email:</strong> <span id="resEmail"></span></p>
                 <p class="mb-0"><strong>Phone:</strong> <span id="resPhone"></span></p>
@@ -522,12 +531,14 @@
           <div class="col-md-6">
             <div class="card shadow-sm border-0">
               <div class="card-body">
-                <h6 class="fw-bold mb-3"><i class="bi bi-info-circle me-2"></i>Reservation Info</h6>
+                <h6 class="fw-bold mb-3">
+                  <i class="bi bi-info-circle me-2"></i>Reservation Info
+                </h6>
                 <p class="mb-1"><strong>Table:</strong> <span id="resTable"></span></p>
                 <p class="mb-1"><strong>Reference No.:</strong> <span id="resRef"></span></p>
                 <p class="mb-1"><strong>Total Price:</strong> ₱<span id="resPrice"></span></p>
                 <p class="mb-1"><strong>Reservation Fee:</strong> ₱<span id="resFee"></span></p>
-                <p class="mb-0"><strong>Status:</strong> 
+                <p class="mb-0"><strong>Status:</strong>
                   <span id="resStatus" class="badge bg-warning text-dark px-3 py-2 rounded-pill"></span>
                 </p>
               </div>
@@ -540,204 +551,151 @@
   </div>
 </div>
 
-
 <!-- ✅ Scripts -->
- <script src="/socket.io/socket.io.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
+document.addEventListener('DOMContentLoaded', async function () {
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      themeSystem: 'bootstrap5',
-      height: 'auto',
-      headerToolbar: {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay'
-      },
+  const calendarEl = document.getElementById('calendar');
+  const blockDateBtn = document.getElementById('blockDateBtn');
+  let selectedDate = null;
 
-      // ✅ Load events dynamically from backend
-      events: '/staff/calendar/events',
+  // ✅ Initialize FullCalendar
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    themeSystem: 'bootstrap5',
+    height: 'auto',
+    selectable: true,
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
 
-      // ✅ Show reservation modal on click
-      eventClick: function (info) {
-        const props = info.event.extendedProps;
+    // Load both reservation events and blocked dates
+    events: async (fetchInfo, successCallback, failureCallback) => {
+      try {
+        const [reservations, blockedDates] = await Promise.all([
+          fetch('/staff/calendar/events').then(r => r.json()),
+          fetch('/calendar/blocked-dates').then(r => r.json())
+        ]);
 
-        document.getElementById('resFullName').innerText = props.fullName;
-        document.getElementById('resEmail').innerText = props.email;
-        document.getElementById('resPhone').innerText = props.phone;
-        document.getElementById('resTable').innerText = props.table;
-        document.getElementById('resRef').innerText = props.refNo;
-        document.getElementById('resPrice').innerText = props.price;
-        document.getElementById('resFee').innerText = props.fee;
-        document.getElementById('resStatus').innerText = props.status;
-       
+        const blockEvents = blockedDates.map(date => ({
+          title: 'Blocked',
+          start: date,
+          color: '#dc3545'
+        }));
 
-        var modal = new bootstrap.Modal(document.getElementById('reservationModal'));
-        modal.show();
-      },
+        successCallback([...reservations, ...blockEvents]);
+      } catch (err) {
+        failureCallback(err);
+      }
+    },
 
-      // Event rendering with custom classes based on status
-      eventDidMount: function(info) {
-        const status = info.event.extendedProps.status;
-        if (status) {
-          info.el.classList.add(`fc-event-${status.toLowerCase()}`);
+    dateClick: function (info) {
+      selectedDate = info.dateStr;
+      calendar.select(info.date);
+    },
+
+    eventClick: async function (info) {
+      const event = info.event;
+
+      // ✅ If user clicked a blocked date
+      if (event.title === 'Blocked') {
+        const confirm = await Swal.fire({
+          title: `Date ${event.startStr} is blocked`,
+          text: 'Do you want to unblock this date?',
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonText: 'Yes, Unblock',
+          cancelButtonText: 'Cancel'
+        });
+
+        if (confirm.isConfirmed) {
+          const res = await fetch('/calendar/unblock-date', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: event.startStr })
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            Swal.fire({ icon: 'success', title: data.message });
+            event.remove(); // Remove event from calendar
+          } else {
+            Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+          }
         }
-      },
-     
+
+        return;
+      }
+
+      // ✅ Otherwise, it's a reservation event
+      const props = event.extendedProps;
+      document.getElementById('resFullName').innerText = props.fullName || '-';
+      document.getElementById('resEmail').innerText = props.email || '-';
+      document.getElementById('resPhone').innerText = props.phone || '-';
+      document.getElementById('resTable').innerText = props.table || '-';
+      document.getElementById('resRef').innerText = props.refNo || '-';
+      document.getElementById('resPrice').innerText = props.price || '0';
+      document.getElementById('resFee').innerText = props.fee || '0';
+      document.getElementById('resStatus').innerText = props.status || 'Pending';
+
+      const modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+      modal.show();
+    }
+  });
+
+  calendar.render();
+
+  // ✅ Block selected date
+  blockDateBtn.addEventListener('click', async () => {
+    if (!selectedDate) {
+      return Swal.fire({ icon: 'warning', title: 'Please select a date first.' });
+    }
+
+    const confirm = await Swal.fire({
+      title: `Block date ${selectedDate}?`,
+      input: 'text',
+      inputPlaceholder: 'Optional reason...',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, Block it',
+      cancelButtonText: 'Cancel'
     });
 
-    calendar.render();
-  });
-document.addEventListener('DOMContentLoaded', () => {
-  const notificationBtn = document.getElementById('notificationBtn');
-  const notificationDropdown = document.getElementById('notificationDropdown');
-  const notificationBadge = document.getElementById('notificationBadge');
-  const notificationList = document.getElementById('notificationList');
+    if (!confirm.isConfirmed) return;
 
-  let pendingCount = 0;
+    const reason = confirm.value || '';
 
-  // Update bell badge
-  function updateBadge() {
-    if (pendingCount > 0) {
-      notificationBadge.textContent = pendingCount;
-      notificationBadge.style.display = 'flex';
-    } else {
-      notificationBadge.style.display = 'none';
-    }
-  }
+    const res = await fetch('/calendar/block-date', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ date: selectedDate, reason })
+    });
 
-  // Show "No Notifications" if empty
-  function checkEmpty() {
-    const hasItems = notificationList.querySelectorAll('.notification-item').length > 0;
-    if (!hasItems) {
-      const emptyMsg = document.createElement('div');
-      emptyMsg.className = 'notification-empty text-center text-muted';
-      emptyMsg.textContent = 'No Notifications';
-      notificationList.appendChild(emptyMsg);
-    } else {
-      const emptyMsg = notificationList.querySelector('.notification-empty');
-      if (emptyMsg) emptyMsg.remove();
-    }
-  }
-
-  async function loadPendingOrders() {
-  try {
-    const res = await fetch('/staff/pending-orders');
     const data = await res.json();
-    const orders = data.pendingOrders || [];
-    const reservations = data.pendingReservations || [];
 
-    // Helper function to create notification item
-    function createNotificationItem(type, item) {
-      const userName = item.userId ? `${item.userId.firstName} ${item.userId.lastName}` : item.fullName || 'Guest';
-      const time = new Date(item.createdAt).toLocaleTimeString('en-PH', { hour12: true });
-      const notificationItem = document.createElement('div');
-      notificationItem.className = 'notification-item';
-      notificationItem.innerHTML = `
-        <div class="notification-title">${type}</div>
-        <div class="notification-message">${type === 'New Order' ? `Order #${item._id} by ${userName}` : `Reservation #${item._id} by ${userName}`}</div>
-        <div class="notification-time">${time}</div>
-      `;
-      notificationItem.addEventListener('click', () => {
-        window.location.href = type === 'New Order' ? '/staff/order' : '/staff/reservation';
+    if (res.ok) {
+      Swal.fire({ icon: 'success', title: 'Date blocked successfully!' });
+      calendar.addEvent({
+        title: 'Blocked',
+        start: selectedDate,
+        color: '#dc3545'
       });
-      return notificationItem;
-    }
-
-    // Add pending orders
-    orders.forEach(order => {
-      const notificationItem = createNotificationItem('New Order', order);
-      notificationList.insertBefore(notificationItem, notificationList.firstChild);
-    });
-
-    // Add pending reservations
-    reservations.forEach(reservation => {
-      const notificationItem = createNotificationItem('New Reservation', reservation);
-      notificationList.insertBefore(notificationItem, notificationList.firstChild);
-    });
-
-    // Update badge count
-    pendingCount = orders.length + reservations.length;
-    updateBadge();
-    checkEmpty();
-  } catch (err) {
-    console.error('Error fetching pending orders/reservations:', err);
-  }
-}
-
-
-  loadPendingOrders(); // Load pending orders on page load
-
-  // Toggle dropdown
-  notificationBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = notificationDropdown.style.display === 'block';
-    notificationDropdown.style.display = isOpen ? 'none' : 'block';
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!notificationDropdown.contains(e.target) && e.target !== notificationBtn) {
-      notificationDropdown.style.display = 'none';
+    } else {
+      Swal.fire({ icon: 'error', title: 'Error', text: data.message });
     }
   });
 
-  // Socket.IO for new orders
-  const socket = io();
-  socket.on('newOrder', (data) => {
-    // Remove empty message if exists
-    const emptyMsg = notificationList.querySelector('.notification-empty');
-    if (emptyMsg) emptyMsg.remove();
-
-    const notificationItem = document.createElement('div');
-    notificationItem.className = 'notification-item new-notification';
-    notificationItem.innerHTML = `
-      <div class="notification-title">${data.title}</div>
-      <div class="notification-message">${data.message}</div>
-      <div class="notification-time">${data.time}</div>
-    `;
-    notificationItem.addEventListener('click', () => {
-      window.location.href = '/staff/order';
-    });
-    notificationList.insertBefore(notificationItem, notificationList.firstChild);
-
-    pendingCount += 1;
-    updateBadge();
-
-    setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
-  });
 });
-
 </script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.getElementById("restaurantToggle");
-    const label = document.getElementById("restaurantLabel");
 
-    const isClosed = localStorage.getItem("restaurantClosed") === "true";
-    toggle.checked = !isClosed;
-    label.textContent = isClosed ? "Closed" : "Open";
-
-    toggle.addEventListener("change", () => {
-      const newStatusClosed = !toggle.checked;
-      localStorage.setItem("restaurantClosed", newStatusClosed);
-      label.textContent = newStatusClosed ? "Closed" : "Open";
-
-      Swal.fire({
-        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
-        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
-        icon: newStatusClosed ? "error" : "success",
-        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
-        confirmButtonText: "OK"
-      });
-    });
-  });
-</script> 
 </body>
 </html>
