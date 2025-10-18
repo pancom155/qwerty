@@ -393,7 +393,7 @@ exports.sendVoucherEmail = async ({ to, name, voucher }) => {
           <p style="font-size:15px;">We’re excited to share an exclusive voucher with you!</p>
           <div style="background:#f9f9f9;padding:15px;border-radius:6px;margin:20px 0;">
             <p style="font-size:15px;margin:5px 0;"><b>Voucher Code:</b> <span style="color:#1976d2;">${voucher.code}</span></p>
-            <p style="font-size:15px;margin:5px 0;"><b>Discount:</b> ${voucher.discount}% Off</p>
+            <p style="font-size:15px;margin:5px 0;"><b>Discount:</b> ₱${voucher.discount} Off</p>
             <p style="font-size:15px;margin:5px 0;"><b>Minimum Spend:</b> ₱${voucher.minSpend}</p>
             <p style="font-size:15px;margin:5px 0;"><b>Valid Until:</b> ${new Date(voucher.expiryDate).toLocaleDateString()}</p>
           </div>

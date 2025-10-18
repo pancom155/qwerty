@@ -602,6 +602,80 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => notificationItem.classList.remove('new-notification'), 500);
   });
 });
+
+ document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      themeSystem: 'bootstrap5',
+      height: 'auto',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+
+      // ✅ Load both reservations and blocked dates
+      events: async (fetchInfo, successCallback, failureCallback) => {
+        try {
+          const [reservations, blockedDates] = await Promise.all([
+            fetch('/staff/calendar/events').then(r => r.json()),
+            fetch('/calendar/blocked-dates').then(r => r.json())
+          ]);
+
+          const blockEvents = blockedDates.map(date => ({
+            title: 'Blocked',
+            start: date,
+            color: '#dc3545', // Red
+            textColor: '#fff',
+            display: 'background'
+          }));
+
+          successCallback([...reservations, ...blockEvents]);
+        } catch (err) {
+          failureCallback(err);
+        }
+      },
+
+      eventClick: function (info) {
+        const event = info.event;
+
+        // 🛑 If it’s a blocked date, staff can’t edit/unblock it
+        if (event.title === 'Blocked') {
+          return Swal.fire({
+            icon: 'info',
+            title: 'This date is blocked',
+            text: 'Reservations are disabled for this date.',
+            confirmButtonColor: '#3085d6'
+          });
+        }
+
+        // ✅ Otherwise, show reservation details
+        const props = event.extendedProps;
+        document.getElementById('resFullName').innerText = props.fullName;
+        document.getElementById('resEmail').innerText = props.email;
+        document.getElementById('resPhone').innerText = props.phone;
+        document.getElementById('resTable').innerText = props.table;
+        document.getElementById('resRef').innerText = props.refNo;
+        document.getElementById('resPrice').innerText = props.price;
+        document.getElementById('resFee').innerText = props.fee;
+        document.getElementById('resStatus').innerText = props.status;
+
+        var modal = new bootstrap.Modal(document.getElementById('reservationModal'));
+        modal.show();
+      },
+
+      eventDidMount: function (info) {
+        const status = info.event.extendedProps.status;
+        if (status) {
+          info.el.classList.add(`fc-event-${status.toLowerCase()}`);
+        }
+      },
+    });
+
+    calendar.render();
+  });
 </script>
 
 </body>
