@@ -222,7 +222,6 @@
           </div>
         </div>
 
-        <!-- Edit Modal -->
         <div class="modal fade" id="editModal-<%= table._id %>" tabindex="-1">
           <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content rounded-4">
@@ -235,37 +234,34 @@
 
                 <div class="modal-body row g-3 px-3">
                   <div class="col-md-6">
-                    <label class="form-label">Name</label>
+                    <label class="form-label"><i class="bi bi-table"></i> Table Name</label>
                     <input type="text" name="name" class="form-control" maxlength="40" value="<%= table.name %>" required>
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Price</label>
-                    <input type="number" name="price" class="form-control" value="<%= table.price %>" min="0" max="1000000" required oninput="this.value = Math.abs(this.value)">
+                    <label class="form-label"><i class="bi bi-currency-dollar"></i> Price</label>
+                    <input type="number" name="price" class="form-control" value="<%= table.price %>" min="1" max="100000" required oninput="this.value = Math.abs(this.value)">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Reservation Fee</label>
-                    <input type="number" name="reservation_fee" class="form-control" value="<%= table.reservation_fee %>" min="0" max="1000000" required oninput="this.value = Math.abs(this.value)">
+                    <label class="form-label"><i class="bi bi-currency-dollar"></i> Reservation Fee</label>
+                    <input type="number" name="reservation_fee" class="form-control" value="<%= table.reservation_fee %>" min="1" max="100000" required oninput="this.value = Math.abs(this.value)">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Pax</label>
+                    <label class="form-label"><i class="bi bi-person-plus-fill"></i> Pax</label>
                     <input type="number" name="pax" class="form-control" value="<%= table.pax %>" min="0" max="100" required oninput="this.value = Math.abs(this.value)">
                   </div>
                   <div class="col-md-6">
-                    <label class="form-label">Image (Leave blank to keep current)</label>
+                    <label class="form-label"><i class="bi bi-file-image-fill"></i> Image (Leave blank to keep current)</label>
                     <input type="file" name="image" class="form-control" accept="image/*">
                   </div>
                   <div class="col-12">
-                    <label class="form-label">Description</label>
+                    <label class="form-label"><i class="bi bi-body-text"></i> Description</label>
                     <textarea name="description" class="form-control" maxlength="100" rows="3" required><%= table.description %></textarea>
                   </div>
                 </div>
 
                 <div class="modal-footer">
-                  <button type="submit" class="btn text-white fw-semibold px-4"
-                          style="background: rgb(14, 83, 231);">
-                    Update
-                  </button>
-                  <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+                  <button type="submit" class="btn text-white fw-semibold px-4" style="background: rgb(14, 83, 231);"><i class="bi bi-plus-circle"></i> Update</button>
+                  <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Cancel</button>
                 </div>
               </form>
             </div>
@@ -280,7 +276,6 @@
   </div>
 </div>
 
-<!-- Add Table Modal -->
 <div class="modal fade" id="addTableModal" tabindex="-1">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content rounded-4">
@@ -293,40 +288,37 @@
 
         <div class="modal-body row g-3 px-3">
           <div class="col-md-6">
-            <label class="form-label">Name</label>
+            <label class="form-label"><i class="bi bi-table"></i> Table Name</label>
             <input type="text" name="name" class="form-control" placeholder="Enter Table Name..." required>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Price</label>
-            <input type="number" name="price" class="form-control" placeholder="Enter Table Price..." min="0"  max="1000000"  required oninput="this.value = Math.abs(this.value)"
+            <label class="form-label"><i class="bi bi-currency-dollar"></i> Price</label>
+            <input type="number" name="price" class="form-control" placeholder="Enter Table Price..." min="1"  max="1000000"  required oninput="this.value = Math.abs(this.value)"
 >
           </div>
           <div class="col-md-6">
-            <label class="form-label">Reservation Fee</label>
-            <input type="number" name="reservation_fee" class="form-control"max="1000000" placeholder="Enter Table Reservation Fee..." min="0" required oninput="this.value = Math.abs(this.value)"
+            <label class="form-label"><i class="bi bi-currency-dollar"></i> Reservation Fee</label>
+            <input type="number" name="reservation_fee" class="form-control"max="1000000" placeholder="Enter Table Reservation Fee..." min="1" required oninput="this.value = Math.abs(this.value)"
 >
           </div>
           <div class="col-md-6">
-            <label class="form-label">Pax</label>
-            <input type="number" name="pax" class="form-control" placeholder="Enter Table Pax..." min="0" required oninput="this.value = Math.abs(this.value)"
+            <label class="form-label"><i class="bi bi-person-plus-fill"></i> Pax</label>
+            <input type="number" name="pax" class="form-control" placeholder="Enter Table Pax..." min="1" required oninput="this.value = Math.abs(this.value)"
 >
           </div>
           <div class="col-md-6">
-            <label class="form-label">Image</label>
+            <label class="form-label"><i class="bi bi-file-image-fill"></i> Image</label>
             <input type="file" name="image" class="form-control" accept="image/*" required>
           </div>
           <div class="col-12">
-            <label class="form-label">Description</label>
-            <textarea name="description" maxlength="100 " class="form-control" rows="3" placeholder="Enter Description..." required></textarea>
+            <label class="form-label"><i class="bi bi-body-text"></i> Description</label>
+            <textarea name="description" maxlength="100" class="form-control" rows="3" placeholder="Enter Description..." required></textarea>
           </div>
         </div>
 
         <div class="modal-footer">
-          <button type="submit" class="btn text-white fw-semibold px-4"
-                  style="background: rgb(14, 83, 231);">
-            Add Table
-          </button>
-          <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn text-white fw-semibold px-4" style="background: rgb(14, 83, 231);"><i class="bi bi-plus-circle"></i> Add Table</button>
+          <button type="button" class="btn btn-danger px-4" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Cancel</button>
         </div>
       </form>
     </div>
@@ -368,7 +360,6 @@
     const addTableForm = document.querySelector('#addTableModal form');
     if (!addTableForm) return;
 
-    // Safely embed EJS array into JS
     const existingTables = JSON.parse('<%- JSON.stringify(tables.map(t => t.name.toLowerCase())) %>');
 
     addTableForm.addEventListener("submit", (e) => {
@@ -388,6 +379,96 @@
   });
 </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  // Select all inputs and textareas in add/edit modals
+  const fields = document.querySelectorAll(
+    '#addTableModal input, #addTableModal textarea, [id^="editModal-"] input, [id^="editModal-"] textarea'
+  );
+
+  fields.forEach(field => {
+    field.addEventListener("input", function () {
+      const name = this.getAttribute("name");
+      const type = this.getAttribute("type");
+      const maxLength = this.getAttribute("maxlength");
+      const maxValue = this.getAttribute("max");
+      const value = this.value;
+
+      // 🔸 Maxlength for text/textarea
+      if (maxLength && value.length >= parseInt(maxLength)) {
+        this.value = value.substring(0, parseInt(maxLength));
+        Swal.fire({
+          icon: "warning",
+          title: "Maximum Text Limit Reached",
+          text: `You can only enter up to ${maxLength} characters.`,
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true
+        });
+      }
+
+      if (type === "number" && maxValue && parseFloat(value) > parseFloat(maxValue)) {
+        this.value = maxValue;
+        Swal.fire({
+          icon: "warning",
+          title: "Maximum Value Reached",
+          text: `You cannot enter more than ${maxValue}.`,
+          showConfirmButton: false,
+          timer: 1000,
+          timerProgressBar: true
+        });
+      }
+
+      if (name === "name" && value.length > 40) {
+        this.value = value.substring(0, 40);
+        Swal.fire({
+          icon: "warning",
+          title: "Table Name Too Long",
+          text: "Table name can only have up to 40 characters.",
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true
+        });
+      }
+
+      if (name === "pax" && parseInt(value) > 100) {
+        this.value = 100;
+        Swal.fire({
+          icon: "warning",
+          title: "Maximum Pax Limit Reached",
+          text: "Pax cannot exceed 100.",
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true
+        });
+      }
+    });
+  });
+
+  const imageInputs = document.querySelectorAll('input[type="file"][name="image"]');
+  imageInputs.forEach(input => {
+    input.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const validTypes = ["image/jpeg", "image/png", "image/jpg"];
+        if (!validTypes.includes(file.type)) {
+          this.value = "";
+          Swal.fire({
+            icon: "error",
+            title: "Invalid File Type",
+            text: "Please upload only JPG, JPEG, or PNG images.",
+            showConfirmButton: false,
+            timer: 1500,
+            timerProgressBar: true
+          });
+        }
+      }
+    });
+  });
+
+});
+</script>
   
 </body>
 </html>

@@ -516,13 +516,7 @@ body {
     <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
   </nav>
 
-  <div class="mt-4 p-3 border-top">
-    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
-    <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" id="restaurantToggle">
-      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
-    </div>
-  </div>
+ 
 </div>
 
 <div class="main-content">
@@ -685,9 +679,6 @@ body {
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  /* =========================
-     🔍 SEARCH + PAGINATION
-  ========================== */
   const searchInput = document.getElementById("searchInput");
   const tableBody = document.getElementById("reservationTableBody");
   const pagination = document.getElementById("pagination");
@@ -733,7 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderPagination(totalPages) {
     pagination.innerHTML = "";
 
-    if (totalPages <= 1) return; // Hide pagination if only 1 page
+    if (totalPages <= 1) return; 
 
     for (let i = 1; i <= totalPages; i++) {
       const li = document.createElement("li");
@@ -755,10 +746,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   renderTable();
 
-
-  /* =========================
-     🔔 NOTIFICATIONS
-  ========================== */
   const notificationBtn = document.getElementById("notificationBtn");
   const notificationDropdown = document.getElementById("notificationDropdown");
   const notificationBadge = document.getElementById("notificationBadge");
@@ -854,8 +841,6 @@ document.addEventListener("DOMContentLoaded", () => {
       notificationDropdown.style.display = "none";
     }
   });
-
-  // 🔄 Real-time Notifications via Socket.IO
   const socket = io();
 
   socket.on("newOrder", data => {
@@ -880,7 +865,6 @@ document.addEventListener("DOMContentLoaded", () => {
     pendingCount++;
     updateBadge();
 
-    // Highlight effect for new notification
     setTimeout(() => div.classList.remove("new-notification"), 500);
   });
 });

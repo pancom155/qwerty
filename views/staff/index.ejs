@@ -449,13 +449,7 @@ body {
 <a href="/staff/chat"><i class="bi bi-chat-dots"></i> Customer Concern</a>
 </nav>
 
-  <div class="mt-4 p-3 border-top">
-    <label class="form-check-label fw-bold d-block mb-2">Restaurant Status</label>
-    <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" id="restaurantToggle">
-      <label class="form-check-label" for="restaurantToggle" id="restaurantLabel">Open</label>
-    </div>
-  </div>
+  
 </div>
 
 <div class="main-content">
@@ -761,30 +755,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 </script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const toggle = document.getElementById("restaurantToggle");
-    const label = document.getElementById("restaurantLabel");
 
-    const isClosed = localStorage.getItem("restaurantClosed") === "true";
-    toggle.checked = !isClosed;
-    label.textContent = isClosed ? "Closed" : "Open";
-
-    toggle.addEventListener("change", () => {
-      const newStatusClosed = !toggle.checked;
-      localStorage.setItem("restaurantClosed", newStatusClosed);
-      label.textContent = newStatusClosed ? "Closed" : "Open";
-
-      Swal.fire({
-        title: newStatusClosed ? "Restaurant is Closed" : "Restaurant is Open",
-        text: `The restaurant is now ${newStatusClosed ? "closed" : "open"} for orders.`,
-        icon: newStatusClosed ? "error" : "success",
-        confirmButtonColor: newStatusClosed ? "#d33" : "#28a745",
-        confirmButtonText: "OK"
-      });
-    });
-  });
-</script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

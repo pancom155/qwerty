@@ -218,7 +218,7 @@ exports.sendOrderProcessedEmail = async ({ to, name, orderId }) => {
         <p style="font-size:14px;">Thank you for choosing <strong>Nap's Grill & Restobar</strong>! 🍔</p>
         <p style="font-size:13px;color:#888;">If you have any questions, feel free to contact us.</p>
         <div style="text-align:center;margin-top:30px;">
-          <a href="#" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">Visit Us Again</a>
+          <a href="https://qwerty-1-8irw.onrender.com/" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">Visit Us Again</a>
         </div>
       </div>
     `
@@ -240,7 +240,7 @@ exports.sendOrderRejectedEmail = async ({ to, name, orderId }) => {
         <hr style="margin:20px 0;">
         <p style="font-size:14px;">Thank you for understanding. — <strong>Nap's Grill & Restobar</strong></p>
         <div style="text-align:center;margin-top:30px;">
-          <a href="#" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">Contact Support</a>
+          <a href="https://qwerty-1-8irw.onrender.com/" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">Contact Support</a>
         </div>
       </div>
     `
@@ -402,12 +402,58 @@ exports.sendVoucherEmail = async ({ to, name, voucher }) => {
           <p style="font-size:14px;">Thank you for being one of our valued customers. We look forward to serving you again soon! 🍽️</p>
           <p style="font-size:13px;color:#888;">If you have any questions, feel free to contact us.</p>
           <div style="text-align:center;margin-top:30px;">
-            <a href="#" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">Order Now</a>
+            <a href="https://qwerty-1-8irw.onrender.com/" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">Order Now</a>
           </div>
         </div>
       `
     });
   } catch (error) {
     console.error('Failed to send voucher email:', error);
+  }
+};
+
+exports.sendSupportEmail = async ({ to, name, staffEmail, imageUrl }) => {
+  try {
+    await transporter.sendMail({
+      from: `"Nap's Grill & Restobar" <${process.env.GMAIL_USER}>`,
+      to,
+      subject: `Staff ${staffEmail} sent you a message from Nap's Grill & Restobar`,
+      html: `
+        <div style="max-width:600px;margin:0 auto;padding:20px;border:1px solid #ddd;border-radius:8px;font-family:Arial,sans-serif;background:#fff;">
+          <h2 style="text-align:center;color:#d32f2f;">Nap's Grill & Restobar</h2>
+          <p style="font-size:16px;">Hi <strong>${name || "Customer"}</strong>,</p>
+          <p style="font-size:15px;">
+            <strong>${staffEmail}</strong> from our support team has sent you a new message.
+          </p>
+
+          <div style="background:#f9f9f9;padding:15px;border-radius:6px;margin:20px 0;text-align:center;color:#888;">
+            <p style="font-size:15px;margin:0;">To protect your privacy, message content is hidden.</p>
+            <p style="font-size:15px;margin:0;">Please log in to view it securely.</p>
+          </div>
+
+          ${
+            imageUrl
+              ? `<div style="margin-top:10px;text-align:center;">
+                  <a href="${imageUrl}" target="_blank" style="text-decoration:none;">
+                    <img src="${imageUrl}" alt="Support Image" style="max-width:100%;border-radius:6px;display:block;margin:0 auto;">
+                  </a>
+                </div>`
+              : ""
+          }
+
+          <p style="font-size:15px;">Please log in to your Dinehub account to read and reply to this message.</p>
+          <hr style="margin:20px 0;">
+          <p style="font-size:14px;">Thank you for contacting <strong>Nap's Grill & Restobar</strong>! We’re always happy to assist you.</p>
+          <p style="font-size:13px;color:#888;">This is an automated notification — please reply through your Dinehub account.</p>
+          <div style="text-align:center;margin-top:30px;">
+            <a href="https://qwerty-1-8irw.onrender.com/" style="background:#d32f2f;color:#fff;text-decoration:none;padding:10px 20px;border-radius:5px;font-weight:bold;">View Message</a>
+          </div>
+        </div>
+      `,
+    });
+
+    console.log(`[Email Sent] Support message sent to ${to}`);
+  } catch (err) {
+    console.error("[EmailService Error - Support Email]:", err);
   }
 };

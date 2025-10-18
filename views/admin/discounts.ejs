@@ -320,9 +320,9 @@
 <script>
   const generateBtn = document.getElementById('generateCodeBtn');
   const codeInput = document.getElementById('voucherCode');
-
   const existingVoucherCodes = <%- JSON.stringify(vouchers.map(v => v.code.toLowerCase())) %>;
 
+  // Generate random voucher code (unique)
   generateBtn.addEventListener('click', function () {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     let code;
@@ -345,18 +345,18 @@
     });
   });
 
+  // Prevent manual typing/pasting of voucher code
   codeInput.addEventListener('keydown', e => e.preventDefault());
   codeInput.addEventListener('paste', e => e.preventDefault());
 
+  // Validate max digits
   function validateMaxLength(input, maxLength) {
     const value = input.value.toString();
-
     if (value.length > maxLength) {
       input.value = value.slice(0, maxLength);
-
       Swal.fire({
         icon: 'warning',
-        title: 'Input too long!',
+        title: 'Too Many Digits',
         text: `Maximum ${maxLength} digits allowed.`,
         timer: 1200,
         showConfirmButton: false
@@ -364,6 +364,53 @@
     }
   }
 
+  // Check image type
+  document.addEventListener("change", function (e) {
+    if (e.target.matches(".voucher-image-input")) {
+      const file = e.target.files[0];
+      if (file) {
+        const validTypes = ["image/jpeg", "image/png"];
+        if (!validTypes.includes(file.type)) {
+          Swal.fire({
+            icon: "error",
+            title: "Invalid File Type!",
+            text: "Please upload only JPEG or PNG images."
+          });
+          e.target.value = "";
+        }
+      }
+    }
+  });
+
+  // Validate discount and min spend (min = 1)
+  document.addEventListener("input", function (e) {
+    const target = e.target;
+    const value = parseInt(target.value, 10);
+
+    if (target.name === "discount" && (value < 1 || isNaN(value))) {
+      target.value = "";
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid Discount Value",
+        text: "Discount must be at least ₱1.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    }
+
+    if (target.name === "minSpend" && (value < 1 || isNaN(value))) {
+      target.value = "";
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid Minimum Spend",
+        text: "Minimum spend must be at least ₱1.",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    }
+  });
+
+  // Validate on form submit (digit limits)
   document.querySelectorAll('form').forEach(form => {
     form.addEventListener('submit', function(e) {
       const discount = this.querySelector('input[name="discount"]');
@@ -390,15 +437,8 @@
       }
     });
   });
-</script>
 
-<script>
-  document.getElementById("generateCodeBtn")?.addEventListener("click", () => {
-    const codeField = document.getElementById("voucherCode");
-    const randomCode = "VCH-" + Math.random().toString(36).substring(2, 10).toUpperCase();
-    codeField.value = randomCode;
-  });
-
+  // Edit randomizer
   document.querySelectorAll(".edit-randomizer-btn").forEach(btn => {
     btn.addEventListener("click", () => {
       const id = btn.dataset.id;
@@ -407,38 +447,7 @@
       codeInput.value = randomCode;
     });
   });
-
-  function validateMaxLength(input, maxLength) {
-    const value = input.value.toString();
-    if (value.length > maxLength) {
-      input.value = value.slice(0, maxLength);
-      Swal.fire({
-        icon: 'warning',
-        title: 'Too Many Digits',
-        text: `Maximum ${maxLength} digits allowed.`,
-        timer: 1200,
-        showConfirmButton: false
-      });
-    }
-  }
-
-  document.addEventListener("change", function(e) {
-    if (e.target.matches(".voucher-image-input")) {
-      const file = e.target.files[0];
-      if (file) {
-        const validTypes = ["image/jpeg", "image/png"];
-        if (!validTypes.includes(file.type)) {
-          Swal.fire({
-            icon: "error",
-            title: "Invalid File Type!",
-            text: "Please upload only JPEG or PNG images."
-          });
-          e.target.value = "";
-        }
-      }
-    }
-  });
+  
 </script>
-
 </body>
 </html>

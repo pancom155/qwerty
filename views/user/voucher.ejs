@@ -82,7 +82,7 @@
                   <img src="/<%= v.image %>" class="card-img-top" alt="Voucher">
                   <div class="card-body">
                     <h5 class="card-title fw-bold"><%= v.code %></h5>
-                    <p class="small mb-1">Discount: <%= v.discount %>%</p>
+                    <p class="small mb-1">Discount:₱<%= v.discount %></p>
                     <p class="small mb-0">Min spend ₱<%= v.minSpend.toFixed(2) %></p>
                     <p class="small mb-0 text-muted">Expires: <%= new Date(v.expiryDate).toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' }) %></p>
                   </div>

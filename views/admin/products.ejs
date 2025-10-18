@@ -409,7 +409,7 @@
           </div>
           <div class="col-md-6">
             <label class="form-label"><i class="fa-solid fa-peso-sign me-2"></i>Price</label>
-           <input type="number" name="price" class="form-control" value="<%= product.price %>" min="0" required oninput="this.value = Math.abs(this.value)">
+           <input type="number" name="price" class="form-control" value="<%= product.price %>" min="1" maxlength="100000" required oninput="this.value = Math.abs(this.value)">
 
           </div>
           <div class="col-md-6">
@@ -425,7 +425,7 @@
           </div>
           <div class="col-12">
             <label class="form-label"><i class="bi bi-card-text me-2"></i>Description</label>
-            <textarea name="description" maxlength="100" class="form-control" required><%= product.description %></textarea>
+            <textarea name="description" maxlength="1000" class="form-control" required><%= product.description %></textarea>
           </div>
         </div>
         <div class="modal-footer">

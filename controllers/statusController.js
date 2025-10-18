@@ -22,7 +22,10 @@ exports.toggleStatus = async (req, res) => {
     status.isOpen = !status.isOpen;
     await status.save();
 
-    res.json({ message: `Restaurant is now ${status.isOpen ? 'open' : 'closed'}`, isOpen: status.isOpen });
+    res.json({
+      message: `Restaurant is now ${status.isOpen ? 'open' : 'closed'}`,
+      isOpen: status.isOpen
+    });
   } catch (err) {
     res.status(500).json({ error: 'Failed to update status' });
   }

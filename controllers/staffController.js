@@ -3,7 +3,7 @@ const Order = require('../models/Order');
 
 const CustomerSupport = require('../models/CustomerSupport');
 const User = require('../models/User');
-const { sendReservationConfirmedEmail, sendRejectionEmail, sendOrderProcessedEmail, sendOrderRejectedEmail, sendOrderCompletedEmail, sendReadyToPickupEmail } = require('../middleware/emailService');
+const { sendReservationConfirmedEmail, sendRejectionEmail, sendOrderProcessedEmail, sendOrderRejectedEmail, sendOrderCompletedEmail, sendReadyToPickupEmail, sendSupportEmail  } = require('../middleware/emailService');
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
@@ -17,7 +17,6 @@ exports.renderStaffDashboard = async (req, res) => {
     const endOfMonth = new Date(startOfMonth);
     endOfMonth.setMonth(endOfMonth.getMonth() + 1);
 
-    // Kunin lang ang orders at reservations sa current month
     const [orders, reservations] = await Promise.all([
       Order.find({ createdAt: { $gte: startOfMonth, $lt: endOfMonth } }).lean(),
       Reservation.find({ createdAt: { $gte: startOfMonth, $lt: endOfMonth } }).lean()
@@ -181,10 +180,8 @@ exports.downloadReceiptPDF = async (req, res) => {
       return res.status(404).send('Order not found');
     }
 
-    // Get settings for logo
     const settings = await Settings.findOne().lean();
 
-    // Resolve logo path (absolute)
     let logoPath;
     if (settings && settings.logo) {
       logoPath = path.join(__dirname, '../public', settings.logo);
@@ -192,13 +189,11 @@ exports.downloadReceiptPDF = async (req, res) => {
       logoPath = path.join(__dirname, '../public/images/napslogo.png');
     }
 
-    // ✅ POS-style receipt
     const doc = new PDFDocument({
       size: [226, 600],
       margins: { top: 10, left: 10, right: 10, bottom: 10 }
     });
 
-    // ✅ Use built-in Helvetica (no .ttf needed, peso sign supported)
     doc.font('Helvetica');
 
     res.setHeader('Content-Type', 'application/pdf');
@@ -208,7 +203,6 @@ exports.downloadReceiptPDF = async (req, res) => {
     );
     doc.pipe(res);
 
-    // --- LOGO ---
     if (fs.existsSync(logoPath)) {
       const logoWidth = 70;
       const pageWidth = doc.page.width;
@@ -220,7 +214,6 @@ exports.downloadReceiptPDF = async (req, res) => {
       doc.moveDown(2);
     }
 
-    // --- STORE INFO ---
     doc.fontSize(12).text("Nap's Grill and Restobar", { align: 'center' });
     doc.fontSize(8).text(
       '32nd Street corner Melencio St.,\nKapitan Pepe Phase II Subd.,\nCabanatuan City, Philippines',
@@ -230,10 +223,8 @@ exports.downloadReceiptPDF = async (req, res) => {
     doc.moveDown();
     doc.fontSize(8).text('================================', { align: 'center' });
 
-    // --- ORDER INFO ---
 doc.fontSize(9).text(`Order #: ${order._id}`);
 
-// Convert order.createdAt to Philippine Time (UTC+8)
 const manilaTime = new Date(order.createdAt).toLocaleString('en-PH', {
   timeZone: 'Asia/Manila',
   year: 'numeric',
@@ -560,98 +551,102 @@ exports.getAllChats = async (req, res) => {
     }
 };
 
-// Staff sends a message to existing chat
 exports.sendMessage = async (req, res) => {
   const { userId, message } = req.body;
 
   try {
-    if (!req.session.user || !req.session.user.email) {
-      console.error('[Send Staff Message Error]: Staff session not found.');
-      req.flash('error', 'Staff not logged in.');
-      return res.redirect('/staff/chat');
-    }
-
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).select("firstname lastname email");
     if (!user) {
-      console.error('[Send Staff Message Error]: User not found for ID', userId);
-      req.flash('error', 'User not found.');
-      return res.redirect('/staff/chat');
+      req.flash("error", "User not found.");
+      return res.redirect("/staff/chat");
     }
 
     let chat = await CustomerSupport.findOne({ userId: user._id });
     if (!chat) {
       chat = new CustomerSupport({
         userId: user._id,
-        userEmail: user.email, // ✅ Save user email here
-        messages: []
+        userEmail: user.email,
+        messages: [],
       });
     }
 
     chat.messages.push({
-  sender: 'staff',
-  email: req.session.user.email,
-  message: message || null,
-  image: req.file ? `/uploads/${req.file.filename}` : null  // ✅ save uploaded image path
-});
-
+      sender: "staff",
+      email: req.session.user.email,
+      message: message || null,
+      image: req.file ? `/uploads/${req.file.filename}` : null,
+    });
 
     await chat.save();
-    res.redirect('/staff/chat');
+
+    await sendSupportEmail({
+      to: user.email,
+      name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Customer",
+      staffEmail: req.session.user.email,
+      imageUrl: req.file
+        ? `https://qwerty-1-8irw.onrender.com/uploads/${req.file.filename}`
+        : null,
+    });
+
+    res.redirect("/staff/chat");
   } catch (err) {
-    console.error('[Send Staff Message Error]:', err);
-    res.redirect('/staff/chat');
+    console.error("[Send Staff Message Error]:", err);
+    res.redirect("/staff/chat");
   }
 };
 
-
-// Staff starts a new chat
+// ✅ STAFF START NEW CHAT (Email Hidden)
 exports.addChat = async (req, res) => {
   try {
     const { email, message } = req.body;
 
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select("firstname lastname email");
     if (!user) {
-      return res.json({ success: false, message: 'User not found' });
+      return res.json({ success: false, message: "User not found" });
     }
 
-    // ✅ Check if chat already exists
-    let existingChat = await CustomerSupport.findOne({ userId: user._id });
+    const existingChat = await CustomerSupport.findOne({ userId: user._id });
     if (existingChat) {
       return res.json({
         success: false,
         reminder: true,
         message: `A chat with (${user.email}) already exists.`,
-        chatId: existingChat._id
+        chatId: existingChat._id,
       });
     }
 
-    // If not exist, create new chat
     const newChat = await CustomerSupport.create({
       userId: user._id,
-      userEmail: user.email, // ✅ Save user email here
+      userEmail: user.email,
       messages: [
         {
-          sender: 'staff',
-          email: req.session.user.email, // staff email only
-          message
-        }
-      ]
+          sender: "staff",
+          email: req.session.user.email,
+          message,
+        },
+      ],
+    });
+
+    await sendSupportEmail({
+      to: user.email,
+      name: `${user.firstName || ""} ${user.lastName || ""}`.trim() || "Customer",
+      staffEmail: req.session.user.email,
+      imageUrl: null,
     });
 
     res.json({
       success: true,
       chatId: newChat._id,
-      name: `${user.firstname} ${user.lastname}`,
-      email: user.email
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
     });
+
+    console.log(`[Chat Created + Email Sent] To: ${user.email}`);
   } catch (err) {
-    console.error('[Add Chat Error]:', err);
-    res.json({ success: true, message: 'add chat' });
+    console.error("[Add Chat Error]:", err);
+    res.json({ success: false, message: "Error creating chat." });
   }
 };
-
-
-
 
 exports.deleteChat = async (req, res) => {
   try {
