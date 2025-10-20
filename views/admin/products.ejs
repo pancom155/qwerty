@@ -520,7 +520,7 @@
           </div>
           <div class="col-12">
             <label class="form-label"><i class="bi bi-card-text me-2"></i>Description</label>
-            <textarea name="description" maxlength="1000" class="form-control" required><%= product.description %></textarea>
+            <textarea name="description" maxlength="100" class="form-control" required><%= product.description %></textarea>
           </div>
         </div>
         <div class="modal-footer">
@@ -853,6 +853,133 @@
     filterByCategory('all');
   });
 </script>
+<script>
+  /* ---------- PRODUCT NAME: only letters and spaces ---------- */
+  document.querySelectorAll('input[name="name"]').forEach(input => {
+    input.addEventListener('input', function () {
+      const regex = /^[A-Za-z\s]*$/;
+      let value = this.value;
 
+      // Allow only letters and spaces
+      if (!regex.test(value)) {
+        this.value = value.replace(/[^A-Za-z\s]/g, '');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Input',
+          text: 'Product name can only contain letters and spaces.',
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'center'
+        });
+        return;
+      }
+
+      // Prevent input with only spaces
+      if (value.trim() === '' && value.length > 0) {
+        this.value = '';
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Input',
+          text: 'Product name cannot contain only spaces.',
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'center'
+        });
+        return;
+      }
+
+      // SweetAlert for reaching maxlength
+      const maxLength = parseInt(this.getAttribute('maxlength'));
+      if (value.length === maxLength) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Maximum Length Reached',
+          text: `Product name cannot exceed ${maxLength} characters.`,
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'center'
+        });
+      }
+    });
+  });
+
+  /* ---------- DESCRIPTION: SweetAlert for max length ---------- */
+  document.querySelectorAll('textarea[name="description"]').forEach(textarea => {
+    textarea.addEventListener('input', function () {
+      const maxLength = parseInt(this.getAttribute('maxlength'));
+      if (this.value.length === maxLength) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Maximum Length Reached',
+          text: `Description cannot exceed ${maxLength} characters.`,
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'center'
+        });
+      }
+    });
+  });
+
+  /* ---------- PRICE: only numbers, min = 1, max = 5 digits ---------- */
+  document.querySelectorAll('input[name="price"]').forEach(input => {
+    input.addEventListener('input', function () {
+      let value = this.value.replace(/[^0-9]/g, ''); // Only numbers
+      this.value = value;
+
+      // Minimum price check
+      if (value !== '' && parseInt(value) < 1) {
+        this.value = 1;
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Price',
+          text: 'Price must be at least 1.',
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'center'
+        });
+      }
+
+      // Maximum 5 digits
+      if (value.length > 5) {
+        this.value = value.slice(0, 5);
+        Swal.fire({
+          icon: 'info',
+          title: 'Maximum Limit Reached',
+          text: 'Price cannot exceed 5 digits (99999).',
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'center'
+        });
+      }
+    });
+  });
+
+  document.querySelectorAll('input[type="file"][name="image"]').forEach(fileInput => {
+    fileInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const allowedTypes = ['image/jpeg', 'image/png'];
+      if (!allowedTypes.includes(file.type)) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Invalid File Type',
+          text: 'Only JPG and PNG image formats are allowed.',
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'center'
+        });
+        this.value = '';
+      }
+    });
+  });
+</script>
 </body>
 </html>

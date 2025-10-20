@@ -211,7 +211,7 @@
 
             <div class="col-md-6">
             <label class="form-label">GCash Reference No.</label>
-            <input type="number" class="form-control" name="referenceNumber" placeholder="e.g. 1234567890" min="0"  required oninput="this.value = Math.abs(this.value)">
+            <input type="number" class="form-control" name="referenceNumber" placeholder="e.g. 1234567890" maxlength="13"  required oninput="this.value = Math.abs(this.value)">
             </div>
 
             <div class="col-md-6">
@@ -347,6 +347,119 @@
   });
 });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll('form').forEach(form => {
+    const refInput = form.querySelector('input[name="referenceNumber"]');
+    const proofInput = form.querySelector('input[name="proofOfPayment"]');
+    const requiredInputs = form.querySelectorAll('input[required], select[required]');
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    if (!submitBtn) return;
+
+    // Initially disable confirm button
+    submitBtn.disabled = true;
+    submitBtn.style.opacity = "0.6";
+    submitBtn.style.cursor = "not-allowed";
+
+    // Function to check if all fields are filled & valid
+    const validateForm = () => {
+      let allFilled = true;
+
+      requiredInputs.forEach(input => {
+        if (!input.value.trim()) allFilled = false;
+      });
+
+      // Check reference number = 13 digits
+      const isRefValid = refInput && refInput.value.trim().length === 13;
+
+      // Check proof file is PNG or JPG
+      let isProofValid = false;
+      if (proofInput && proofInput.files.length > 0) {
+        const file = proofInput.files[0];
+        isProofValid = ["image/png", "image/jpeg"].includes(file.type);
+      }
+
+      // Enable/disable confirm button
+      if (allFilled && isRefValid && isProofValid) {
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = "1";
+        submitBtn.style.cursor = "pointer";
+      } else {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = "0.6";
+        submitBtn.style.cursor = "not-allowed";
+      }
+    };
+
+    // Validate all required inputs
+    requiredInputs.forEach(input => {
+      input.addEventListener("input", validateForm);
+      input.addEventListener("change", validateForm);
+    });
+
+    // Reference number validation
+    if (refInput) {
+      refInput.addEventListener("input", () => {
+        const value = refInput.value.trim();
+
+        // Red or green border
+        refInput.style.borderColor = value.length === 13 ? "green" : "red";
+
+        // Max 13 digits
+        if (value.length > 13) {
+          refInput.value = value.slice(0, 13);
+          Swal.fire({
+            icon: "warning",
+            title: "Invalid Reference Number",
+            text: "Please enter only 13 digits.",
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+
+        validateForm();
+      });
+    }
+
+    // File upload validation
+    if (proofInput) {
+      proofInput.addEventListener("change", () => {
+        const file = proofInput.files[0];
+        if (!file) return;
+
+        if (!["image/png", "image/jpeg"].includes(file.type)) {
+          Swal.fire({
+            icon: "error",
+            title: "Invalid File Type",
+            text: "Please upload a PNG or JPG file only.",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          proofInput.value = "";
+        }
+
+        validateForm();
+      });
+    }
+
+    // Final validation before submit
+    form.addEventListener("submit", e => {
+      if (refInput && refInput.value.trim().length !== 13) {
+        e.preventDefault();
+        Swal.fire({
+          icon: "error",
+          title: "Incomplete Reference Number",
+          text: "GCash Reference Number must be exactly 13 digits.",
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+  });
+});
+</script>
+
 
 </body>
 </html>

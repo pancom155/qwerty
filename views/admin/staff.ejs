@@ -815,7 +815,7 @@
             <input type="hidden" name="role" id="editRole"> 
             <div class="mb-3">
               <label class="form-label">Full Name</label>
-              <input type="text" name="name" maxlength="20" id="editName" class="form-control" required>
+              <input type="text" name="name" maxlength="30" id="editName" class="form-control" required>
             </div>
             <div class="mb-3">
               <label class="form-label">Email</label>
@@ -1034,6 +1034,61 @@
       
     </script>
   <% } %>
-  
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  const nameInputs = document.querySelectorAll('input[name="name"]');
+
+  nameInputs.forEach(input => {
+    input.addEventListener('input', function () {
+      const regex = /^[A-Za-z\s]*$/;
+      if (!regex.test(this.value)) {
+        this.value = this.value.replace(/[^A-Za-z\s]/g, '');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Input',
+          text: 'Only letters and spaces are allowed in Full Name.',
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'middle'
+        });
+      }
+    });
+  });
+
+  document.querySelectorAll('#addAccountModal input[maxlength]').forEach(input => {
+    input.addEventListener('input', function () {
+      if (this.value.length === parseInt(this.getAttribute('maxlength'))) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Maximum Length Reached',
+          text: `You can only enter up to ${this.getAttribute('maxlength')} characters.`,
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'middle'
+        });
+      }
+    });
+  });
+
+  // SweetAlert for maxlength reached (Edit Modal)
+  document.querySelectorAll('#editModal input[maxlength]').forEach(input => {
+    input.addEventListener('input', function () {
+      if (this.value.length === parseInt(this.getAttribute('maxlength'))) {
+        Swal.fire({
+          icon: 'info',
+          title: 'Maximum Length Reached',
+          text: `You can only enter up to ${this.getAttribute('maxlength')} characters.`,
+          timer: 1500,
+          showConfirmButton: false,
+          timerProgressBar: true,
+          position: 'middle'
+        });
+      }
+    });
+  });
+</script>
+
 </body>
 </html>

@@ -469,6 +469,58 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
-  
+<script>
+  document.querySelectorAll('input[name="name"]').forEach(input => {
+    input.addEventListener('input', function () {
+      let value = this.value;
+
+      // Allow only letters and spaces
+      const regex = /^[A-Za-z\s]*$/;
+      if (!regex.test(value)) {
+        this.value = value.replace(/[^A-Za-z\s]/g, '');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Input',
+          text: 'Only letters and spaces are allowed.',
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+          position: 'center'
+        });
+        return;
+      }
+
+      // Prevent input with spaces only
+      if (value.trim() === '' && value.length > 0) {
+        this.value = '';
+        Swal.fire({
+          icon: 'warning',
+          title: 'Invalid Input',
+          text: 'Name cannot contain only spaces.',
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+          position: 'center'
+        });
+        return;
+      }
+
+      // Maximum 40 characters check
+      if (value.length > 40) {
+        this.value = value.substring(0, 40);
+        Swal.fire({
+          icon: 'info',
+          title: 'Maximum Length Reached',
+          text: 'Name can only have up to 40 characters.',
+          showConfirmButton: false,
+          timer: 1500,
+          timerProgressBar: true,
+          position: 'center'
+        });
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
